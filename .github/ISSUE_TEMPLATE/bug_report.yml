@@ -1,0 +1,37 @@
+name: Bug report
+description: Something does not work as expected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Security problems:** please use a private advisory instead (Security → Report a vulnerability). Never paste tokens, App Secrets or API keys.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Add a project …
+        2. Write a prompt …
+        3. See …
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Promo Studio, macOS, Node.js (`node --version`) and Claude Code (`claude --version`).
+      placeholder: Promo Studio 1.0.0, macOS 26.1, Node 22.11, Claude Code 2.1.310
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error message or logs
+      description: The error Promo Studio showed, or the end of the job's log.
+      render: text

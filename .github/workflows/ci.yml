@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: Build and translations
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select the newest Xcode
+        run: |
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)"
+          xcodebuild -version
+      - name: Generate the project
+        run: brew install xcodegen && xcodegen generate
+      - name: Build
+        run: xcodebuild -scheme PromoStudio -derivedDataPath build -configuration Debug build CODE_SIGNING_ALLOWED=NO
+      - name: Check translations
+        run: python3 scripts/l10n.py --check
+
+  remotion:
+    name: Remotion template
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Type-check the template and the motion kit
+        working-directory: RemotionTemplate
+        run: npm ci && npx tsc --noEmit

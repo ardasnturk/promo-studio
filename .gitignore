@@ -1,0 +1,19 @@
+# The main project is generated with XcodeGen (xcodegen generate)
+/PromoStudio.xcodeproj/
+# The capture tool's project is bundled into the app, so it is kept in the repo; only user data is ignored
+CaptureRunner/PromoStudioCaptureRunner.xcodeproj/xcuserdata/
+CaptureRunner/PromoStudioCaptureRunner.xcodeproj/project.xcworkspace/xcuserdata/
+xcuserdata/
+build/
+DerivedData/
+.DS_Store
+RemotionTemplate/node_modules/
+RemotionTemplate/out/
+RemotionTemplate/public/jobs/
+# Generated videos
+exports/
+
+# Local signing settings (team ID)
+Config/Signing.local.xcconfig
+# Release output (scripts/build-release.sh)
+dist/

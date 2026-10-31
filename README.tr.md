@@ -1,133 +1,331 @@
-# Promo Studio
+<p align="center"><img src="docs/icon.png" width="128" height="128" alt="Promo Studio simgesi"></p>
 
-[English](README.md) · **Türkçe**
+<h1 align="center">Promo Studio</h1>
 
-Geliştirdiğin uygulamalar için sosyal medya içeriği üreten, paylaşan ve takip eden macOS kontrol paneli. İlk platform Instagram (Reels).
+<p align="center">Geliştirdiğin uygulamalar için tanıtım videoları, <b>Claude Code'un yazıp yönettiği</b>.</p>
 
-Akış: proje klasörünü seç → Claude Code kodu analiz eder (özellikler, hedef kitle, marka renkleri, ekran görüntüleri) → bir özellik ya da öneri seç (veya kendi isteğini yaz; Claude gerekirse web’de araştırır) → Claude senaryoyu, açıklamayı ve hashtag'leri yazar → Remotion videoyu render eder → hemen paylaş ya da zamanla → izlenme/erişim istatistiklerini takip et.
+<p align="center">
+  <a href="https://github.com/ardasnturk/promo-studio/releases/latest"><img alt="Son sürüm" src="https://img.shields.io/github/v/release/ardasnturk/promo-studio?label=release"></a>
+  <a href="https://github.com/ardasnturk/promo-studio/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/ardasnturk/promo-studio/actions/workflows/ci.yml/badge.svg"></a>
+  <img alt="Platform" src="https://img.shields.io/badge/platform-macOS%2015%2B-blue">
+  <a href="LICENSE"><img alt="MIT Lisansı" src="https://img.shields.io/badge/license-MIT-green"></a>
+</p>
+
+<p align="center"><a href="README.md">English</a> · <b>Türkçe</b></p>
+
+> **Promo Studio; Claude Code, Remotion, Gemini ve Instagram ile çalışır.**
+> Bağımsız, açık kaynak bir projedir; **Anthropic, Remotion, Google ya da Meta
+> ile bağlantılı değildir, onlar tarafından onaylanmamış ya da desteklenmemiştir.**
+> Bu hizmetleri koşullarına uygun kullanmak senin sorumluluğundadır.
+
+Promo Studio, uygulamanın kaynak kodundan kısa dikey videolar (Reels, TikTok,
+Shorts) üreten bir Mac uygulamasıdır. Projeni okur, isteğinden — gerekirse
+web'de araştırarak — bir storyboard yazar, Claude'a buna özel bir
+[Remotion](https://www.remotion.dev) videosu kodlatır, seslendirmeyle render
+eder ve Instagram'da paylaşır ya da zamanlar.
+
+Promo Studio **kendi `claude` CLI'ını**, kendi hesabınla çalıştırır. Promo
+Studio'nun sunucusu, hesabı ya da telemetrisi yoktur: kodun, anahtarların ve
+videoların Mac'inde kalır.
+
+## Özellikler
+
+* **Claude'un yönettiği promosyon filmleri** — isteğinden sahne sahne bir
+  storyboard, senin onayınla kinetik yazı, sayaçlar, telefon çekimleri ve ses
+  efektleriyle kendine özel kodlanan bir Remotion videosu; düz cümlelerle
+  revize edersin.
+* **Hızlı şablonlar** — bütün bir filme gerek olmadığında uygulamanın
+  özelliklerinden ve ekran görüntülerinden tek tıkla video.
+* **Kaynaklı araştırma** — Claude güncel bilgileri (tarih, kadro, fiyat)
+  ekrana koymadan önce web'de doğrular ve kaynaklarını gösterir.
+* **Seslendirme ve müzik** — sahnelere oturtulan Gemini seslendirmesi
+  (isteğe bağlı) ve telifsiz bir arka plan ritmi.
+* **Instagram** — resmi API'lerle Reels'i hemen paylaş ya da zamanla, sonra
+  izlenme ve erişimi izle. İsteğe bağlı: **Videoyu kaydet…** MP4'ü dışa aktarır.
+* **On dil** — videolar ve uygulamanın kendisi English, Türkçe, Deutsch,
+  Español, Français, Italiano, Português, 日本語, 한국어 ve 简体中文 dillerinde.
+* **Menü çubuğu öncelikli** — seni bekleyenler, üretimdeki işler ve sıradaki
+  paylaşımlarla bir panel; stüdyo penceresi kapalıyken de zamanlanmış
+  paylaşımlar gider.
+* **iPhone'dan** — [Remote Code](https://github.com/ardasnturk/remote-code) ile
+  videoları telefondan oluştur, onayla ve paylaş.
+
+## İçindekiler
+
+* [Hızlı başlangıç](#hızlı-başlangıç)
+* [Gereksinimler](#gereksinimler)
+* [Kurulum](#kurulum)
+* [Promosyon filmi yapmak](#promosyon-filmi-yapmak)
+* [Hızlı şablonlar](#hızlı-şablonlar)
+* [Instagram](#instagram)
+* [Seslendirme, müzik ve diller](#seslendirme-müzik-ve-diller)
+* [Promo Templates](#promo-templates)
+* [Menü çubuğu](#menü-çubuğu)
+* [iPhone'dan uzaktan yönetim](#iphonedan-uzaktan-yönetim)
+* [Güncellemeler](#güncellemeler)
+* [Sorun giderme](#sorun-giderme)
+* [Gizlilik ve güvenlik](#gizlilik-ve-güvenlik)
+* [SSS](#sss)
+* [Kaynaktan derleme](#kaynaktan-derleme)
+* [Katkıda bulunmak](#katkıda-bulunmak)
+* [Lisans](#lisans)
+
+## Hızlı başlangıç
+
+1. **Promo Studio'yu kur** — DMG'yi
+   [Releases](https://github.com/ardasnturk/promo-studio/releases/latest)
+   sayfasından indir, Promo Studio'yu Uygulamalar'a sürükle ve aç. Simgesi menü
+   çubuğunda belirir ve stüdyo penceresi açılır.
+2. **Kurulum kontrol listesini tamamla** — bir şey eksikse kendiliğinden açılır:
+   Claude Code (kurulu ve oturum açık) ve Node.js 20+. Remotion'ın yanındaki
+   **Kur**'a bas; ilk seferde birkaç dakika sürer.
+3. **Uygulamanı ekle** — kenar çubuğunda **Proje klasörü ekle…** ile
+   uygulamanın kaynak klasörünü seç. Claude onu analiz eder: özellikler, hedef
+   kitle, marka renkleri ve ekran görüntüleri.
+4. **İsteğini yaz** — projede **Prompt yaz…**: "yeni widget'lar için 20
+   saniyelik bir lansman filmi". Claude storyboard'u yazar; onaylarsın, video
+   kodlanır ve render edilir.
+5. **Paylaş** — **Videoyu kaydet…** ya da **Paylaş**; veya Instagram'ı bir kez
+   bağla ve stüdyodan paylaş ya da zamanla.
+
+Seslendirme ve Instagram isteğe bağlıdır; Gemini anahtarı ve Meta uygulaması
+için [docs/SETUP.tr.md](docs/SETUP.tr.md).
+
+## Gereksinimler
+
+| | |
+|---|---|
+| Mac | macOS 15 Sequoia veya üstü, Apple silicon ya da Intel |
+| Claude Code | Resmi CLI kurulu ve **kendi Claude hesabınla** oturum açılmış (`claude auth status`) |
+| Node.js | 20 veya üstü; Promo Studio Remotion'ı kurar ve onunla gelen ffmpeg'i kullanır |
+| Seslendirme | İsteğe bağlı. Bir [Gemini API anahtarı](https://aistudio.google.com) (ücretsiz katman: model başına günde yaklaşık 10 istek, video başına bir) |
+| Instagram | İsteğe bağlı. İşletme ya da İçerik üreticisi hesabı ve kendi Meta geliştirici uygulaman |
+| Yerel ekranlar | İsteğe bağlı. iOS Simülatörü ile Xcode |
 
 ## Kurulum
 
-[Releases](https://github.com/ardasnturk/promo-studio/releases/latest) sayfasından `PromoStudio-<sürüm>.dmg` dosyasını
-indirip Promo Studio'yu Uygulamalar klasörüne sürükle ya da Homebrew kullan:
+Notarize edilmiş `PromoStudio-<sürüm>.dmg` dosyasını
+[GitHub Releases](https://github.com/ardasnturk/promo-studio/releases)
+sayfasından indir ya da Homebrew kullan:
 
-```bash
+```sh
 brew tap ardasnturk/promo-studio https://github.com/ardasnturk/promo-studio
 brew install --cask promo-studio
 ```
 
-Uygulama Developer ID ile imzalı ve Apple tarafından notarize edilmiştir.
-
-## Gereksinimler
-
-- macOS 15+, Xcode 16+ ve [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
-- Node.js 20+ (Remotion için; Promo Studio Remotion'ı kurar ve onunla gelen ffmpeg'i kullanır)
-- [Claude Code](https://claude.com/claude-code) CLI'ı kurulu ve oturum açılmış olmalı (`claude auth status`)
-- İsteğe bağlı: seslendirme için [Gemini API anahtarı](https://aistudio.google.com)
-- İsteğe bağlı, paylaşım için: Instagram **İşletme** ya da **İçerik üreticisi** hesabı ve kendi Meta uygulaman
-
-## Derleme
-
-```bash
-xcodegen generate
-open PromoStudio.xcodeproj
-```
-
-Promo Studio açılışta gereksinimleri denetler ve zorunlu bir şey eksikse **kurulum kontrol listesini** açar (ayrıca
-**Yardım → Kurulum kontrol listesi…**); Remotion'ı tek tıkla kurar. Meta uygulaması ve Gemini anahtarı dahil adım adım
+Promo Studio'yu aç. İlk açılışta **kurulum kontrol listesi** neyin eksik
+olduğunu bağlantı ve komutlarla gösterir (**Yardım → Kurulum kontrol
+listesi…** yeniden açar). Meta uygulaması ve Gemini anahtarı dahil adım adım
 anlatım: **[docs/SETUP.tr.md](docs/SETUP.tr.md)**.
 
-Instagram bağlamak isteğe bağlı: bağlamadan stüdyodaki **Videoyu kaydet…** ya da **Paylaş** ile MP4'ü alıp kendin
-paylaşabilirsin.
+## Promosyon filmi yapmak
 
-## Instagram bağlantısı
+Projede **Prompt yaz…** (ya da **Özelleştir… → Kendi isteğim**):
 
-Promo Studio, resmi **Instagram API with Instagram Login** kullanır (şifre saklanmaz, hesabın riske girmez).
+1. **Storyboard** — Claude isteğini bir yönetmen storyboard'una çevirir:
+   konsept ve görsel dil, her sahne için görsel ve hareket notu, ekran metni,
+   seslendirme, ses efektleri ve hangi ekran görüntülerinin kullanılacağı.
+   **Claude web'de araştırsın** açıkken önce güncel bilgileri kontrol eder ve
+   kaynaklarını listeler. Storyboard'u elle düzeltebilir ya da **Claude ile
+   revize** sekmesinden değişiklik isteyebilirsin.
+2. **Onayla ve üret** — seslendirme üretilir (sahne süreleri sese göre
+   ayarlanır), Claude videoyu Remotion'da kodlar, işini `tsc` ve render
+   edilen karelerle kendisi kontrol eder, Promo Studio da render eder.
+   **Seslendirmesiz** seslendirmeyi atlar.
+3. **Revize et** — "kancadaki başlık kenara taşıyor, ortala". Claude
+   storyboard'u ve yalnızca değişmesi gereken kodu günceller, video yeniden
+   render edilir. Önceki her sürüm saklanır; **Bu sürüme dön** geri getirir.
 
-1. [developers.facebook.com](https://developers.facebook.com) → yeni uygulama → **Instagram** ürününü ekle → "API setup with Instagram login".
-2. İzinler: `instagram_business_basic`, `instagram_business_content_publish`, `instagram_business_manage_insights`, `instagram_business_manage_comments`.
-3. "Business login settings" altında **OAuth redirect URI** olarak Promo Studio'daki yönlendirme URI'sini gir (varsayılan `https://localhost/promostudio/callback`; sayfanın açılması gerekmez, Promo Studio yönlendirmeyi yakalar).
-4. Promo Studio → Hesap → Instagram App ID + App Secret → **Instagram ile giriş yap**.
+Claude `RemotionTemplate/src/kit` içindeki hareket kitiyle çalışır
+([KIT.md](RemotionTemplate/KIT.md)); yalnızca o videonun klasörüne yazabilir
+(`Edit(src/videos/<id>/**)`) ve yalnızca `npx tsc` ile `npx remotion still`
+çalıştırabilir. Bir şablon kütüphanesinde projenin adını taşıyan bir klasör
+varsa (ör. `src/Acme`), Claude onu marka kiti olarak okur.
 
-Hızlı test: uygulama panelindeki "Generate access token" ile aldığın token'ı doğrudan yapıştırabilirsin. Uygulama "Development" modundayken yalnızca uygulamaya tester olarak eklenen hesaplar bağlanabilir.
+## Hızlı şablonlar
 
-**Facebook girişi (varsayılan):** Meta panelinde "Instagram girişiyle API kurulumu" görünmüyorsa bu yol kullanılır. Instagram hesabı bir Facebook sayfasına bağlı olmalıdır. Meta uygulamasına `instagram_basic`, `instagram_content_publish`, `instagram_manage_insights`, `instagram_manage_comments`, `pages_show_list`, `pages_read_engagement` ve `business_management` izinlerini ekle. Facebook Login for Business ayarlarında "Eingebettete Browser-OAuth-Anmeldung" (gömülü tarayıcıda OAuth girişi) açık olmalı. Promo Studio → Hesap → App ID → **Facebook ile giriş yap**. App Secret girildiğinde token otomatik olarak 60 güne uzatılır.
+Analiz edilen her proje özelliklerini ve içerik fikirlerini listeler. **Hızlı
+video** bir özellikten tek tıkla 15 saniyelik video yapar; **Özelleştir…** ile
+tema, süre, dil ve notları seçersin. Bu modda Claude hazır bir şablon için
+senaryo yazar (kanca, özellikler, sayılar, harekete geçirici mesaj), Promo
+Studio da ekran görüntülerin ve marka renklerinle render eder.
 
-Videolar resumable upload ile doğrudan yüklenir; herkese açık bir sunucuya gerek yoktur. Token 60 gün geçerlidir ve süresi dolmadan otomatik yenilenir.
+## Instagram
 
-**Birden fazla hesap:** Her proje kendi Instagram hesabına bağlanır (proje ekranının başlığındaki hesap seçici). Paylaşım, zamanlama ve istatistikler o hesabın token'ıyla yapılır; hesabı olmayan projenin videoları paylaşılmaz. Facebook girişi, yönettiğin sayfalara bağlı tüm Instagram hesaplarını tek seferde ekler; adı bir projeyle eşleşen hesap o projeye otomatik bağlanır.
+Promo Studio resmi Instagram API'lerini kullanır; parola saklanmaz, token'lar
+Keychain'de durur. Bağlamak isteğe bağlıdır.
 
-## Kendi isteğinle video (prompt)
-
-Proje ekranındaki **Kendi isteğinle video → Prompt yaz…** (ya da Özelleştir… → "Kendi isteğim"). İki video türü var:
-
-### Promosyon filmi (Claude yönetir, varsayılan)
-
-Ekran görüntüsü slaytı değil, her video için özel kodlanan bir reklam filmi:
-
-1. **Storyboard:** Claude isteğini (gerekirse web'de araştırarak) sahne sahne bir yönetmen storyboard'una çevirir: konsept/görsel dil, her sahnenin görsel ve hareket notu, ekran metni, seslendirme, ses efektleri ve kullanılacak proje görselleri. Stüdyonun **Storyboard** sekmesinde görünür; alanları elle düzeltebilir ya da **Claude ile revize** sekmesinden talimat verebilirsin.
-2. **Onay ve üretim:** "Onayla ve videoyu üret" ile Promo Studio seslendirmeyi üretir (sahne süreleri sese göre ayarlanır), Claude videoyu Remotion'da kodlar (`src/videos/<id>/`), `tsc` ve sahne kareleriyle kendi işini kontrol eder, ardından Promo Studio render eder.
-3. **Video üzerinden revizyon:** Talimat ver ("kancadaki başlık kenara taşıyor, ortala"); Claude önce storyboard'u, sonra yalnızca ilgili kodu günceller ve video yeniden render edilir. Her revizyondan önceki storyboard ve kod saklanır, "Bu sürüme dön" ile geri alınır.
-
-- **Kit:** Claude, `RemotionTemplate/src/kit` hareketli grafik kitini (kinetik tipografi, sayaç, olasılık çubuğu, geri sayım, rozet/karşılaşma tabelası, bildirim kartı, telefon/zoom, saha, parçacık, flaş, sarsıntı, ses efektleri) kullanır; kılavuzu `RemotionTemplate/KIT.md`. Kit yetmezse videonun klasöründe kendi bileşenini yazar.
-- **Marka kiti:** Bir şablon kütüphanesinin Remotion klasöründe projeyle aynı adda klasör varsa (ör. `src/Acme` klasörü, Acme projesi için), Claude o marka kitini ve kütüphanenin CLAUDE.md kurallarını okur; kütüphanenin `public/<proje>` görselleri stüdyoya kopyalanır. Kütüphaneye yazılmaz.
-- **Yetki:** Claude yalnızca o videonun klasörüne yazabilir (`Edit(src/videos/<id>/**)`); yalnızca `npx tsc` ve `npx remotion still` komutlarını çalıştırabilir.
-
-### Hızlı şablon (ekran görüntüleri)
-
-1. **İstek:** Ne istediğini yaz (ör. "Bu hafta sonu büyük bir güncelleme yayınlıyoruz, yeni özelliği öne çıkaran enerjik bir tanıtım filmi yap"). İstersen öne çıkacak özelliği seç; boş bırakırsan Claude seçer.
-2. **Araştırma:** "Claude web'de araştırsın" açıksa Claude güncel bilgileri (maç tarihi/saati, form, kadro…) WebSearch/WebFetch ile doğrular. Yalnızca doğruladığı bilgiyi kullanır; bulgular ve kaynaklar stüdyonun **Claude ile revize** sekmesinde görünür.
-3. **Onay:** Bu modda otomatik render varsayılan olarak kapalıdır; senaryoyu inceleyip soldan render edersin.
-4. **Revizyon:** **Claude ile revize** sekmesinde talimat ver ("kancayı sertleştir, 3. sahnede kadroyu göster"). Claude yalnızca istenen yerleri değiştirir. Her revizyondan önceki sürüm saklanır ve "Bu sürüme dön" ile geri alınır. Render sonrası revize edilen videoda önizleme eski sürüme ait olarak işaretlenir; yeniden render et.
+* **Facebook girişi** (varsayılan) yönettiğin Facebook sayfalarına bağlı tüm
+  Instagram hesaplarını tek seferde ekler. **Instagram girişi** sayfa olmadan
+  çalışır.
+* İkisi de kendi Meta geliştirici uygulamanı gerektirir; kendi hesapların için
+  geliştirme modunda kalabilir. İzinler ve ayarlar:
+  [docs/SETUP.tr.md](docs/SETUP.tr.md#instagram).
+* Her proje kendi hesabıyla paylaşır (proje başlığındaki seçici). Videolar
+  doğrudan yüklenir; herkese açık bir sunucu gerekmez.
+* App Secret girildiyse token'lar 60 güne uzatılır ve süresi dolmadan yenilenir.
 
 ## Seslendirme, müzik ve diller
 
-- Claude her sahne için bir seslendirme cümlesi yazar (`[excited]` gibi ton etiketiyle). Render sırasında tüm cümleler tek bir Gemini TTS isteğiyle seslendirilir, sessizliklerden sahnelere bölünür ve sahne süreleri sese göre ayarlanır. Metin değişmedikçe ses yeniden üretilmez.
-- Gemini anahtarı Ayarlar → Seslendirme ve müzik'ten girilir; boşsa shell'deki `GEMINI_API_KEY` kullanılır. Ücretsiz kota model başına günde ~10 istektir (video başına 1 istek).
-- Arka plan müziği yerel olarak üretilen telifsiz 120 BPM bir ritimdir; konuşma sırasında kısık çalar.
-- Her video kendi dilinde üretilir (Türkçe, English, Deutsch, Español, Italiano, Français, Português, 日本語, 한국어, 简体中文). Stüdyodaki "Başka dilde kopyala" videonun metinlerini, seslendirmesini, açıklamasını ve hashtag'lerini hedef pazara uyarlayıp yeniden render eder.
-- Promo Studio'nun arayüzü Remote Code ile aynı dillerde: İngilizce, Türkçe, Almanca, İspanyolca, Fransızca, İtalyanca, Portekizce (Brezilya), Japonca, Korece ve Basitleştirilmiş Çince. Mac'inin dilini izler; başka bir dil için Sistem Ayarları → Genel → Dil ve Bölge → Uygulamalar.
+* Claude her sahne için tek seslendirme satırı yazar (`[excited]` gibi bir ton
+  etiketiyle); tüm satırlar tek Gemini TTS isteğiyle seslendirilir, duraklardan
+  bölünür ve sahnelere oturtulur. Günlük Gemini kotası dolunca Promo Studio ne
+  zaman yenileneceğini söyler; seslendirmesiz üretebilirsin.
+* Arka plan, yerelde üretilen telifsiz 120 BPM bir ritimdir ve sesin altında
+  kısılır.
+* Her video kendi dilinde üretilir; **Başka dilde kopyala** metinleri,
+  seslendirmeyi, açıklamayı ve hashtag'leri uyarlayıp yeniden render eder.
+* Uygulama Mac'inin dilini izler (Remote Code ile aynı on dil). Başka bir dil
+  için Sistem Ayarları → Genel → Dil ve Bölge → Uygulamalar.
+* **Yerel ekranlar…** uygulamanı her dilde iOS Simülatörü'nde açar ve
+  Claude'un kodunda bulduğu ekranları yakalar (UI testleri, başlatma
+  argümanları, deep link'ler).
 
-## Simülatörden yerel ekranlar
+## Promo Templates
 
-Sadece tek dilde bulunan ham uygulama ekranları için proje ekranındaki **Yerel ekranlar…**:
+[Promo Templates](https://github.com/ardasnturk/promo-templates), Promo
+Studio'nun şablon kütüphanesidir: hazır kalıplar (fizik döngüleri, gerçek bir
+çözücüyle çözülen bulmacalar, metinsiz makineler, rahatlatıcı egzersizler,
+mesajlaşma hikâyeleri) ve her türden yeni video üreten Claude Code skill'leri.
+Promo Studio kurmayı önerir ve güncel tutar; Claude Code skill'leri olan her
+Remotion projesi **Kütüphane ekle…** ile eklenebilir.
 
-1. **Tarifi çıkar:** Claude Code kodu (UI testleri, launch argümanları, derin bağlantılar) inceleyip her ekranın nasıl açılacağını bulur. Tarif bundle ID'yi, derleme bilgisini, demo argümanlarını ve her ekran için derin bağlantıyı ve dokunma adımlarını (erişilebilirlik kimlikleri) içerir.
-2. **Ekranları yakala:** Promo Studio kendine ait bir simülatör oluşturur ("Promo Studio · iPhone"). Uygulama kurulu değilse simülatör için derleyip kurar. Ardından paketteki XCUITest aracıyla (`CaptureRunner/`) her dilde uygulamayı açar, sistem onaylarını geçer, ekranları 9:41 durum çubuğuyla ve orijinal görselin koyu/açık temasında yakalar.
-3. Yakalanan ekranlar ilgili görselin o dildeki karşılığı olarak kaydedilir. "Başka dilde kopyala" bunları otomatik kullanır; tarifi olan projelerde eksik ekranlar uyarlamadan önce kendiliğinden yakalanır.
+* **Üret…** — bir skill seç ve isteğini yaz; Claude onu kütüphanede çalıştırır,
+  videoyu yazar, kontrol eder ve render eder; Promo Studio açıklamasıyla içe
+  aktarır.
+* **Trendleri araştır** — fikir skill'i trendleri araştırır ve konsept önerir; **Bunu
+  üret** ilgili skill'i başlatır.
+* **Bu parametrelerle yeniden render et** — şablon videonun parametrelerini
+  değiştir ve Claude olmadan render et.
 
-## Şablon kütüphaneleri (ör. Promo Templates)
+## Menü çubuğu
 
-Hazır video kalıpları ve Claude Code skill'leri içeren harici bir Remotion projesi, kenar çubuğundaki **Şablonlar → Kütüphane ekle…** ile bağlanır. Kalıplar Promo Studio'ya kopyalanmaz; kütüphanede yapılan her değişiklik "Yeniden tara" ile görünür.
+Promo Studio menü çubuğunda yaşar. Paneli seni bekleyenleri (onay bekleyen
+storyboard'lar, başarısız paylaşımlar, kurulum), üretimdekileri ilerlemesiyle,
+sıradaki paylaşımları ve yeni bir promosyon filmi başlatma kutusunu gösterir.
+Dock simgesi yalnızca stüdyo ya da Ayarlar penceresi açıkken görünür.
+**Ayarlar → Genel → Girişte aç** onu Mac'inle başlatır; zamanlanmış
+paylaşımlar vaktinde gider.
 
-- **Tarama:** Remotion klasörü (package.json + `src/Root.tsx`), `.claude/skills/*/SKILL.md` (Remotion'ın genel skill'leri hariç) ve `Root.tsx`'teki kompozisyonlar (şemalı olanlar işaretli).
-- **Üret:** Bir kalıp seçilip istek yazılır. Promo Studio, Claude Code'u kütüphane klasöründe arka planda o skill'le çalıştırır. Claude kütüphanenin `CLAUDE.md` kurallarına uyarak videoyu yazar, doğrular ve render eder. Promo Studio MP4'ü içe alır, kapak çıkarır ve SEO uyumlu açıklama yazdırır. Gerçek bilgi doğrulanamazsa Claude render etmez; gönderi "Girdi gerekli" notuyla taslak kalır.
-- **Fikir bul:** Fikir skill'i trendleri araştırıp konsept önerir; "Bunu üret" ilgili skill'i başlatır.
-- **Parametrelerle yeniden render:** Stüdyonun "Kalıp" sekmesinde render'da kullanılan props JSON olarak görünür. Düzenleyip Claude'u çalıştırmadan yeniden render edebilirsin.
-- **Yetkiler:** Arka plandaki Claude Code kütüphane klasöründe dosya yazabilir, `npx`, `npm` ve `node` komutlarını çalıştırabilir ve web'de arama yapabilir. Kütüphaneye eklenen dosyalar o deponun commit edilmemiş değişiklikleri olarak kalır.
+## iPhone'dan uzaktan yönetim
 
-## Mimari
+Aynı Mac'te [Remote Code](https://github.com/ardasnturk/remote-code) varsa
+iPhone ve iPad uygulamasında bir **Promo Studio** sekmesi çıkar: projeler,
+istekten video, storyboard ve revizyonlar, video oynatma, açıklamalar,
+paylaşma, zamanlama ve Instagram girişi — Remote Code'un uçtan uca şifreli
+bağlantısı üzerinden. Promo Studio yalnızca `127.0.0.1` üzerinde token korumalı
+bir API sunar; bkz. [docs/CONTROL_API.md](docs/CONTROL_API.md).
 
+## Güncellemeler
+
+Promo Studio günde bir kez GitHub'da yeni sürüm arar (Ayarlar → Güncellemeler).
+**Kur ve yeniden başlat** indirir; SHA-256 sağlamasını, Apple notarizasyonunu
+ve geliştirici imzasını denetler, uygulamayı değiştirir ve yeni sürümü açar.
+GitHub'dan gelen şablon kütüphaneleri de denetlenir ve yerel değişiklik yoksa
+git ile güncellenir. Homebrew kullananlar `brew upgrade --cask promo-studio`
+da çalıştırabilir.
+
+## Sorun giderme
+
+**Claude Code ya da Node.js kurulu ama "bulunamadı" görünüyor.** Finder'dan
+açılan uygulamalar Terminal'in `PATH`'ini almaz. Promo Studio bunu login
+shell'den okur; ayrıca `/opt/homebrew/bin`, `/usr/local/bin` ve `~/.local/bin`
+klasörlerine bakar. Sürüm yöneticisiyle kurulan araçları `~/.zprofile`'da da
+tanımla ve kontrol listesinde **Yeniden denetle**'ye bas.
+
+**macOS Keychain erişimi soruyor.** Bir kez **Her zaman izin ver**'i seç.
+Yayın sürümleri bu izni güncellemelerde korur.
+
+**"Gemini kotası doldu".** Ücretsiz katman model başına günde yaklaşık 10
+seslendirme isteğine izin verir. **Seslendirmesiz** üret, Ayarlar'dan başka bir
+TTS modeli seç ya da Promo Studio'nun gösterdiği yenilenme saatini bekle.
+
+**Girişten sonra Instagram hesabı yok.** Promo Studio neyin eksik olduğunu
+söyler: bir izin, girişte seçilmeyen bir sayfa ya da hesap, veya sayfaya bağlı
+İşletme/İçerik üreticisi hesabı olmayan bir hesap. Bkz.
+[docs/SETUP.tr.md](docs/SETUP.tr.md#sorun-çıkarsa).
+
+## Gizlilik ve güvenlik
+
+* **Sunucu yok, telemetri yok.** Promo Studio yalnızca `claude` CLI'ınla (ve
+  onun üzerinden Anthropic'le), anahtar eklediysen Google'ın Gemini API'siyle,
+  Instagram için Meta'nın Graph API'siyle, güncellemeler için GitHub'la ve
+  Claude'un araştırmada okuduğu web sayfalarıyla konuşur.
+* **Sırlar** — Instagram token'ları, Meta App Secret ve Gemini anahtarı
+  Keychain'de tutulur; dosyalara ya da istemlere asla yazılmaz.
+* **Claude'a dar araçlar** — analiz ve yazım salt okunurdur; video kodlama
+  yalnızca o videonun klasörüne yazabilir.
+* **Yerel API** — uzaktan yönetim API'si yalnızca `127.0.0.1`'i dinler ve 0600
+  izinli dosyada saklanan rastgele bir token ister.
+* **Veri** — `~/Library/Application Support/Promo Studio` (projeler,
+  gönderiler, render'lar). Başka bir şey yok, başka bir yerde yok.
+
+Güvenlik açıklarını lütfen *Security → Report a vulnerability* üzerinden gizli
+bildir ([SECURITY.md](SECURITY.md)).
+
+## SSS
+
+**Promo Studio için Claude aboneliği gerekir mi?**
+Claude Code CLI'ın neye ihtiyaç duyuyorsa: Claude Code erişimi olan bir Claude
+hesabı ya da bir Anthropic API anahtarı. Video kodlama, hızlı şablona göre
+belirgin biçimde daha çok kullanım harcar. Promo Studio'nun kendisi ücretsizdir.
+
+**Remotion ücretsiz mi?**
+Remotion'ın kendi lisansı vardır: bireyler, kâr amacı gütmeyen kuruluşlar ve en
+fazla 3 çalışanlı şirketler için ücretsizdir; daha büyük şirketlerin
+[şirket lisansı](https://www.remotion.dev/license) alması gerekir.
+
+**Kodum Mac'imden çıkar mı?**
+Yalnızca Claude Code'la zaten çıktığı kadar: CLI her zamanki gibi Anthropic'le
+konuşur. Render Mac'inde yapılır.
+
+**Instagram dışında bir yerde paylaşabilir miyim?**
+**Videoyu kaydet…** ya da **Paylaş** ile MP4'ü al ve istediğin yerde paylaş;
+doğrudan paylaşım şimdilik yalnızca Instagram'da.
+
+**Zamanlanmış paylaşım gitmedi.**
+Paylaşımı uygulama yapar; çalışıyor olması gerekir (menü çubuğu yeterli). Mac
+uyuyorsa paylaşım uyandığında gider.
+
+**Nasıl kaldırırım?**
+Promo Studio'dan çık ve sil (ya da `brew uninstall --zap --cask
+promo-studio`). Tertemiz bir başlangıç için
+`~/Library/Application Support/Promo Studio` klasörünü ve Keychain Erişimi'ndeki
+"Promo Studio" öğesini sil.
+
+## Kaynaktan derleme
+
+```sh
+git clone https://github.com/ardasnturk/promo-studio.git && cd promo-studio
+brew install xcodegen && xcodegen generate
+open PromoStudio.xcodeproj          # Xcode 16 veya üstü; PromoStudio şeması
 ```
-Promo Studio/
-  App/AppModel.swift          Merkezi durum, iş kuyruğu, zamanlayıcı
-  Services/ClaudeCode.swift   `claude -p --json-schema` çağrıları (stream-json ile canlı etkinlik)
-  Services/ContentAI.swift    Analiz / senaryo / açıklama istemleri ve JSON şemaları
-  Services/ProjectScanner.swift  Depodaki ekran görüntüsü adaylarını bulur
-  Services/AssetService.swift    Görselleri kopyalar, iOS Simülatöründen yakalar
-  Services/RemotionService.swift Şablonu kurar, video + kapak render eder
-  Services/StudioService.swift   Claude'un yönettiği videolar: props, giriş dosyası, render, kod sürümleri
-  Services/ContentAI+Studio.swift Storyboard yazımı/revizyonu ve videonun kodlanması istemleri
-  Services/InstagramAPI.swift    OAuth, Reels paylaşımı, istatistikler
-  Views/                      SwiftUI ekranları
-RemotionTemplate/             Video şablonu (AppPromo kompozisyonu, 4 tema, 5 sahne türü) ve stüdyo kiti (src/kit, KIT.md)
-```
 
-- Veriler: `~/Library/Application Support/Promo Studio/data.json`; gizli bilgiler (token, app secret) Keychain'de.
-- Video sözleşmesi: `PromoStudio/Models/VideoSpec.swift` ↔ `RemotionTemplate/src/types.ts` birebir aynı tutulmalı.
-- Şablonu tarayıcıda denemek için: `cd RemotionTemplate && npm install && npm run studio`.
+* `PromoStudio/` — uygulama: `App` (durum, işler, zamanlayıcı), `Services`
+  (Claude Code, Remotion, Instagram, Gemini, kontrol API'si), `Views`.
+* `RemotionTemplate/` — Claude'un kodladığı video şablonu ve hareket kiti.
+* `CaptureRunner/` — yerel ekranlar için XCUITest çalıştırıcısı.
+* Derlemeler ad-hoc imzalanır; Keychain iznini yeniden derlemelerde korumak
+  için `Config/Signing.local.xcconfig` ile kendi ekibinle imzala.
+* Sürümler: [docs/RELEASE.md](docs/RELEASE.md). Değişiklikler:
+  [CHANGELOG.md](CHANGELOG.md). Çeviriler: `l10n/` ve
+  `python3 scripts/l10n.py --check`.
 
-## Bilinen sınırlamalar
+Üçüncü taraf Swift bağımlılığı yoktur.
 
-- Zamanlanmış paylaşımlar uygulama açıkken gerçekleşir (pencere kapatılsa da menü çubuğunda çalışmaya devam eder). Mac uykudaysa paylaşım uyanınca yapılır.
-- Instagram API yalnızca Business/Creator hesaplarında paylaşıma izin verir.
+## Katkıda bulunmak
+
+Issue ve pull request'ler memnuniyetle karşılanır — lütfen önce
+[CONTRIBUTING.md](CONTRIBUTING.md) ve [davranış kurallarını](CODE_OF_CONDUCT.md)
+oku. Yeni hareket kiti bileşenleri ve şablon skill'leri iyi ilk katkılardır.
+Güvenlik sorunları için: [SECURITY.md](SECURITY.md).
+
+## Lisans
+
+[MIT](LICENSE) © 2026 Arda Şentürk. Promo Studio, kendi
+[lisansı](https://www.remotion.dev/license) olan
+[Remotion](https://www.remotion.dev) ile render eder.
+
+"Claude" ve "Claude Code" Anthropic, PBC'nin; "Instagram" ve "Facebook" Meta
+Platforms, Inc.'in; "Gemini" Google LLC'nin; "Remotion" Remotion AG'nin
+ticari markalarıdır. Burada yalnızca uyumluluğu anlatmak için kullanılırlar.

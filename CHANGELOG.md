@@ -6,6 +6,13 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.1.1] — 2026-11-01
+
+### Fixed
+- Installing an update failed with an invalid code signature: the designed DMG
+  window set Finder's "hide extension" flag on the app, which the updater's
+  strict check rejects. The DMG no longer sets it and the updater ignores it.
+
 ## [1.1.0] — 2026-11-01
 
 ### Added

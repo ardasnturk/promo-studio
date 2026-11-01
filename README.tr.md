@@ -213,7 +213,9 @@ Aynı Mac'te [Remote Code](https://github.com/ardasnturk/remote-code) varsa
 iPhone ve iPad uygulamasında bir **Promo Studio** sekmesi çıkar: projeler,
 istekten video, storyboard ve revizyonlar, video oynatma, açıklamalar,
 paylaşma, zamanlama ve Instagram girişi — Remote Code'un uçtan uca şifreli
-bağlantısı üzerinden. Promo Studio yalnızca `127.0.0.1` üzerinde token korumalı
+bağlantısı üzerinden. Remote Code ayrıca video hazır olduğunda, storyboard onay
+beklediğinde, paylaşım yapıldığında ya da bir iş başarısız olduğunda Mac'te ve
+telefonda bildirim gönderir; üretimdeki işler kalan süreyi gösterir. Promo Studio yalnızca `127.0.0.1` üzerinde token korumalı
 bir API sunar; bkz. [docs/CONTROL_API.md](docs/CONTROL_API.md).
 
 ## Güncellemeler

@@ -79,8 +79,27 @@ final class ControlServer {
         if let last = lastJobSent[id], Date().timeIntervalSince(last) < 0.25 { return }
         lastJobSent[id] = Date()
         var payload: [String: Any] = ["id": id.uuidString, "message": job.message]
+        payload.merge(Self.timing(job)) { _, new in new }
         if let p = job.progress { payload["progress"] = p }
         broadcast("job", payload)
+    }
+
+    /// `kind`, `startedAt` and `estimatedEnd` (ISO 8601) of a job, for the remaining time on the phone
+    static func timing(_ job: JobState) -> [String: Any] {
+        let iso = ISO8601DateFormatter()
+        var out: [String: Any] = ["kind": job.kind.rawValue, "startedAt": iso.string(from: job.startedAt)]
+        if let end = job.estimatedEnd { out["estimatedEnd"] = iso.string(from: end) }
+        return out
+    }
+
+    /// A job ended. `notice` says what is worth telling the user: videoReady, storyboardReady,
+    /// published or failed (nil: nothing, e.g. a rewritten caption). Remote Code turns it into a notification.
+    func jobFinished(_ id: UUID, kind: JobKind, notice: String?, title: String, postId: UUID?, error: String?) {
+        var payload: [String: Any] = ["id": id.uuidString, "kind": kind.rawValue, "title": title]
+        if let notice { payload["notice"] = notice }
+        if let postId { payload["postId"] = postId.uuidString }
+        if let error { payload["error"] = error }
+        broadcast("finished", payload)
     }
 
     func alertShown(title: String, message: String) {
@@ -263,6 +282,7 @@ final class ControlServer {
         for (id, job) in model.jobs {
             var j: [String: Any] = ["message": job.message, "log": Array(job.log.suffix(20))]
             if let p = job.progress { j["progress"] = p }
+            j.merge(Self.timing(job)) { _, new in new }
             jobs[id.uuidString] = j
         }
         let s = model.settings

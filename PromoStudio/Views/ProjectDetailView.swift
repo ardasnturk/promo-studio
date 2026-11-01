@@ -313,6 +313,7 @@ struct PostRow: View {
                     VStack(alignment: .trailing) {
                         if let p = job.progress { ProgressView(value: p).frame(width: 100) } else { ProgressView().controlSize(.small) }
                         Text(job.message).font(.caption2).foregroundStyle(.secondary).lineLimit(1).frame(maxWidth: 200, alignment: .trailing)
+                        RemainingTimeLabel(job: job)
                     }
                 }
                 StatusBadge(status: post.status)

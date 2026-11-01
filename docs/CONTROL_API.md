@@ -31,7 +31,7 @@ The full app state. The phone fetches it on first launch and on every `changed` 
   "posts": [ContentPost],         // Promo Studio's Codable ContentPost, as is (+ a "media" field)
   "accounts": [InstagramAccount],
   "libraries": [{"id", "name", "skills": [{"name", "description"}]}],
-  "jobs": {"<postId|projectId>": {"message": "...", "progress": 0.42, "log": ["last 20 lines"]}},
+  "jobs": {"<postId|projectId>": {"message": "...", "progress": 0.42, "log": ["last 20 lines"], "kind": "render", "startedAt": "<ISO 8601>", "estimatedEnd": "<ISO 8601>"}},
   "settings": {"loginMode", "metaAppId", "hasAppSecret", "contentLanguage", "voiceoverEnabled", "defaultTheme", "maxHashtags"},
   "languages": [{"id": "en", "label": "English"}],
   "themes": [{"id": "hype", "label": "..."}]
@@ -47,10 +47,13 @@ The connection stays open. Events:
 | event | data | Meaning |
 |---|---|---|
 | `changed` | `{"revision": 18}` | Data changed; fetch `/v1/state` again (sent at most twice per second) |
-| `job` | `{"id", "message", "progress"}` | Progress of a running job (at most 4 times per second) |
+| `job` | `{"id", "message", "progress", "kind", "startedAt", "estimatedEnd"}` | Progress of a running job (at most 4 times per second) |
 | `jobEnded` | `{"id"}` | Job finished |
+| `finished` | `{"id", "kind", "title", "notice", "postId", "error"}` | A job ended. `notice` (optional) says what is worth telling the user: `videoReady`, `storyboardReady`, `published` or `failed` (with `error`); cancelled jobs send nothing. Remote Code turns it into a notification |
 | `alert` | `{"title": "Something went wrong" \| "Info", "message"}` | Phone counterpart of the alert shown on the Mac |
 | `ping` | `{}` | Every 20 s; keeps the connection alive |
+
+**Remaining time.** `kind` is one of `analyze`, `script`, `storyboard`, `produce`, `revise`, `render`, `caption`, `translate`, `generate`, `ideas`, `capture`, `publish`, `other`. `estimatedEnd` is missing until Promo Studio can estimate: from the render progress rate, or from the median duration of the last jobs of the same kind (`timings.json`, after two successful jobs).
 
 ### `GET /v1/media/<path>`
 File bytes. `Range: bytes=a-b` is supported (`206 Partial Content`), with `Content-Range` and `Accept-Ranges: bytes` in the response. Paths:

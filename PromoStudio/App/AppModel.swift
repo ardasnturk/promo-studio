@@ -7,6 +7,22 @@ struct JobState: Equatable {
     var message: String
     var progress: Double?
     var log: [String] = []
+    var kind: JobKind = .other
+    var startedAt = Date()
+    /// When the job is expected to finish: from the render progress, or from earlier jobs of the same kind
+    var estimatedEnd: Date?
+    /// First progress report of the current progress phase (baseline for the progress-based estimate)
+    var progressBaseline: (date: Date, value: Double)?
+
+    static func == (a: JobState, b: JobState) -> Bool {
+        a.message == b.message && a.progress == b.progress && a.log == b.log && a.kind == b.kind
+            && a.startedAt == b.startedAt && a.estimatedEnd == b.estimatedEnd
+    }
+}
+
+/// What a job does; durations are learned per kind for the remaining-time estimate.
+enum JobKind: String, Codable, CaseIterable {
+    case analyze, script, storyboard, produce, revise, render, caption, translate, generate, ideas, capture, publish, other
 }
 
 @MainActor
@@ -47,6 +63,8 @@ final class AppModel {
     var libraryIdeas: [UUID: ContentAI.IdeasResult] = [:]
 
     private var tasks: [UUID: Task<Void, Never>] = [:]
+    /// When each post's video was last rendered (tells a finished job whether it produced a video)
+    private var renderedAt: [UUID: Date] = [:]
     private var schedulerTimer: Timer?
     private var activity: NSObjectProtocol?
 
@@ -138,20 +156,51 @@ final class AppModel {
         )
     }
 
-    private func run(_ id: UUID, _ message: String, _ work: @escaping () async throws -> Void) {
+    private func run(_ id: UUID, _ message: String, kind: JobKind = .other, _ work: @escaping () async throws -> Void) {
         guard tasks[id] == nil else { return }
-        jobs[id] = JobState(message: message)
+        let started = Date()
+        jobs[id] = JobState(message: message, kind: kind, startedAt: started, estimatedEnd: JobTimings.shared.typicalDuration(of: kind).map { started + $0 })
         tasks[id] = Task {
+            var failure: String?
+            var cancelled = false
             do {
                 try await work()
             } catch is CancellationError {
+                cancelled = true
             } catch {
                 // A cancelled job (e.g. a stopped claude process) is not shown as an error
-                if !Task.isCancelled { alert = Self.shortened(error.localizedDescription) }
+                if Task.isCancelled {
+                    cancelled = true
+                } else {
+                    failure = Self.shortened(error.localizedDescription)
+                    alert = failure
+                }
             }
+            if !cancelled, failure == nil { JobTimings.shared.record(kind, duration: Date().timeIntervalSince(started)) }
             jobs[id] = nil
             tasks[id] = nil
+            jobFinished(id, kind: kind, startedAt: started, failure: failure, cancelled: cancelled)
         }
+    }
+
+    /// Tells Remote Code (and through it the phone) that a job ended and whether there is something to see.
+    private func jobFinished(_ id: UUID, kind: JobKind, startedAt: Date, failure: String?, cancelled: Bool) {
+        guard !cancelled, let control else { return }
+        let post = post(id)
+        let title = post?.title ?? project(id)?.name ?? library(id)?.name ?? ""
+        let notice: String?
+        if failure != nil {
+            notice = [.caption, .ideas, .other].contains(kind) ? nil : "failed"
+        } else if kind == .publish {
+            notice = "published"
+        } else if let post, (renderedAt[id] ?? .distantPast) >= startedAt || (kind == .generate && post.videoFile != nil) || (kind == .translate && post.videoFile != nil) {
+            notice = "videoReady"
+        } else if let post, [.storyboard, .script, .revise].contains(kind), post.status == .draft {
+            notice = "storyboardReady"
+        } else {
+            notice = nil
+        }
+        control.jobFinished(id, kind: kind, notice: notice, title: title, postId: post?.id, error: failure)
     }
 
     func cancel(_ id: UUID) {
@@ -161,7 +210,18 @@ final class AppModel {
     private func report(_ id: UUID, _ message: String, progress: Double? = nil) {
         var j = jobs[id] ?? JobState(message: message)
         j.message = message
-        if let progress { j.progress = progress }
+        if let progress {
+            j.progress = progress
+            // Remaining time from the progress rate once it has been measured for a few seconds
+            let now = Date()
+            if let base = j.progressBaseline, progress > base.value, progress < 1 {
+                let elapsed = now.timeIntervalSince(base.date)
+                if elapsed >= 3 { j.estimatedEnd = now + elapsed * (1 - progress) / (progress - base.value) }
+            } else if progress > 0, j.progressBaseline == nil || progress < (j.progressBaseline?.value ?? 0) {
+                // Start measuring at the first real progress, after bundling and setup
+                j.progressBaseline = (now, progress)
+            }
+        }
         j.log.append(message)
         if j.log.count > 200 { j.log.removeFirst(j.log.count - 200) }
         jobs[id] = j
@@ -186,7 +246,7 @@ final class AppModel {
     func analyze(_ id: UUID) {
         guard let project = project(id) else { return }
         let ai = contentAI()
-        run(id, String(localized: "Scanning project…")) { [weak self] in
+        run(id, String(localized: "Scanning project…"), kind: .analyze) { [weak self] in
             let images = await Task.detached { ProjectScanner.findImages(in: project.folderURL) }.value
             self?.report(id, String(localized: "Claude Code is analyzing the project (\(images.count) candidate images)…"))
             let analysis = try await ai.analyze(project: project, images: images) { activity in
@@ -249,7 +309,7 @@ final class AppModel {
         let postId = post.id
 
         let message = brief?.research == true ? String(localized: "Claude is researching and writing the script…") : String(localized: "Claude is writing the script…")
-        run(postId, message) { [weak self] in
+        run(postId, message, kind: .script) { [weak self] in
             let script = try await ai.writeScript(project: project, languageCode: language.id, analysis: analysis, feature: feature, suggestion: suggestion, theme: theme, targetSeconds: seconds, extraNotes: notes, brief: brief) { activity in
                 Task { @MainActor in self?.report(postId, activity) }
             }
@@ -266,7 +326,7 @@ final class AppModel {
               let project = project(post.projectId), let analysis = project.analysis else { return }
         let ai = contentAI(language: post.language)
         let message = post.brief?.research == true ? String(localized: "Claude is revising (researching if needed)…") : String(localized: "Claude is revising the script…")
-        run(postId, message) { [weak self] in
+        run(postId, message, kind: .revise) { [weak self] in
             let script = try await ai.reviseScript(post: post, project: project, analysis: analysis, instruction: instruction) { activity in
                 Task { @MainActor in self?.report(postId, activity) }
             }
@@ -335,7 +395,7 @@ final class AppModel {
         data.posts.append(post)
         let postId = post.id
 
-        run(postId, brief.research ? String(localized: "Claude is researching and writing the storyboard…") : String(localized: "Claude is writing the storyboard…")) { [weak self] in
+        run(postId, brief.research ? String(localized: "Claude is researching and writing the storyboard…") : String(localized: "Claude is writing the storyboard…"), kind: .storyboard) { [weak self] in
             let result = try await ai.writeStoryboard(project: project, languageCode: language.id, analysis: analysis, feature: feature, brief: brief, targetSeconds: seconds, voiceover: voiceover, brandKit: kit) { activity in
                 Task { @MainActor in self?.report(postId, activity) }
             }
@@ -350,7 +410,7 @@ final class AppModel {
         guard let post = post(postId), post.directed != nil, let project = project(post.projectId), let analysis = project.analysis else { return }
         let ai = contentAI(language: post.language)
         updatePost(postId) { $0.directed?.muted = !voiceover; $0.lastError = nil }
-        run(postId, String(localized: "Preparing video…")) { [weak self] in
+        run(postId, String(localized: "Preparing video…"), kind: .produce) { [weak self] in
             guard let self else { return }
             try await self.recordingError(postId) {
                 try await self.codeVideo(postId, project: project, analysis: analysis, ai: ai, revision: nil)
@@ -384,7 +444,7 @@ final class AppModel {
               let project = project(post.projectId), let analysis = project.analysis else { return }
         let ai = contentAI(language: post.language)
         let produced = directed.produced && StudioService.hasCode(directed.compositionId)
-        run(postId, produced ? String(localized: "Claude is revising the storyboard and video…") : String(localized: "Claude is revising the storyboard…")) { [weak self] in
+        run(postId, produced ? String(localized: "Claude is revising the storyboard and video…") : String(localized: "Claude is revising the storyboard…"), kind: .revise) { [weak self] in
             guard let self else { return }
             let result = try await ai.reviseStoryboard(post: post, project: project, analysis: analysis, instruction: instruction, produced: produced) { activity in
                 Task { @MainActor in self.report(postId, activity) }
@@ -447,7 +507,7 @@ final class AppModel {
 
     func render(_ postId: UUID) {
         guard post(postId) != nil else { return }
-        run(postId, String(localized: "Preparing render…")) { [weak self] in
+        run(postId, String(localized: "Preparing render…"), kind: .render) { [weak self] in
             try await self?.performRender(postId)
         }
     }
@@ -478,6 +538,7 @@ final class AppModel {
                 $0.coverFile = result.cover
                 $0.status = .ready
             }
+            renderedAt[postId] = Date()
         } catch {
             updatePost(postId) { $0.status = .draft; $0.lastError = Self.shortened(error.localizedDescription) }
             throw error
@@ -528,7 +589,7 @@ final class AppModel {
     func rewriteCaption(_ postId: UUID, instruction: String) {
         guard let post = post(postId), let project = project(post.projectId), let analysis = project.analysis else { return }
         let ai = contentAI(language: post.language)
-        run(postId, String(localized: "Claude is rewriting the caption…")) { [weak self] in
+        run(postId, String(localized: "Claude is rewriting the caption…"), kind: .caption) { [weak self] in
             let r = try await ai.rewriteCaption(post: post, analysis: analysis, instruction: instruction, cwd: project.folderURL)
             self?.updatePost(postId) {
                 $0.caption = r.caption
@@ -567,7 +628,7 @@ final class AppModel {
         let ai = contentAI(language: language.id)
 
         let usedImages = Set(source.spec.scenes.compactMap(\.image))
-        run(newId, String(localized: "Claude is adapting it to \(language.label)…")) { [weak self] in
+        run(newId, String(localized: "Claude is adapting it to \(language.label)…"), kind: .translate) { [weak self] in
             var project = project
             // If there is a recipe, first capture from the simulator the screens used in the video that have no version in this language
             if project.captureRecipe != nil {
@@ -652,7 +713,7 @@ final class AppModel {
         let postId = post.id
         let ai = contentAI(language: language.id)
 
-        run(postId, String(localized: "\(lib.name): preparing \(skill)…")) { [weak self] in
+        run(postId, String(localized: "\(lib.name): preparing \(skill)…"), kind: .generate) { [weak self] in
             do {
                 try await LibraryService.ensureInstalled(lib) { line in Task { @MainActor in self?.report(postId, line) } }
                 self?.report(postId, String(localized: "Claude Code is running /\(skill)…"))
@@ -692,7 +753,7 @@ final class AppModel {
     func generateIdeas(libraryId: UUID, focus: String) {
         guard let lib = library(libraryId) else { return }
         let ai = contentAI()
-        run(libraryId, String(localized: "Claude is researching trends…")) { [weak self] in
+        run(libraryId, String(localized: "Claude is researching trends…"), kind: .ideas) { [weak self] in
             let ideas = try await ai.videoIdeas(focus: focus, library: lib) { activity in
                 Task { @MainActor in self?.report(libraryId, activity) }
             }
@@ -715,7 +776,7 @@ final class AppModel {
             return
         }
         let ai = contentAI()
-        run(projectId, String(localized: "Claude Code is working out the capture recipe…")) { [weak self] in
+        run(projectId, String(localized: "Claude Code is working out the capture recipe…"), kind: .capture) { [weak self] in
             let recipe = try await ai.captureRecipe(project: project, screens: screens) { activity in
                 Task { @MainActor in self?.report(projectId, activity) }
             }
@@ -724,7 +785,7 @@ final class AppModel {
     }
 
     func captureLocalizedScreens(_ projectId: UUID, languages: [String]) {
-        run(projectId, String(localized: "Preparing simulator…")) { [weak self] in
+        run(projectId, String(localized: "Preparing simulator…"), kind: .capture) { [weak self] in
             try await self?.performCapture(projectId: projectId, languages: languages, onlyAssets: nil, jobId: projectId)
         }
     }
@@ -805,7 +866,7 @@ final class AppModel {
         }
         let client = api(token, mode: account.loginMode)
         updatePost(postId) { $0.status = .publishing; $0.lastError = nil; $0.accountId = account.userId }
-        run(postId, String(localized: "Publishing to @\(account.username)…")) { [weak self] in
+        run(postId, String(localized: "Publishing to @\(account.username)…"), kind: .publish) { [weak self] in
             do {
                 let result = try await client.publishReel(userId: account.userId, videoURL: video, caption: post.fullCaption) { status in
                     Task { @MainActor in self?.report(postId, status) }

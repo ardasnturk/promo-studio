@@ -63,6 +63,7 @@ struct JobBanner: View {
                 HStack {
                     Text(job.message).font(.callout.weight(.medium)).lineLimit(1).truncationMode(.middle)
                     Spacer()
+                    RemainingTimeLabel(job: job)
                     if let p = job.progress {
                         Text("\(Int(p * 100))%").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                     }
@@ -79,6 +80,19 @@ struct JobBanner: View {
             }
         }
         .glassCard(padding: 10)
+    }
+}
+
+/// "About 3 min left" for a running job, refreshed every second; empty without an estimate.
+struct RemainingTimeLabel: View {
+    let job: JobState
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 1)) { context in
+            if let text = job.remainingText(now: context.date) {
+                Text(text).font(.caption.monospacedDigit()).foregroundStyle(.secondary).lineLimit(1)
+            }
+        }
     }
 }
 

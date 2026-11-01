@@ -212,7 +212,10 @@ login** starts it with your Mac, so scheduled posts go out on time.
 With [Remote Code](https://github.com/ardasnturk/remote-code) on the same Mac,
 its iPhone and iPad app shows a **Promo Studio** tab: projects, prompt to video,
 storyboards and revisions, video playback, captions, posting, scheduling and
-Instagram sign-in — over Remote Code's end-to-end encrypted connection. Promo
+Instagram sign-in — over Remote Code's end-to-end encrypted connection. Remote
+Code also notifies you on the Mac and the phone when a video is ready, a
+storyboard waits for approval, a post went out or a job failed, and running
+jobs show their remaining time. Promo
 Studio serves a token-protected API on `127.0.0.1` only; see
 [docs/CONTROL_API.md](docs/CONTROL_API.md).
 

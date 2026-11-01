@@ -181,7 +181,11 @@ struct MenuPanelView: View {
                         thumbnail(item.post)
                         VStack(alignment: .leading, spacing: 4) {
                             Text(item.title).font(.callout.weight(.semibold)).lineLimit(1)
-                            Text(item.job.message).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                            HStack(spacing: 6) {
+                                Text(item.job.message).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                                Spacer(minLength: 4)
+                                RemainingTimeLabel(job: item.job)
+                            }
                             ProgressBar(fraction: item.job.progress)
                         }
                         Button {

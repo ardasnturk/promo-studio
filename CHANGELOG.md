@@ -6,6 +6,22 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-11-01
+
+### Added
+- Free-form videos directed by Claude: any video the request describes (news
+  report, story, explainer…); the app, its features or a store CTA appear only
+  where the request asks. `createDirectedPost` takes `style: "freeform"`.
+
+### Changed
+- Voiceover lines respell foreign proper names the way the video's language
+  pronounces them (on-screen text keeps the original spelling), and write
+  scores and times as spoken.
+
+### Fixed
+- The updater quits from the run loop rather than from a main-queue job, which
+  would deadlock once the app delegate answers `.terminateLater`.
+
 ## [1.1.1] — 2026-11-01
 
 ### Fixed

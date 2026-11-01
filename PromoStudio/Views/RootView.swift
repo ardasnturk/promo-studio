@@ -74,7 +74,7 @@ struct RootView: View {
                         .padding(.vertical, 2)
                         .tag(SidebarItem.library(lib.id))
                     }
-                    if model.data.libraries.isEmpty {
+                    if model.promoTemplates == nil {
                         Button {
                             showTemplatesPrompt = true
                         } label: {
@@ -133,7 +133,7 @@ struct RootView: View {
             // (until the user chooses "don't show again")
             if model.isSetupIncomplete {
                 model.showSetup = true
-            } else if model.data.libraries.isEmpty, !model.settings.templatesPromptDismissed {
+            } else if model.promoTemplates == nil, !model.settings.templatesPromptDismissed {
                 showTemplatesPrompt = true
             }
         }

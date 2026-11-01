@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Suggests installing Promo Templates when no template library is connected.
+/// Suggests installing Promo Templates when it isn't linked.
 struct TemplatesPromptSheet: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -41,7 +41,7 @@ struct TemplatesPromptSheet: View {
         }
         .padding(24)
         .frame(width: 520)
-        .onChange(of: model.data.libraries.count) { _, count in if count > 0 { dismiss() } }
+        .onChange(of: model.promoTemplates != nil) { _, linked in if linked { dismiss() } }
     }
 
     private func close() {

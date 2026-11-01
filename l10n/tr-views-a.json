@@ -149,5 +149,6 @@
   "no composition": "kompozisyon yok",
   "“\\(project?.name ?? \"\")” has no linked Instagram account. Choose one from the header of the project screen.": "“\\(project?.name ?? \"\")” projesine bağlı bir Instagram hesabı yok. Proje ekranının başlığından hesap seç.",
   "Free-form video (directed by Claude)": "Serbest video (Claude yönetir)",
-  "Claude makes exactly the video you describe (a news report, a story, an explainer…) without advertising the app. The app’s features, screenshots or a download call appear only if your request asks for them. You approve the storyboard first, as with a promo film.": "Claude, tarif ettiğin videoyu (haber, hikâye, anlatım…) birebir yapar; uygulamanın reklamını yapmaz. Uygulamanın özellikleri, ekran görüntüleri ya da indirme çağrısı yalnızca isteğinde geçiyorsa yer alır. Promosyon filminde olduğu gibi önce storyboard’u onaylarsın."
+  "Claude makes exactly the video you describe (a news report, a story, an explainer…) without advertising the app. The app’s features, screenshots or a download call appear only if your request asks for them. You approve the storyboard first, as with a promo film.": "Claude, tarif ettiğin videoyu (haber, hikâye, anlatım…) birebir yapar; uygulamanın reklamını yapmaz. Uygulamanın özellikleri, ekran görüntüleri ya da indirme çağrısı yalnızca isteğinde geçiyorsa yer alır. Promosyon filminde olduğu gibi önce storyboard’u onaylarsın.",
+  "Folder not found": "Klasör bulunamadı"
 }

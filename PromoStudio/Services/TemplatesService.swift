@@ -40,6 +40,11 @@ enum TemplatesService {
         return PackageInfo(version: (json["version"] as? String).flatMap(SemanticVersion.init), repository: repo)
     }
 
+    /// The library's folder was moved, renamed or deleted
+    static func isMissing(_ lib: TemplateLibrary) -> Bool {
+        !FileManager.default.fileExists(atPath: lib.remotionURL.appendingPathComponent("package.json").path)
+    }
+
     static func isPromoTemplates(_ lib: TemplateLibrary) -> Bool {
         packageInfo(lib).repository?.lowercased() == repository
     }

@@ -669,6 +669,9 @@ final class AppModel {
 
     func library(_ id: UUID) -> TemplateLibrary? { data.libraries.first { $0.id == id } }
 
+    /// The linked Promo Templates library, if any (other libraries, or one whose folder is gone, don't count)
+    var promoTemplates: TemplateLibrary? { data.libraries.first(where: TemplatesService.isPromoTemplates) }
+
     @discardableResult
     func addLibrary(folder: URL) -> UUID? {
         if let existing = data.libraries.first(where: { $0.path == folder.path }) { return existing.id }

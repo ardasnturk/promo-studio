@@ -4,6 +4,7 @@ import SwiftUI
 struct UpdatesSection: View {
     @Environment(AppModel.self) private var model
     @State private var checkingLibraries = false
+    @State private var showTemplatesPrompt = false
 
     var body: some View {
         @Bindable var model = model
@@ -33,9 +34,20 @@ struct UpdatesSection: View {
             case .idle:
                 EmptyView()
             }
+            if model.promoTemplates == nil {
+                LabeledContent("Promo Templates") {
+                    if model.jobs[AppModel.templatesJobId] != nil {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Button("Install…") { showTemplatesPrompt = true }
+                    }
+                }
+            }
             ForEach(model.data.libraries) { lib in
                 LabeledContent(lib.name) {
-                    if let latest = model.libraryUpdates[lib.id] {
+                    if TemplatesService.isMissing(lib) {
+                        Label("Folder not found", systemImage: "exclamationmark.triangle").foregroundStyle(.secondary)
+                    } else if let latest = model.libraryUpdates[lib.id] {
                         Button("Update to \(latest)") { model.updateLibrary(lib.id) }
                             .disabled(model.jobs[lib.id] != nil)
                     } else {
@@ -56,6 +68,20 @@ struct UpdatesSection: View {
             Text("Updates")
         } footer: {
             Text("New versions are checked on GitHub Releases once a day. Promo Studio updates are installed after being downloaded and having their signature verified; template libraries are updated with git if they have no local changes.")
+        }
+        .sheet(isPresented: $showTemplatesPrompt) {
+            TemplatesPromptSheet { chooseExisting() }
+        }
+    }
+
+    private func chooseExisting() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.prompt = String(localized: "Choose Library")
+        panel.message = String(localized: "Choose a folder containing Remotion video templates and Claude Code skills (e.g. promo-templates)")
+        if panel.runModal() == .OK, let url = panel.url {
+            _ = model.addLibrary(folder: url)
         }
     }
 }

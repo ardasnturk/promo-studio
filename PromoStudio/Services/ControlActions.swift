@@ -68,7 +68,7 @@ enum ControlActions {
         case "createDirectedPost":
             let p = try project(), a = try analysis(p)
             let brief = PostBrief(prompt: try require("prompt"), research: bool("research", true))
-            return try created(model.createDirectedPost(projectId: p.id, feature: a.features.first { $0.id == str("featureId") }, seconds: int("seconds", 20), language: str("language"), brief: brief, voiceover: bool("voiceover", model.settings.voiceoverEnabled)))
+            return try created(model.createDirectedPost(projectId: p.id, feature: a.features.first { $0.id == str("featureId") }, seconds: int("seconds", 20), language: str("language"), brief: brief, voiceover: bool("voiceover", model.settings.voiceoverEnabled), style: str("style").flatMap(DirectedStyle.init(rawValue:)) ?? .promo))
         case "produce":
             let p = try post()
             guard p.directed != nil else { throw ActionError.failed(String(localized: "This post isn't a promo film")) }

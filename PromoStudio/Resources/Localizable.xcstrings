@@ -6497,6 +6497,64 @@
         }
       }
     },
+    "Claude makes exactly the video you describe (a news report, a story, an explainer…) without advertising the app. The app’s features, screenshots or a download call appear only if your request asks for them. You approve the storyboard first, as with a promo film.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude dreht genau das Video, das du beschreibst (Nachrichtenbeitrag, Geschichte, Erklärvideo…), ohne für die App zu werben. Funktionen, Screenshots oder ein Download-Aufruf der App erscheinen nur, wenn deine Anfrage danach verlangt. Wie beim Promofilm gibst du zuerst das Storyboard frei."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude hace exactamente el vídeo que describes (una noticia, una historia, un vídeo explicativo…) sin anunciar la app. Las funciones, capturas o la invitación a descargar la app solo aparecen si tu petición lo pide. Como en el vídeo promocional, primero apruebas el storyboard."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude réalise exactement la vidéo que tu décris (un reportage, une histoire, une explication…) sans faire la promotion de l’app. Les fonctionnalités, captures d’écran ou l’appel à télécharger n’apparaissent que si ta demande les mentionne. Comme pour un film promo, tu valides d’abord le storyboard."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude realizza esattamente il video che descrivi (un servizio, una storia, una spiegazione…) senza pubblicizzare l’app. Funzioni, screenshot o l’invito a scaricare l’app compaiono solo se la tua richiesta li prevede. Come per il video promozionale, prima approvi lo storyboard."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claudeは説明どおりの動画（ニュース、ストーリー、解説など）をアプリの宣伝なしで制作します。アプリの機能、スクリーンショット、ダウンロードの呼びかけは、リクエストで求めた場合にのみ入ります。プロモーション映像と同様に、まず絵コンテを承認します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude가 설명한 그대로의 영상(뉴스, 이야기, 설명 영상 등)을 앱 광고 없이 만듭니다. 앱 기능, 스크린샷, 다운로드 안내는 요청에 있을 때만 들어갑니다. 홍보 영상과 마찬가지로 먼저 스토리보드를 승인합니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Claude faz exatamente o vídeo que você descreve (uma reportagem, uma história, uma explicação…) sem anunciar o app. Recursos, capturas de tela ou o convite para baixar o app só aparecem se o seu pedido pedir. Como no filme promocional, você aprova o storyboard primeiro."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude, tarif ettiğin videoyu (haber, hikâye, anlatım…) birebir yapar; uygulamanın reklamını yapmaz. Uygulamanın özellikleri, ekran görüntüleri ya da indirme çağrısı yalnızca isteğinde geçiyorsa yer alır. Promosyon filminde olduğu gibi önce storyboard’u onaylarsın."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude 会完全按照你的描述制作视频（新闻报道、故事、讲解等），不为 App 做广告。只有你的请求提到时，才会出现 App 的功能、截图或下载号召。与宣传片一样，你先审批分镜脚本。"
+          }
+        }
+      }
+    },
     "Claude updates the storyboard and the video’s code together; only the parts you ask for change. The video code from before each revision is kept.": {
       "localizations": {
         "de": {
@@ -11075,6 +11133,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "用于配音。没有它也可以制作视频。"
+          }
+        }
+      }
+    },
+    "Free-form video (directed by Claude)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Freies Video (Regie: Claude)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vídeo libre (dirigido por Claude)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidéo libre (réalisée par Claude)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video libero (diretto da Claude)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自由形式の動画（Claudeが演出）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자유 형식 영상(Claude 연출)"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vídeo livre (dirigido pelo Claude)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serbest video (Claude yönetir)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自由视频（由 Claude 执导）"
           }
         }
       }

@@ -278,9 +278,19 @@ struct ScriptRevision: Codable, Hashable, Identifiable {
     var code: String?
 }
 
-/// Custom promo video directed by Claude: the storyboard is approved first, then Claude writes the Remotion code.
+/// Kind of Claude-directed video
+enum DirectedStyle: String, Codable, CaseIterable {
+    /// Promo film for the app: features, screenshots and a store CTA
+    case promo
+    /// Any video the user describes (news, story, explainer…); the app is only mentioned if the request asks for it
+    case freeform
+}
+
+/// Custom video directed by Claude: the storyboard is approved first, then Claude writes the Remotion code.
 struct DirectedVideo: Codable, Hashable {
     var storyboard: Storyboard
+    /// nil for posts made before free-form videos existed (promo)
+    var style: DirectedStyle?
     /// Composition and folder name in the studio (src/videos/<id>)
     var compositionId: String
     /// Whether the code has been written (storyboard approved and produced)
@@ -290,6 +300,8 @@ struct DirectedVideo: Codable, Hashable {
     /// Claude's short summary and notes on the video it made
     var summary: String?
     var notes: String?
+
+    var isFreeform: Bool { style == .freeform }
 }
 
 struct Storyboard: Codable, Hashable {

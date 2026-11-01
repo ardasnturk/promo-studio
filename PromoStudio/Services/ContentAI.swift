@@ -207,6 +207,7 @@ struct ContentAI {
         - Keep it short: 4–8 words for hook and cta, 6–14 words for other scenes. The total voiceover must not exceed about \(targetSeconds) seconds (~2.5 words per second).
         - Every sentence must start with exactly one tone tag: [excited], [curious], [amazed], [friendly] or [serious]. These tags are not read aloud. Never write directions outside the square brackets; the model reads plain text exactly as written.
         - Write symbols the way they are spoken in the video's language (e.g. in English "78 percent" instead of "%78", "dollars" instead of "$").
+        \(Self.pronunciationRule(language))
         - caption: optimized for Instagram SEO. The first line is a strong hook containing keywords (the first 125 characters show in the preview). Then 2–4 short lines of value proposition, emoji where appropriate, and a clear CTA at the end (link in profile / comment / save). Do not put hashtags in the caption.
         - hashtags: at most \(maxHashtags), without #; a mix of niche + medium-volume + directly on-topic tags; no irrelevant popular tags.
         - altText: accessibility text describing the video (keywords should appear naturally).

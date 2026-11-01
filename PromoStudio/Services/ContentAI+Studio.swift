@@ -1,6 +1,6 @@
 import Foundation
 
-/// Claude-directed promo videos: writing/revising the storyboard and writing the Remotion code.
+/// Claude-directed videos (promo films and free-form videos): writing/revising the storyboard and writing the Remotion code.
 extension ContentAI {
     struct StoryboardResult: Decodable {
         var title: String
@@ -37,25 +37,27 @@ extension ContentAI {
         brief: PostBrief,
         targetSeconds: Int,
         voiceover: Bool,
+        style: DirectedStyle,
         brandKit: BrandKit?,
         onActivity: @escaping @Sendable (String) -> Void
     ) async throws -> StoryboardResult {
         let usable = Self.assets(for: languageCode, in: project)
+        let freeform = style == .freeform
         let prompt = """
-        You are an award-winning commercial director and motion graphics designer. Design a \(targetSeconds)-second vertical (1080×1920) promo film for the Instagram/TikTok account of the app below. The film will be custom-built scene by scene in code with Remotion. At this stage you are only writing the STORYBOARD; once the user approves it, a developer will turn it into code one-to-one.
+        \(freeform
+            ? "You are an award-winning director and motion graphics designer. Design a \(targetSeconds)-second vertical (1080×1920) video for Instagram/TikTok exactly as the user describes it below. It is posted from the account of the app below, but it is NOT an ad for the app. The video will be custom-built scene by scene in code with Remotion. At this stage you are only writing the STORYBOARD; once the user approves it, a developer will turn it into code one-to-one."
+            : "You are an award-winning commercial director and motion graphics designer. Design a \(targetSeconds)-second vertical (1080×1920) promo film for the Instagram/TikTok account of the app below. The film will be custom-built scene by scene in code with Remotion. At this stage you are only writing the STORYBOARD; once the user approves it, a developer will turn it into code one-to-one.")
 
         USER'S REQUEST
         \(brief.prompt)
 
-        APP
+        \(freeform ? "ACCOUNT (background only: brand colors and name; do not advertise it)" : "APP")
         \(Self.compact(analysis))
         \(feature.map { "Feature to spotlight: \($0.emoji) \($0.name) — \($0.summary)" } ?? "")
         \(brief.research ? Self.researchRules : "")
 
         DIRECTING PRINCIPLES
-        - This is NOT a screenshot slideshow. Build a commercial with a story and rhythm: kinetic typography, number and probability animations, notification cards, countdowns, a matchup scoreboard, pitch/arena atmosphere, particle and flash effects, camera shake, hard cuts.
-        - Use screenshots only to prove the product, in at most 1–2 scenes; if possible in a cinematic way such as a zoom-in (ZoomShot) or a 3D tilted phone.
-        - The first 1.5 seconds must be a scroll-stopping hook. Last scene is the CTA: app name/icon and store badge.
+        \(freeform ? Self.freeformRules : Self.promoRules)
         - Define the visual language in the concept: color palette (brand colors), typography (display/condensed/heading), rhythm (fast cuts or smooth transitions), atmosphere.
         - In each scene's visual field, write with enough clarity for the developer to understand: what is visible, where, how it enters/exits, which kit components (from the list below), timing accents ("flash at 0.5 s", "number counts from 0 to 78").
         - Real-world information (date, time, team, numbers) is used only if verified or present in the app information. Official club/league/brand logos are not used; colors and an abbreviation badge (Badge) are used instead.
@@ -72,12 +74,13 @@ extension ContentAI {
         - text: the main on-screen text, short (≤7 words), in \(language). Wrap the word to emphasize in *asterisks*.
         \(voiceover ? """
         - voiceover: For each scene, a single sentence (in \(language)) to be read by an AI voiceover. Do not repeat the on-screen text; it should complement it. Hook and CTA 4–8 words, others 6–14 words. The total must not exceed ~\(targetSeconds) s (~2.5 words per second). Every sentence must start with exactly one tone tag: [excited], [curious], [amazed], [friendly] or [serious]. Write symbols the way they are spoken in the video's language (e.g. in English "78 percent" instead of "%78"). The scene duration will be adjusted to the length of the audio.
+        \(Self.pronunciationRule(language))
         """ : "- Leave the voiceover field empty (this video has no voiceover).")
         - sfx: the scene's sound effect(s) and their moment (e.g. "boom 0.2 s"), empty if none.
-        - assets: project images to use in the scene (empty array if none).
+        - assets: project images to use in the scene (empty array if none\(freeform ? "; leave empty unless the request calls for the app" : "")).
 
         CAPTION
-        - caption: optimized for Instagram SEO; the first line is a strong keyword hook (first 125 characters), 2–4 short lines, suitable emoji, a clear CTA at the end. Do not put hashtags in the caption.
+        - caption: optimized for Instagram SEO; the first line is a strong keyword hook (first 125 characters), 2–4 short lines, suitable emoji, \(freeform ? "a CTA at the end only if it fits the request" : "a clear CTA at the end"). Do not put hashtags in the caption.
         - hashtags: at most \(maxHashtags), without #, directly on-topic.
         - altText: accessibility text describing the video. postingTip: recommended posting time and rationale.
         """
@@ -98,8 +101,9 @@ extension ContentAI {
         let research = post.brief?.research ?? false
         let board = post.directed?.storyboard ?? Storyboard(concept: "", scenes: [])
         let current = Self.storyboardJSON(post: post, board: board)
+        let freeform = post.directed?.isFreeform == true
         let prompt = """
-        You are an award-winning commercial director. Update the promo film storyboard below according to the user's REVISION INSTRUCTION.
+        You are an award-winning \(freeform ? "director" : "commercial director"). Update the \(freeform ? "video" : "promo film") storyboard below according to the user's REVISION INSTRUCTION.
 
         REVISION INSTRUCTION
         \(instruction)
@@ -108,6 +112,8 @@ extension ContentAI {
         \(produced ? "- The video has already been coded. If the instruction concerns only visuals/motion/timing (color, animation, effects, layout), update the visual fields; do not change text and voiceover (so the voiceover is not regenerated)." : "")
         - If the instruction requires new information, \(research ? "research and verify it" : "rely on the app information; do not make anything up").
         - If there is a voiceover, every sentence must start with a tone tag ([excited], [curious], [amazed], [friendly], [serious]).
+        \(Self.pronunciationRule(language))
+        \(freeform ? "- This is a free-form video, not an app ad: do not add app features, screenshots or a store CTA unless the instruction or the original request asks for them." : "")
 
         APP
         \(Self.compact(analysis))
@@ -148,7 +154,7 @@ extension ContentAI {
             TASK: Turn the approved storyboard below into code in \(folder)/Video.tsx as `export const Video: React.FC<StudioProps>`. Stay faithful to the storyboard; implement every motion and effect in the director's notes.
             """
         let prompt = """
-        You are a senior motion graphics developer (Remotion 4, React). You are coding an app's vertical promo film. The working folder is Promo Studio's Remotion studio.
+        You are a senior motion graphics developer (Remotion 4, React). \(directed.isFreeform ? "You are coding a vertical video for an app's social account. It is not an app ad: build exactly what the storyboard describes and do not add app screenshots, store badges or CTA cards it doesn't have." : "You are coding an app's vertical promo film.") The working folder is Promo Studio's Remotion studio.
 
         \(task)
 
@@ -189,6 +195,29 @@ extension ContentAI {
             maxTurns: 150,
             onActivity: onActivity
         )
+    }
+
+    /// Directing principles for an app promo film
+    static let promoRules = """
+    - This is NOT a screenshot slideshow. Build a commercial with a story and rhythm: kinetic typography, number and probability animations, notification cards, countdowns, a matchup scoreboard, pitch/arena atmosphere, particle and flash effects, camera shake, hard cuts.
+    - Use screenshots only to prove the product, in at most 1–2 scenes; if possible in a cinematic way such as a zoom-in (ZoomShot) or a 3D tilted phone.
+    - The first 1.5 seconds must be a scroll-stopping hook. Last scene is the CTA: app name/icon and store badge.
+    """
+
+    /// Directing principles for a free-form video: the user's request is the whole brief
+    static let freeformRules = """
+    - The user's request is the brief. Follow its format (news report, story, explainer, countdown…), structure, tone and ending literally.
+    - This is NOT an ad for the app. Do not mention the app, its features or slogans, do not show screenshots or the app icon, and do not add a store CTA, unless the request explicitly asks for it, and then only where and as much as it asks (e.g. "end with a download-the-app outro" means only the final scene shows the app).
+    - Pick the visual grammar of the requested genre (e.g. a news report: lower thirds, breaking-news band (Ticker), live chip, scoreboard, headline cards). Brand colors may drive the palette.
+    - The first 1.5 seconds must be a scroll-stopping hook.
+    """
+
+    /// Foreign names in voiceover: TTS reads text with the video language's phonetics.
+    static func pronunciationRule(_ language: String) -> String {
+        """
+        - The voiceover is only heard, never shown, and the TTS reads it with \(language) phonetics. Respell foreign proper names (people, players, clubs, brands, places) the way a \(language) speaker would write their correct pronunciation, e.g. in a Turkish video "Jayden Oosterwolde" → "Ceydın Ostervolde", "Mourinho" → "Murinyo", "Szymański" → "Şimanski". Names already read correctly in \(language) stay as they are. On-screen text keeps the original spelling.
+        - Write scores, times and abbreviations as they are spoken (e.g. in Turkish "2-1" → "ikiye bir", "90+3" → "doksan artı üç").
+        """
     }
 
     static func storyboardJSON(post: ContentPost, board: Storyboard) -> String {

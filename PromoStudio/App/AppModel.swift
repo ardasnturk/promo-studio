@@ -370,7 +370,7 @@ final class AppModel {
     // MARK: Claude-directed videos
 
     /// Has Claude write a storyboard from the user's request; the video is coded with `produce` once the storyboard is approved.
-    func createDirectedPost(projectId: UUID, feature: AppFeature?, seconds: Int, language: String?, brief: PostBrief, voiceover: Bool) -> UUID? {
+    func createDirectedPost(projectId: UUID, feature: AppFeature?, seconds: Int, language: String?, brief: PostBrief, voiceover: Bool, style: DirectedStyle = .promo) -> UUID? {
         guard let analysis = project(projectId)?.analysis else { return nil }
         let language = ContentLanguage.find(language ?? settings.contentLanguage)
         let ai = contentAI(language: language.id)
@@ -392,11 +392,12 @@ final class AppModel {
         )
         post.brief = brief
         post.directed = DirectedVideo(storyboard: Storyboard(concept: "", scenes: []), compositionId: StudioService.compositionId(for: post.id))
+        post.directed?.style = style
         data.posts.append(post)
         let postId = post.id
 
         run(postId, brief.research ? String(localized: "Claude is researching and writing the storyboard…") : String(localized: "Claude is writing the storyboard…"), kind: .storyboard) { [weak self] in
-            let result = try await ai.writeStoryboard(project: project, languageCode: language.id, analysis: analysis, feature: feature, brief: brief, targetSeconds: seconds, voiceover: voiceover, brandKit: kit) { activity in
+            let result = try await ai.writeStoryboard(project: project, languageCode: language.id, analysis: analysis, feature: feature, brief: brief, targetSeconds: seconds, voiceover: voiceover, style: style, brandKit: kit) { activity in
                 Task { @MainActor in self?.report(postId, activity) }
             }
             self?.updatePost(postId) { $0.applyStoryboard(result) }

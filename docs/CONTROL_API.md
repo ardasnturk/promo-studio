@@ -69,7 +69,7 @@ JSON body. The response is `{"ok": true}`, or `202 {"ok": true, "jobId"}` for lo
 |---|---|---|
 | `createPost` | `projectId, featureId?, suggestionId?, theme?, seconds, notes?, autoRender?, language?` | Quick template video |
 | `createScriptPost` | `projectId, prompt, research, featureId?, theme?, seconds, language?` | Quick template from a custom request (auto-render off) |
-| `createDirectedPost` | `projectId, prompt, research, featureId?, seconds, language?, voiceover` | Promo film: storyboard first |
+| `createDirectedPost` | `projectId, prompt, research, featureId?, seconds, language?, voiceover, style?` | Claude-directed video, storyboard first. `style`: `promo` (default, app promo film) or `freeform` (any video the prompt describes; the app only appears if asked) |
 | `produce` | `postId, voiceover` | Approve the storyboard, have the video coded and render it |
 | `revise` | `postId, instruction, renderAfter` | Storyboard (+ code) for a promo film, script for a template |
 | `restoreRevision` | `postId, revisionId` | |

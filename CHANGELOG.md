@@ -6,6 +6,14 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.2.1] — 2026-11-01
+
+### Fixed
+- Promo Templates was offered for install only while no library was linked, so
+  a stale library entry hid the offer. It is now offered whenever Promo
+  Templates itself isn't linked, including from Settings → Updates.
+- Libraries whose folder is gone show "Folder not found" in Settings → Updates.
+
 ## [1.2.0] — 2026-11-01
 
 ### Added

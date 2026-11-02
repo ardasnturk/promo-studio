@@ -600,5 +600,8 @@
   "views this week": "이번 주 조회수",
   "“%@”": "‘%@’",
   "“%@” has no linked Instagram account. Choose one from the header of the project screen.": "‘%@’에 연결된 Instagram 계정이 없습니다. 프로젝트 화면의 헤더에서 계정을 선택하십시오.",
-  "…or paste an access token": "…또는 접근 토큰 붙여넣기"
+  "…or paste an access token": "…또는 접근 토큰 붙여넣기",
+  "Configuration ID (optional)": "구성 ID(선택 사항)",
+  "Signs in with Instagram through your Meta app's \"Instagram API with Unified Login\" configuration; no Facebook Page needed. Requires a Business or Creator account added as an Instagram tester to the app.": "Meta 앱의 \"Instagram API with Unified Login\" 구성을 통해 Instagram으로 로그인합니다. Facebook 페이지가 필요 없습니다. 앱에 Instagram 테스터로 추가된 비즈니스 또는 크리에이터 계정이 필요합니다.",
+  "Meta offers this setup only to older apps. For a new app, enter the configuration ID of \"Instagram API with Unified Login\" in the Meta App section.": "Meta는 이 설정을 이전 앱에만 제공합니다. 새 앱에서는 Meta App 섹션에 \"Instagram API with Unified Login\"의 구성 ID를 입력하세요."
 }

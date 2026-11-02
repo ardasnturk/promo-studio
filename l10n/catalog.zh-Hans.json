@@ -600,5 +600,8 @@
   "views this week": "本周播放量",
   "“%@”": "“%@”",
   "“%@” has no linked Instagram account. Choose one from the header of the project screen.": "“%@”没有关联的 Instagram 账户。请从项目屏幕的标题栏中选择一个。",
-  "…or paste an access token": "…或粘贴访问令牌"
+  "…or paste an access token": "…或粘贴访问令牌",
+  "Configuration ID (optional)": "配置 ID(可选)",
+  "Signs in with Instagram through your Meta app's \"Instagram API with Unified Login\" configuration; no Facebook Page needed. Requires a Business or Creator account added as an Instagram tester to the app.": "通过你的 Meta 应用的“Instagram API with Unified Login”配置使用 Instagram 登录,无需 Facebook 主页。需要一个已作为 Instagram 测试人员添加到应用的商家或创作者账户。",
+  "Meta offers this setup only to older apps. For a new app, enter the configuration ID of \"Instagram API with Unified Login\" in the Meta App section.": "Meta 仅向较早的应用提供此设置。对于新应用,请在 Meta App 部分输入“Instagram API with Unified Login”的配置 ID。"
 }

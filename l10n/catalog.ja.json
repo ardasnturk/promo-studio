@@ -600,5 +600,8 @@
   "views this week": "今週の再生回数",
   "“%@”": "「%@」",
   "“%@” has no linked Instagram account. Choose one from the header of the project screen.": "「%@」にはリンクされたInstagramアカウントがありません。プロジェクト画面のヘッダから選択してください。",
-  "…or paste an access token": "…またはアクセストークンを貼り付け"
+  "…or paste an access token": "…またはアクセストークンを貼り付け",
+  "Configuration ID (optional)": "構成ID(任意)",
+  "Signs in with Instagram through your Meta app's \"Instagram API with Unified Login\" configuration; no Facebook Page needed. Requires a Business or Creator account added as an Instagram tester to the app.": "Metaアプリの「Instagram API with Unified Login」構成を使ってInstagramでログインします。Facebookページは不要です。Instagramテスターとしてアプリに追加されたビジネスまたはクリエイターアカウントが必要です。",
+  "Meta offers this setup only to older apps. For a new app, enter the configuration ID of \"Instagram API with Unified Login\" in the Meta App section.": "Metaはこの設定を古いアプリにのみ提供しています。新しいアプリでは、「Meta App」セクションに「Instagram API with Unified Login」の構成IDを入力してください。"
 }

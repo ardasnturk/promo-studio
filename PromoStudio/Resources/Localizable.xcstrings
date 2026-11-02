@@ -7541,6 +7541,64 @@
         }
       }
     },
+    "Configuration ID (optional)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konfigurations-ID (optional)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ID de configuración (opcional)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ID de configuration (facultatif)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ID configurazione (facoltativo)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "構成ID(任意)"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구성 ID(선택 사항)"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ID da configuração (opcional)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yapılandırma kimliği (isteğe bağlı)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配置 ID(可选)"
+          }
+        }
+      }
+    },
     "Connect": {
       "localizations": {
         "de": {
@@ -16353,6 +16411,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "Meta App ID 和 App Secret（设置）"
+          }
+        }
+      }
+    },
+    "Meta offers this setup only to older apps. For a new app, enter the configuration ID of \"Instagram API with Unified Login\" in the Meta App section.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta bietet diese Einrichtung nur älteren Apps an. Gib für eine neue App im Abschnitt „Meta App“ die Konfigurations-ID von „Instagram API with Unified Login“ ein."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta solo ofrece esta configuración a apps antiguas. Para una app nueva, introduce el ID de configuración de \"Instagram API with Unified Login\" en la sección Meta App."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta ne propose cette configuration qu’aux anciennes apps. Pour une nouvelle app, saisis l’ID de configuration de « Instagram API with Unified Login » dans la section Meta App."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta offre questa configurazione solo alle app meno recenti. Per una nuova app, inserisci l’ID configurazione di \"Instagram API with Unified Login\" nella sezione Meta App."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metaはこの設定を古いアプリにのみ提供しています。新しいアプリでは、「Meta App」セクションに「Instagram API with Unified Login」の構成IDを入力してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta는 이 설정을 이전 앱에만 제공합니다. 새 앱에서는 Meta App 섹션에 \"Instagram API with Unified Login\"의 구성 ID를 입력하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A Meta oferece esta configuração apenas para apps mais antigos. Para um app novo, insira o ID da configuração do \"Instagram API with Unified Login\" na seção Meta App."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta bu kurulumu yalnızca eski uygulamalara sunuyor. Yeni bir uygulama için Meta App bölümüne \"Instagram API with Unified Login\" yapılandırma kimliğini gir."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta 仅向较早的应用提供此设置。对于新应用,请在 Meta App 部分输入“Instagram API with Unified Login”的配置 ID。"
           }
         }
       }
@@ -26735,6 +26851,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "Showcase — 精致的产品展示"
+          }
+        }
+      }
+    },
+    "Signs in with Instagram through your Meta app's \"Instagram API with Unified Login\" configuration; no Facebook Page needed. Requires a Business or Creator account added as an Instagram tester to the app.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meldet dich über die Konfiguration „Instagram API with Unified Login“ deiner Meta-App mit Instagram an; keine Facebook-Seite nötig. Erfordert ein Business- oder Creator-Konto, das der App als Instagram-Tester hinzugefügt wurde."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicia sesión con Instagram mediante la configuración \"Instagram API with Unified Login\" de tu app de Meta; no necesita una página de Facebook. Requiere una cuenta de empresa o de creador añadida a la app como tester de Instagram."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se connecte avec Instagram via la configuration « Instagram API with Unified Login » de ton app Meta ; aucune Page Facebook n’est nécessaire. Nécessite un compte professionnel ou créateur ajouté à l’app comme testeur Instagram."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accede con Instagram tramite la configurazione \"Instagram API with Unified Login\" della tua app Meta; non serve una Pagina Facebook. Richiede un account business o creator aggiunto all’app come tester di Instagram."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metaアプリの「Instagram API with Unified Login」構成を使ってInstagramでログインします。Facebookページは不要です。Instagramテスターとしてアプリに追加されたビジネスまたはクリエイターアカウントが必要です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta 앱의 \"Instagram API with Unified Login\" 구성을 통해 Instagram으로 로그인합니다. Facebook 페이지가 필요 없습니다. 앱에 Instagram 테스터로 추가된 비즈니스 또는 크리에이터 계정이 필요합니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entra com o Instagram pela configuração \"Instagram API with Unified Login\" do seu app da Meta; não precisa de uma Página do Facebook. Requer uma conta comercial ou de criador adicionada ao app como testador do Instagram."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meta uygulamanın \"Instagram API with Unified Login\" yapılandırmasıyla Instagram üzerinden giriş yapar; Facebook Sayfası gerekmez. Uygulamaya Instagram test kullanıcısı olarak eklenmiş bir İşletme veya İçerik Üreticisi hesabı gerekir."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通过你的 Meta 应用的“Instagram API with Unified Login”配置使用 Instagram 登录,无需 Facebook 主页。需要一个已作为 Instagram 测试人员添加到应用的商家或创作者账户。"
           }
         }
       }

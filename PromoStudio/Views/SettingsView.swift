@@ -198,13 +198,16 @@ private struct InstagramSettings: View {
                 Picker("Connection type", selection: $model.settings.loginMode) {
                     ForEach(InstagramLoginMode.allCases) { Text($0.label).tag($0) }
                 }
-                .onChange(of: model.settings.loginMode) { _, mode in model.settings.redirectURI = mode.defaultRedirectURI }
+                .onChange(of: model.settings.loginMode) { old, mode in
+                    // Keep a redirect URI the user registered themselves (Meta only accepts https URLs on a real domain)
+                    if model.settings.redirectURI == old.defaultRedirectURI { model.settings.redirectURI = mode.defaultRedirectURI }
+                }
                 Button {
                     showLogin = true
                 } label: {
                     Label(model.settings.loginMode == .facebook ? String(localized: "Log In with Facebook") : String(localized: "Log In with Instagram"), systemImage: "person.badge.key")
                 }
-                .disabled(model.settings.metaAppId.isEmpty || (model.settings.loginMode == .instagram && appSecret.isEmpty))
+                .disabled(model.settings.metaAppId.isEmpty || (model.settings.apiMode == .instagram && appSecret.isEmpty))
                 HStack {
                     SecureField("…or paste an access token", text: $manualToken)
                     Button("Connect") { Task { await model.connect(withToken: manualToken); manualToken = "" } }
@@ -215,14 +218,17 @@ private struct InstagramSettings: View {
             } footer: {
                 if model.settings.loginMode == .facebook {
                     Text("Facebook Login adds every Instagram account linked to the Pages you manage in one go. To add a new account, also select its Page on the consent screen. Your Instagram Business/Creator account must be linked to a Facebook Page. You can get a token from Graph API Explorer; if an App ID and App Secret are entered, Promo Studio automatically exchanges it for a 60-day token.")
+                } else if !model.settings.facebookConfigId.isEmpty {
+                    Text("Signs in with Instagram through your Meta app's \"Instagram API with Unified Login\" configuration; no Facebook Page needed. Requires a Business or Creator account added as an Instagram tester to the app.")
                 } else {
                     Text("Requires a Business or Creator account. You can paste the token you get with \"Generate token\" in the \"API setup with Instagram login\" section of your Meta app.")
+                    Text("Meta offers this setup only to older apps. For a new app, enter the configuration ID of \"Instagram API with Unified Login\" in the Meta App section.")
                 }
             }
 
             Section("Meta App") {
-                TextField(model.settings.loginMode == .facebook ? "App ID" : "Instagram App ID", text: $model.settings.metaAppId)
-                SecureField(model.settings.loginMode == .facebook ? "App Secret" : "Instagram App Secret", text: $appSecret)
+                TextField(model.settings.apiMode == .facebook ? "App ID" : "Instagram App ID", text: $model.settings.metaAppId)
+                SecureField(model.settings.apiMode == .facebook ? "App Secret" : "Instagram App Secret", text: $appSecret)
                     .onChange(of: appSecret) { _, v in
                         Keychain.set(v.trimmingCharacters(in: .whitespacesAndNewlines), for: Keychain.Key.metaAppSecret)
                         if SettingsView.looksLikeAppSecret(v) { Task { await model.upgradeTokenIfNeeded() } }
@@ -231,6 +237,7 @@ private struct InstagramSettings: View {
                     Label("This doesn't look like an App Secret. The App Secret is the 32-character code under Settings → Basic in the Meta dashboard (not an access token).", systemImage: "exclamationmark.triangle")
                         .font(.caption).foregroundStyle(.orange)
                 }
+                TextField("Configuration ID (optional)", text: $model.settings.facebookConfigId)
                 TextField("Redirect URI", text: $model.settings.redirectURI)
                 TextField("Graph API version", text: $model.settings.graphVersion)
             }
@@ -359,11 +366,12 @@ struct InstagramLoginSheet: View {
                 Button("Cancel") { onFinish(nil) }
             }
             .padding()
-            if let url = InstagramAPI.authorizeURL(mode: settings.loginMode, appId: settings.metaAppId, redirectURI: settings.redirectURI, graphVersion: settings.graphVersion) {
+            if let url = InstagramAPI.authorizeURL(mode: settings.loginMode, appId: settings.metaAppId, redirectURI: settings.redirectURI, graphVersion: settings.graphVersion, configId: settings.facebookConfigId) {
                 OAuthWebView(url: url, redirectURI: settings.redirectURI, onResult: onFinish)
             }
         }
-        .frame(width: 520, height: 720)
+        // Meta's business login pages need about 700 pt; narrower, their buttons are cut off
+        .frame(width: 720, height: 760)
     }
 }
 
@@ -379,15 +387,22 @@ struct OAuthWebView: NSViewRepresentable {
         config.websiteDataStore = .nonPersistent()
         let view = WKWebView(frame: .zero, configuration: config)
         view.navigationDelegate = context.coordinator
+        view.uiDelegate = context.coordinator
         view.load(URLRequest(url: url))
         return view
     }
 
     func updateNSView(_ nsView: WKWebView, context: Context) {}
 
-    final class Coordinator: NSObject, WKNavigationDelegate {
+    final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
         let parent: OAuthWebView
         init(_ parent: OAuthWebView) { self.parent = parent }
+
+        /// Meta's login opens "Continue with Instagram" in a popup; there is only one view, so load it there.
+        func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for action: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+            if action.targetFrame == nil { webView.load(action.request) }
+            return nil
+        }
 
         func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction, decisionHandler: @escaping @MainActor (WKNavigationActionPolicy) -> Void) {
             guard let url = action.request.url, url.absoluteString.hasPrefix(parent.redirectURI) else {

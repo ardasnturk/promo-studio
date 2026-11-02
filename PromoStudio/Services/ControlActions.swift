@@ -167,10 +167,12 @@ enum ControlActions {
         case "loginInfo":
             let s = model.settings
             guard !s.metaAppId.isEmpty else { throw ActionError.failed(String(localized: "No Meta App ID is set in Promo Studio on the Mac (Account & Settings).")) }
-            guard let url = InstagramAPI.authorizeURL(mode: s.loginMode, appId: s.metaAppId, redirectURI: s.redirectURI, graphVersion: s.graphVersion) else {
+            guard let url = InstagramAPI.authorizeURL(mode: s.loginMode, appId: s.metaAppId, redirectURI: s.redirectURI, graphVersion: s.graphVersion, configId: s.facebookConfigId) else {
                 throw ActionError.failed(String(localized: "Couldn't create the login URL"))
             }
-            return (200, ["ok": true, "mode": s.loginMode.rawValue, "authorizeURL": url.absoluteString, "redirectURI": s.redirectURI])
+            // Unified Login (configuration ID) returns a ?code= like Instagram login, so clients handle it the same way
+            let callbackMode = s.loginMode == .facebook && s.facebookConfigId.isEmpty ? "facebook" : "instagram"
+            return (200, ["ok": true, "mode": callbackMode, "authorizeURL": url.absoluteString, "redirectURI": s.redirectURI])
         case "connectToken":
             let token = try require("token")
             let expires = (body["expiresIn"] as? NSNumber)?.intValue

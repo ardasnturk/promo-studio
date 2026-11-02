@@ -100,11 +100,23 @@ tester) can log in, which includes you.
 
 ### Instagram login (alternative)
 
-Without a Facebook Page, choose **Instagram login** as the connection type. In the Meta app, add the **Instagram**
-product with "API setup with Instagram login", the permissions `instagram_business_basic`,
+Without a Facebook Page, choose **Instagram login** as the connection type. Meta offers new apps this through
+**Instagram API with Unified Login**:
+
+1. In the Meta app, open **Use cases → Instagram API → Customize → API setup with Unified login**. Meta asks you to
+   link a business portfolio to the app first.
+2. Create a configuration from the template and copy its **Configuration ID**.
+3. Register a redirect URL. Meta only accepts `https` URLs on a real domain (not `localhost`); the page doesn't need to
+   exist, because Promo Studio's login window stops at it.
+4. In development mode, add the Instagram account as a tester (**App roles → Roles → Add people → Instagram Tester**)
+   and accept the invitation in Instagram (**Settings → Apps and websites → Tester invites**).
+5. In Promo Studio, enter the Configuration ID and the redirect URL under **Meta App**, then **Log In with Instagram**.
+   On Meta's page, choose **Continue with Instagram** and share the Instagram account. The token doesn't expire.
+
+Apps created before Meta's change can still use the older "API setup with Instagram login": leave the Configuration ID
+empty and enter the Instagram app ID and secret, the permissions `instagram_business_basic`,
 `instagram_business_content_publish`, `instagram_business_manage_insights`, `instagram_business_manage_comments`, and
-Promo Studio's redirect URI (default `https://localhost/promostudio/callback`). In development mode, add your Instagram
-account as a tester (**App roles → Roles → Instagram Testers**) and accept the invitation in Instagram.
+Promo Studio's redirect URI (default `https://localhost/promostudio/callback`).
 
 ### If something goes wrong
 

@@ -176,5 +176,8 @@
   "\\(versionPrefix)\\(lib.skills.count) skills · \\(lib.compositions.count) compositions · Remotion: \\(lib.remotionDir)": "\\(versionPrefix)\\(lib.skills.count) skill · \\(lib.compositions.count) kompozisyon · Remotion: \\(lib.remotionDir)",
   "schema": "şema",
   "tap: \\($0)": "dokun: \\($0)",
-  "…or paste an access token": "…ya da erişim token'ı yapıştır"
+  "…or paste an access token": "…ya da erişim token'ı yapıştır",
+  "Configuration ID (optional)": "Yapılandırma kimliği (isteğe bağlı)",
+  "Signs in with Instagram through your Meta app's \"Instagram API with Unified Login\" configuration; no Facebook Page needed. Requires a Business or Creator account added as an Instagram tester to the app.": "Meta uygulamanın \"Instagram API with Unified Login\" yapılandırmasıyla Instagram üzerinden giriş yapar; Facebook Sayfası gerekmez. Uygulamaya Instagram test kullanıcısı olarak eklenmiş bir İşletme veya İçerik Üreticisi hesabı gerekir.",
+  "Meta offers this setup only to older apps. For a new app, enter the configuration ID of \"Instagram API with Unified Login\" in the Meta App section.": "Meta bu kurulumu yalnızca eski uygulamalara sunuyor. Yeni bir uygulama için Meta App bölümüne \"Instagram API with Unified Login\" yapılandırma kimliğini gir."
 }

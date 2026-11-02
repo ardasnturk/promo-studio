@@ -28,6 +28,10 @@ enum InstagramLoginMode: String, Codable, CaseIterable, Identifiable {
 struct AppSettings: Codable, Equatable {
     var loginMode: InstagramLoginMode = .facebook
     var metaAppId: String = ""
+    /// Facebook Login for Business configuration ID ("Instagram API with Unified Login"). When set, login asks for that
+    /// configuration's assets and permissions instead of the scope list, and Instagram login goes through it too:
+    /// Meta no longer offers the older Instagram login setup to new apps. Needs no Facebook Page.
+    var facebookConfigId: String = ""
     var redirectURI: String = InstagramLoginMode.facebook.defaultRedirectURI
     var graphVersion: String = "v26.0"
     var claudeModel: String = ""
@@ -58,6 +62,7 @@ struct AppSettings: Codable, Equatable {
         let d = AppSettings()
         loginMode = try c.decodeIfPresent(InstagramLoginMode.self, forKey: .loginMode) ?? d.loginMode
         metaAppId = try c.decodeIfPresent(String.self, forKey: .metaAppId) ?? d.metaAppId
+        facebookConfigId = try c.decodeIfPresent(String.self, forKey: .facebookConfigId) ?? d.facebookConfigId
         redirectURI = try c.decodeIfPresent(String.self, forKey: .redirectURI) ?? d.redirectURI
         graphVersion = try c.decodeIfPresent(String.self, forKey: .graphVersion) ?? d.graphVersion
         claudeModel = try c.decodeIfPresent(String.self, forKey: .claudeModel) ?? d.claudeModel
@@ -73,6 +78,11 @@ struct AppSettings: Codable, Equatable {
         musicEnabled = try c.decodeIfPresent(Bool.self, forKey: .musicEnabled) ?? d.musicEnabled
         automaticallyChecksForUpdates = try c.decodeIfPresent(Bool.self, forKey: .automaticallyChecksForUpdates) ?? d.automaticallyChecksForUpdates
         templatesPromptDismissed = try c.decodeIfPresent(Bool.self, forKey: .templatesPromptDismissed) ?? d.templatesPromptDismissed
+    }
+
+    /// The API the login's token is used with. Unified Login signs in with Instagram but its token is a graph.facebook.com token.
+    var apiMode: InstagramLoginMode {
+        loginMode == .instagram && facebookConfigId.isEmpty ? .instagram : .facebook
     }
 
     static func load() -> AppSettings {

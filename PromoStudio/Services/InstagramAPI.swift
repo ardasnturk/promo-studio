@@ -26,6 +26,8 @@ struct InstagramAPI {
     var graphVersion: String
     var token: String
     var mode: InstagramLoginMode = .instagram
+    /// `appId|appSecret`; reads which Instagram accounts a Facebook Login for Business token was granted
+    var appToken: String?
 
     static func scopes(for mode: InstagramLoginMode) -> [String] {
         switch mode {
@@ -55,8 +57,21 @@ struct InstagramAPI {
 
     // MARK: OAuth
 
-    static func authorizeURL(mode: InstagramLoginMode, appId: String, redirectURI: String, graphVersion: String) -> URL? {
+    static func authorizeURL(mode: InstagramLoginMode, appId: String, redirectURI: String, graphVersion: String, configId: String = "") -> URL? {
         var c: URLComponents?
+        // A Facebook Login for Business configuration carries its own assets and permissions; its token comes as a code.
+        // Its login page also offers signing in with Instagram.
+        if !configId.isEmpty {
+            c = URLComponents(string: "https://www.facebook.com/\(graphVersion)/dialog/oauth")
+            c?.queryItems = [
+                .init(name: "client_id", value: appId),
+                .init(name: "redirect_uri", value: redirectURI),
+                .init(name: "config_id", value: configId),
+                .init(name: "response_type", value: "code"),
+                .init(name: "override_default_response_type", value: "true"),
+            ]
+            return c?.url
+        }
         switch mode {
         case .instagram:
             c = URLComponents(string: "https://www.instagram.com/oauth/authorize")
@@ -76,6 +91,7 @@ struct InstagramAPI {
     }
 
     /// Facebook Login: exchanges the authorization code for a long-lived (≈60 day) user token.
+    /// A configuration's system user token never expires and comes back as is, with `expiresIn` 0.
     static func exchangeFacebookCode(_ code: String, appId: String, appSecret: String, redirectURI: String, graphVersion: String) async throws -> (token: String, expiresIn: Int) {
         var c = URLComponents(string: "https://graph.facebook.com/\(graphVersion)/oauth/access_token")!
         c.queryItems = [
@@ -86,7 +102,12 @@ struct InstagramAPI {
         ]
         let json = try await send(URLRequest(url: c.url!))
         guard let short = json["access_token"] as? String else { throw InstagramError.api(String(localized: "Couldn't get a token")) }
-        return try await facebookLongLived(short, appId: appId, appSecret: appSecret, graphVersion: graphVersion)
+        guard let expiresIn = json["expires_in"] as? Int else { return (short, 0) }
+        do {
+            return try await facebookLongLived(short, appId: appId, appSecret: appSecret, graphVersion: graphVersion)
+        } catch {
+            return (short, expiresIn)
+        }
     }
 
     /// Exchanges a Facebook user token for a long-lived token. Called with a long-lived token, it extends its expiry.
@@ -167,6 +188,7 @@ struct InstagramAPI {
 
     /// With Facebook Login, Instagram accounts are professional accounts linked to Facebook Pages the user can access.
     /// Pages can belong directly to the user (`me/accounts`) or to a Business portfolio; both are checked.
+    /// Accounts granted through a Facebook Login for Business configuration (Unified Login) need no Page.
     private func facebookAccounts() async throws -> [InstagramAccount] {
         let igFields = "name,instagram_business_account{id,username,name,profile_picture_url,followers_count,media_count}"
         var pages = (try await get("me/accounts", ["fields": igFields, "limit": "100"])["data"] as? [[String: Any]]) ?? []
@@ -184,7 +206,7 @@ struct InstagramAPI {
         }
 
         var seen = Set<String>()
-        let accounts: [InstagramAccount] = pages.compactMap { page in
+        var accounts: [InstagramAccount] = pages.compactMap { page in
             guard let ig = page["instagram_business_account"] as? [String: Any],
                   let id = ig["id"] as? String, seen.insert(id).inserted else { return nil }
             return InstagramAccount(
@@ -197,8 +219,35 @@ struct InstagramAPI {
                 pageName: page["name"] as? String
             )
         }
+        for id in await grantedInstagramIds() where seen.insert(id).inserted {
+            guard let ig = try? await get(id, ["fields": "id,username,name,profile_picture_url,followers_count,media_count"]) else { continue }
+            accounts.append(InstagramAccount(
+                userId: id,
+                username: ig["username"] as? String ?? "",
+                name: ig["name"] as? String,
+                profilePictureURL: ig["profile_picture_url"] as? String,
+                followers: ig["followers_count"] as? Int,
+                mediaCount: ig["media_count"] as? Int
+            ))
+        }
         guard !accounts.isEmpty else { throw InstagramError.api(await diagnosis(pages: pages, businesses: businessNames)) }
         return accounts
+    }
+
+    /// Instagram account IDs the token was granted, with or without a Page: the `debug_token` granular scopes, or for a
+    /// Unified Login system user token the accounts the client shared in the login dialog.
+    private func grantedInstagramIds() async -> [String] {
+        var ids: [String] = []
+        var c = URLComponents(string: "\(base)/debug_token")!
+        c.queryItems = [.init(name: "input_token", value: token), .init(name: "access_token", value: appToken ?? token)]
+        if let json = try? await Self.send(URLRequest(url: c.url!)),
+           let scopes = (json["data"] as? [String: Any])?["granular_scopes"] as? [[String: Any]] {
+            ids += scopes.filter { ($0["scope"] as? String)?.hasPrefix("instagram_") == true }.flatMap { $0["target_ids"] as? [String] ?? [] }
+        }
+        let assigned = (try? await get("me/assigned_instagram_accounts", ["fields": "id,username"]))?["data"] as? [[String: Any]] ?? []
+        ids += assigned.compactMap { $0["id"] as? String }
+        var seen = Set<String>()
+        return ids.filter { seen.insert($0).inserted }
     }
 
     /// Tells the user concretely what is missing when the connection fails.

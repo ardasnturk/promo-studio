@@ -1000,7 +1000,8 @@ final class AppModel {
     }
 
     private func api(_ token: String, mode: InstagramLoginMode? = nil) -> InstagramAPI {
-        InstagramAPI(graphVersion: settings.graphVersion, token: token, mode: mode ?? settings.loginMode)
+        InstagramAPI(graphVersion: settings.graphVersion, token: token, mode: mode ?? settings.apiMode,
+                     appToken: appCredentials.map { "\($0.id)|\($0.secret)" })
     }
 
     private var appCredentials: (id: String, secret: String)? {
@@ -1018,7 +1019,7 @@ final class AppModel {
             Keychain.set(nil, for: Keychain.Key.legacyInstagramToken)
         }
         for i in data.accounts.indices where data.accounts[i].loginMode == nil {
-            data.accounts[i].loginMode = settings.loginMode
+            data.accounts[i].loginMode = settings.apiMode
         }
         autoAssignAccounts()
     }
@@ -1042,7 +1043,7 @@ final class AppModel {
             return
         }
         do {
-            let r = switch settings.loginMode {
+            let r = switch settings.apiMode {
             case .instagram:
                 try await InstagramAPI.exchangeCode(code, appId: app.id, appSecret: app.secret, redirectURI: settings.redirectURI)
             case .facebook:
@@ -1061,7 +1062,7 @@ final class AppModel {
         var expiresIn = expiresIn
         do {
             var warning: String?
-            if settings.loginMode == .facebook, !alreadyLongLived {
+            if settings.apiMode == .facebook, !alreadyLongLived {
                 if let app = appCredentials {
                     do {
                         let long = try await InstagramAPI.facebookLongLived(token, appId: app.id, appSecret: app.secret, graphVersion: settings.graphVersion)
@@ -1076,7 +1077,8 @@ final class AppModel {
                 if warning != nil { expiresIn = expiresIn ?? 3600 }
             }
             let found = try await api(token).allAccounts()
-            let expiry = Date().addingTimeInterval(TimeInterval(expiresIn ?? 5_184_000))
+            // 0: a system user token that doesn't expire
+            let expiry = expiresIn == 0 ? nil : Date().addingTimeInterval(TimeInterval(expiresIn ?? 5_184_000))
             var added: [String] = []
             for var account in found {
                 account.tokenExpiresAt = expiry
@@ -1122,7 +1124,7 @@ final class AppModel {
     func upgradeTokenIfNeeded() async {
         guard let app = appCredentials else { return }
         for group in tokenGroups() {
-            guard group.accounts.contains(where: { ($0.loginMode ?? settings.loginMode) == .facebook }),
+            guard group.accounts.contains(where: { ($0.loginMode ?? settings.apiMode) == .facebook }),
                   group.accounts.contains(where: { ($0.tokenExpiresAt ?? .distantPast).timeIntervalSinceNow < 7 * 86400 }) else { continue }
             do {
                 let long = try await InstagramAPI.facebookLongLived(group.token, appId: app.id, appSecret: app.secret, graphVersion: settings.graphVersion)
@@ -1169,7 +1171,7 @@ final class AppModel {
         let version = settings.graphVersion
         for group in tokenGroups() {
             guard group.accounts.contains(where: { ($0.tokenExpiresAt ?? .distantFuture).timeIntervalSinceNow < 7 * 86400 }) else { continue }
-            let mode = group.accounts.first?.loginMode ?? settings.loginMode
+            let mode = group.accounts.first?.loginMode ?? settings.apiMode
             let client = api(group.token, mode: mode)
             let token = group.token
             Task {

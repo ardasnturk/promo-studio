@@ -600,5 +600,8 @@
   "views this week": "visualizações nesta semana",
   "“%@”": "“%@”",
   "“%@” has no linked Instagram account. Choose one from the header of the project screen.": "“%@” não tem uma conta do Instagram vinculada. Escolha uma no cabeçalho da tela do projeto.",
-  "…or paste an access token": "…ou cole um token de acesso"
+  "…or paste an access token": "…ou cole um token de acesso",
+  "Configuration ID (optional)": "ID da configuração (opcional)",
+  "Signs in with Instagram through your Meta app's \"Instagram API with Unified Login\" configuration; no Facebook Page needed. Requires a Business or Creator account added as an Instagram tester to the app.": "Entra com o Instagram pela configuração \"Instagram API with Unified Login\" do seu app da Meta; não precisa de uma Página do Facebook. Requer uma conta comercial ou de criador adicionada ao app como testador do Instagram.",
+  "Meta offers this setup only to older apps. For a new app, enter the configuration ID of \"Instagram API with Unified Login\" in the Meta App section.": "A Meta oferece esta configuração apenas para apps mais antigos. Para um app novo, insira o ID da configuração do \"Instagram API with Unified Login\" na seção Meta App."
 }

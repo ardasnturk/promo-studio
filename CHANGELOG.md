@@ -6,6 +6,20 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Instagram login without a Facebook Page for new Meta apps: Meta replaced the
+  older "API setup with Instagram login" with "Instagram API with Unified
+  Login". Enter its configuration ID in Settings → Instagram → Meta App and
+  log in with Instagram; the token doesn't expire.
+
+### Changed
+- Switching the connection type keeps a redirect URI you entered yourself.
+- The login window is wider so Meta's business login pages fit.
+
+### Fixed
+- "Continue with Instagram" on Meta's login page did nothing: the login window
+  ignored pages opened as popups.
+
 ## [1.3.0] — 2026-11-02
 
 ### Added

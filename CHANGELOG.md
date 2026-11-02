@@ -6,6 +6,8 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-11-02
+
 ### Added
 - Videos without a project. A new Videos section makes a video from a prompt
   (directed by Claude, free-form, about no app) or from a library template.

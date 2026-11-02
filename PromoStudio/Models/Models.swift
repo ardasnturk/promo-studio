@@ -168,6 +168,8 @@ struct ContentPost: Codable, Identifiable, Hashable {
     var status: PostStatus = .draft
     var videoFile: String?
     var coverFile: String?
+    /// Second of the video the cover is taken from; sent to Instagram as the Reel's cover frame
+    var coverSec: Double?
     var scheduledAt: Date?
     var publishedAt: Date?
     var mediaId: String?
@@ -232,6 +234,9 @@ struct ContentPost: Codable, Identifiable, Hashable {
             if board.scenes[i].voiceover?.trimmingCharacters(in: .whitespaces).isEmpty == true { board.scenes[i].voiceover = nil }
             if board.scenes[i].sfx?.trimmingCharacters(in: .whitespaces).isEmpty == true { board.scenes[i].sfx = nil }
         }
+        // A revision that leaves these out keeps the previous ones
+        if board.logos == nil { board.logos = directed?.storyboard.logos }
+        if board.coverScene == nil { board.coverScene = directed?.storyboard.coverScene }
         directed?.storyboard = board
         caption = result.caption
         hashtags = result.hashtags.map { $0.replacingOccurrences(of: "#", with: "") }
@@ -308,6 +313,15 @@ struct Storyboard: Codable, Hashable {
     /// The video's director concept: visual language, rhythm, color, hook idea
     var concept: String
     var scenes: [StoryScene]
+    /// Real logos (clubs, leagues, brands) the video shows; Promo Studio downloads them
+    var logos: [StoryLogo]?
+    /// Scene whose most striking moment becomes the cover (index into `scenes`)
+    var coverScene: Int?
+}
+
+struct StoryLogo: Codable, Hashable {
+    var name: String
+    var url: String
 }
 
 struct StoryScene: Codable, Hashable, Identifiable {

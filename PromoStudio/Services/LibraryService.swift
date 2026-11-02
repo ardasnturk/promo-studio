@@ -117,7 +117,7 @@ enum LibraryService {
         propsJson: String?,
         postId: UUID,
         onProgress: @escaping @Sendable (Double, String) -> Void
-    ) async throws -> (video: String, cover: String) {
+    ) async throws -> (video: String, cover: String, coverSec: Double) {
         try await ensureInstalled(lib) { onProgress(0, $0) }
         let outDir = Paths.post(postId)
         let video = outDir.appendingPathComponent("video.mp4")
@@ -136,24 +136,28 @@ enum LibraryService {
             }
         }
         guard FileManager.default.fileExists(atPath: video.path) else { throw LibraryError.noVideo(video.path) }
-        let cover = try await makeCover(for: video)
+        let cover = try await makeCover(for: video, at: coverSec)
         onProgress(1, String(localized: "Done"))
-        return (video.lastPathComponent, cover)
+        return (video.lastPathComponent, cover, coverSec)
     }
 
     /// Copies the video the skill produced into the post folder and extracts a cover.
-    static func importVideo(from path: String, postId: UUID) async throws -> (video: String, cover: String) {
+    static func importVideo(from path: String, postId: UUID) async throws -> (video: String, cover: String, coverSec: Double) {
         let src = URL(fileURLWithPath: path)
         guard FileManager.default.fileExists(atPath: src.path) else { throw LibraryError.noVideo(path) }
         let dest = Paths.post(postId).appendingPathComponent("video.mp4")
         try? FileManager.default.removeItem(at: dest)
         try FileManager.default.copyItem(at: src, to: dest)
-        return (dest.lastPathComponent, try await makeCover(for: dest))
+        return (dest.lastPathComponent, try await makeCover(for: dest, at: coverSec), coverSec)
     }
 
-    private static func makeCover(for video: URL) async throws -> String {
-        let cover = video.deletingLastPathComponent().appendingPathComponent("cover.jpg")
-        try await AudioService.ffmpeg(["-v", "error", "-y", "-ss", "1.2", "-i", video.path, "-frames:v", "1", "-q:v", "3", cover.path])
-        return cover.lastPathComponent
+    static let coverSec = 1.2
+
+    /// Writes the frame at `sec` as the cover; a new file name each time so cached previews refresh.
+    static func makeCover(for video: URL, at sec: Double) async throws -> String {
+        let folder = video.deletingLastPathComponent()
+        let name = sec == coverSec ? "cover.jpg" : "cover-\(Int(sec * 1000)).jpg"
+        try await AudioService.ffmpeg(["-v", "error", "-y", "-ss", String(format: "%.3f", sec), "-i", video.path, "-frames:v", "1", "-q:v", "3", folder.appendingPathComponent(name).path])
+        return name
     }
 }

@@ -33,4 +33,6 @@ export type StudioProps = {
   fps: number;
   durationInFrames: number;
   scenes: StudioScene[];
+  /** Real logos (clubs, leagues, brands) from the storyboard: name → path relative to public/. Missing names have no image. */
+  logos?: Record<string, string>;
 };

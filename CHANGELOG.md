@@ -6,6 +6,20 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.2.2] — 2026-11-02
+
+### Added
+- Cover picker in the Publish tab: any frame of the video can be the cover.
+- Directed videos show real club, league and brand logos: the storyboard lists
+  their image URLs and Promo Studio downloads them (`logos` in the studio props).
+- `setCover` control action (`postId`, `sec`); posts carry `coverSec`.
+
+### Fixed
+- Reels were posted without a cover frame, so Instagram used the first frame.
+  The chosen cover is now sent as `thumb_offset`.
+- The automatic cover comes from the scene the director picks (`coverScene`).
+- The indeterminate progress bar moved only inside a narrow strip.
+
 ## [1.2.1] — 2026-11-01
 
 ### Fixed

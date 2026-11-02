@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 
 /// Claude-directed videos: the `src/videos/<id>` folder in the Remotion project, props, entry file and render.
 /// The kit and its guide live in `RemotionTemplate/src/kit` and `KIT.md`.
@@ -82,12 +82,83 @@ enum StudioService {
         ]
         if let label = storeLabel { brand["storeLabel"] = label }
         if let logo = project.logoFile, let path = publish(logo) { brand["logo"] = path }
+        var logos: [String: String] = [:]
+        for (name, file) in logoFiles(post) {
+            let dest = postDir.appendingPathComponent(file)
+            Paths.ensure(dest.deletingLastPathComponent())
+            try? fm.removeItem(at: dest)
+            if (try? fm.copyItem(at: Paths.post(post.id).appendingPathComponent(file), to: dest)) != nil { logos[name] = "\(postRel)/\(file)" }
+        }
         let props: [String: Any] = [
             "brand": brand, "lang": post.language ?? "tr", "fps": fps, "durationInFrames": max(30, from), "scenes": scenes,
+            "logos": logos,
         ]
         let url = propsFile(post.id)
         try JSONSerialization.data(withJSONObject: props, options: [.prettyPrinted, .sortedKeys]).write(to: url)
         return url
+    }
+
+    // MARK: Real logos
+
+    private static func logoFile(_ logo: StoryLogo) -> String {
+        let slug = logo.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+            .components(separatedBy: CharacterSet.alphanumerics.inverted).filter { !$0.isEmpty }.joined(separator: "-")
+        // Stable across launches (hashValue isn't), so a changed URL downloads again
+        let hash = logo.url.utf8.reduce(UInt32(5381)) { ($0 &<< 5) &+ $0 &+ UInt32($1) }
+        return "logos/\(slug.isEmpty ? "logo" : slug)-\(hash % 100_000)"
+    }
+
+    /// Downloaded logos of the storyboard: name → file in the post folder.
+    static func logoFiles(_ post: ContentPost) -> [(String, String)] {
+        let dir = Paths.post(post.id)
+        let files = (try? FileManager.default.contentsOfDirectory(atPath: dir.appendingPathComponent("logos").path)) ?? []
+        return (post.directed?.storyboard.logos ?? []).compactMap { logo in
+            let base = (logoFile(logo) as NSString).lastPathComponent
+            return files.first { ($0 as NSString).deletingPathExtension == base }.map { (logo.name, "logos/\($0)") }
+        }
+    }
+
+    /// Downloads the storyboard's logos into the post folder; ones that fail or aren't images are skipped (the video uses a Badge).
+    static func downloadLogos(_ post: ContentPost) async {
+        let dir = Paths.ensure(Paths.post(post.id).appendingPathComponent("logos"))
+        let have = Set(logoFiles(post).map(\.0))
+        for logo in post.directed?.storyboard.logos ?? [] where !have.contains(logo.name) {
+            guard let url = URL(string: logo.url), url.scheme == "https" || url.scheme == "http" else { continue }
+            var req = URLRequest(url: url, timeoutInterval: 20)
+            // Some hosts (e.g. Wikimedia) refuse requests without a user agent
+            req.setValue("PromoStudio/1.0 (macOS)", forHTTPHeaderField: "User-Agent")
+            guard let (data, resp) = try? await URLSession.shared.data(for: req),
+                  (resp as? HTTPURLResponse)?.statusCode == 200, let ext = imageExtension(data, response: resp) else { continue }
+            try? data.write(to: dir.appendingPathComponent(((logoFile(logo) as NSString).lastPathComponent) + "." + ext))
+        }
+    }
+
+    private static func imageExtension(_ data: Data, response: URLResponse) -> String? {
+        let head = String(decoding: data.prefix(512), as: UTF8.self).lowercased()
+        if head.contains("<svg") { return "svg" }
+        guard NSImage(data: data) != nil else { return nil }
+        switch response.mimeType {
+        case "image/jpeg": return "jpg"
+        case "image/webp": return "webp"
+        default: return data.starts(with: [0xFF, 0xD8]) ? "jpg" : "png"
+        }
+    }
+
+    // MARK: Cover
+
+    /// Cover frame: the settled moment of the scene the director picked (the hook if none).
+    static func coverFrame(_ post: ContentPost) -> Int {
+        // Same timing as writeProps: the voiceover-fitted duration, else the storyboard's
+        let board = post.directed?.storyboard.scenes ?? []
+        let durations = board.indices.map { i in
+            let sec = (post.spec.scenes.indices.contains(i) ? post.spec.scenes[i].durationSec : nil) ?? board[i].durationSec
+            return max(20, Int((sec * Double(fps)).rounded()))
+        }
+        guard !durations.isEmpty else { return Int(1.2 * Double(fps)) }
+        let index = min(max(post.directed?.storyboard.coverScene ?? 0, 0), durations.count - 1)
+        let start = durations.prefix(index).reduce(0, +)
+        let into = index == 0 ? min(Int(1.2 * Double(fps)), Int(Double(durations[0]) * 0.6)) : Int(Double(durations[index]) * 0.6)
+        return start + into
     }
 
     /// Entry file that registers only this video; an error in one video does not break rendering the others.
@@ -126,7 +197,7 @@ enum StudioService {
     }
 
     /// Renders the video and cover into the post folder.
-    static func render(post: ContentPost, onProgress: @escaping @Sendable (Double, String) -> Void) async throws -> (video: String, cover: String) {
+    static func render(post: ContentPost, onProgress: @escaping @Sendable (Double, String) -> Void) async throws -> (video: String, cover: String, coverSec: Double) {
         guard let directed = post.directed else { throw StudioError.noStoryboard }
         let id = directed.compositionId
         guard hasCode(id) else { throw StudioError.noCode }
@@ -146,11 +217,10 @@ enum StudioService {
         }
         guard fm.fileExists(atPath: outDir.appendingPathComponent(video).path) else { throw RemotionError.noOutput }
         onProgress(0.97, String(localized: "Creating cover image…"))
-        // Cover: the moment the hook scene settles
-        let coverFrame = min(Int(1.2 * Double(fps)), Int((post.directed?.storyboard.scenes.first?.durationSec ?? 2) * Double(fps) * 0.6))
-        try await ProcessRunner.run(bin, ["still", entry, id, outDir.appendingPathComponent(cover).path, props, "--frame=\(coverFrame)", "--image-format=jpeg"], cwd: Paths.remotion)
+        let frame = coverFrame(post)
+        try await ProcessRunner.run(bin, ["still", entry, id, outDir.appendingPathComponent(cover).path, props, "--frame=\(frame)", "--image-format=jpeg"], cwd: Paths.remotion)
         onProgress(1, String(localized: "Done"))
-        return (video, cover)
+        return (video, cover, Double(frame) / Double(fps))
     }
 
     // MARK: Code versions

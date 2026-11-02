@@ -146,7 +146,10 @@ struct ProgressBar: View {
                             .fill(Brand.buttonGradient)
                             .frame(width: proxy.size.width * 0.3)
                             .offset(x: (proxy.size.width * 1.3) * t - proxy.size.width * 0.3)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    // Full track width: without it the clip is only as wide as the segment
+                    .frame(width: proxy.size.width, alignment: .leading)
                     .clipShape(Capsule())
                 }
             }

@@ -109,6 +109,12 @@ enum ControlActions {
             let p = try post()
             model.render(p.id)
             return accepted(p.id)
+        case "setCover":
+            let p = try post()
+            guard p.videoFile != nil else { throw ActionError.failed(String(localized: "Render the video first")) }
+            guard let sec = (body["sec"] as? NSNumber)?.doubleValue, sec >= 0 else { throw ActionError.missing("sec") }
+            await model.setCover(p.id, at: sec)
+            return ok
         case "cancel":
             model.cancel(try uuid("id"))
             return ok

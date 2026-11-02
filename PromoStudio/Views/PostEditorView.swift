@@ -10,6 +10,7 @@ struct PostEditorView: View {
 
     @State private var tab = 0
     @State private var scheduleDate = Date().addingTimeInterval(3600)
+    @State private var pickingCover = false
     @State private var rewriteInstruction = ""
 
     var body: some View {
@@ -282,6 +283,23 @@ struct PostEditorView: View {
                     Label("“\(project?.name ?? "")” has no linked Instagram account. Choose one from the header of the project screen.", systemImage: "exclamationmark.triangle")
                         .foregroundStyle(.orange)
                 }
+            }
+            if let video = model.videoURL(post) {
+                Section("Cover") {
+                    HStack(spacing: 12) {
+                        LocalImage(url: model.coverURL(post))
+                            .frame(width: 54, height: 96)
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                        VStack(alignment: .leading, spacing: 6) {
+                            if let sec = post.coverSec {
+                                Text("Frame at \(String(format: "%.1f", sec)) s").font(.callout)
+                            }
+                            Button("Choose Cover…") { pickingCover = true }
+                                .disabled(model.jobs[postId] != nil || post.status == .published)
+                        }
+                    }
+                }
+                .sheet(isPresented: $pickingCover) { CoverPickerSheet(post: post, videoURL: video) }
             }
             Section("Publish Now") {
                 Button {

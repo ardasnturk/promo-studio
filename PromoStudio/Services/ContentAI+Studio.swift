@@ -12,8 +12,10 @@ extension ContentAI {
         var postingTip: String
         var findings: String?
         var sources: [String]?
+        var logos: [StoryLogo]?
+        var coverScene: Int?
 
-        var storyboard: Storyboard { Storyboard(concept: concept, scenes: scenes) }
+        var storyboard: Storyboard { Storyboard(concept: concept, scenes: scenes, logos: logos, coverScene: coverScene) }
     }
 
     struct ProductionResult: Decodable {
@@ -60,7 +62,8 @@ extension ContentAI {
         \(freeform ? Self.freeformRules : Self.promoRules)
         - Define the visual language in the concept: color palette (brand colors), typography (display/condensed/heading), rhythm (fast cuts or smooth transitions), atmosphere.
         - In each scene's visual field, write with enough clarity for the developer to understand: what is visible, where, how it enters/exits, which kit components (from the list below), timing accents ("flash at 0.5 s", "number counts from 0 to 78").
-        - Real-world information (date, time, team, numbers) is used only if verified or present in the app information. Official club/league/brand logos are not used; colors and an abbreviation badge (Badge) are used instead.
+        - Real-world information (date, time, team, numbers) is used only if verified or present in the app information.
+        \(Self.logoRule)
 
         KIT (the building blocks available to the developer)
         Kinetic (title with rise/pop/slam word animation), Typewriter, Caption, Phone (phone frame, tilt, float), ZoomShot (zoom into a region of the screen), AppIcon, Counter (counting number), ProbabilityBar (three-way probability bar), BarChart, Countdown, Badge (color badge), Matchup (matchup scoreboard), Notification (notification card), Chip (LIVE/NEW/PRO label), GlassCard, Ticker (scrolling band), StaggerList, GradientBg, Spotlight, GridFloor, Pitch (football pitch), Particles, Burst (confetti), Flash, Vignette, useShake/usePunch/useDrift; sound effects: whoosh, whip, switch, ding, click, pageTurn, shutter, notification, boom, dramatic, recordScratch, yippee, wow. If needed, the developer can also do custom drawing (SVG, CSS shapes).
@@ -78,6 +81,7 @@ extension ContentAI {
         """ : "- Leave the voiceover field empty (this video has no voiceover).")
         - sfx: the scene's sound effect(s) and their moment (e.g. "boom 0.2 s"), empty if none.
         - assets: project images to use in the scene (empty array if none\(freeform ? "; leave empty unless the request calls for the app" : "")).
+        - coverScene: index (0-based) of the scene whose fully settled frame makes the most eye-catching cover (big readable title or the key visual on screen, not a transition). This frame becomes the Instagram cover.
 
         CAPTION
         - caption: optimized for Instagram SEO; the first line is a strong keyword hook (first 125 characters), 2–4 short lines, suitable emoji, \(freeform ? "a CTA at the end only if it fits the request" : "a clear CTA at the end"). Do not put hashtags in the caption.
@@ -89,7 +93,7 @@ extension ContentAI {
             prompt: prompt,
             schema: Self.storyboardSchema(assetNames: usable.map(\.fileName), maxHashtags: maxHashtags, research: brief.research),
             cwd: project.folderURL,
-            tools: brief.research ? Self.researchTools : ["Read", "Glob", "Grep"],
+            tools: brief.research ? Self.researchTools : ["Read", "Glob", "Grep", "WebFetch"],
             maxTurns: brief.research ? 40 : 12,
             onActivity: onActivity
         )
@@ -113,6 +117,8 @@ extension ContentAI {
         - If the instruction requires new information, \(research ? "research and verify it" : "rely on the app information; do not make anything up").
         - If there is a voiceover, every sentence must start with a tone tag ([excited], [curious], [amazed], [friendly], [serious]).
         \(Self.pronunciationRule(language))
+        \(Self.logoRule)
+        - Keep the logos list and coverScene unless the instruction changes them; update coverScene if the scenes change.
         \(freeform ? "- This is a free-form video, not an app ad: do not add app features, screenshots or a store CTA unless the instruction or the original request asks for them." : "")
 
         APP
@@ -132,8 +138,8 @@ extension ContentAI {
             prompt: prompt,
             schema: Self.storyboardSchema(assetNames: usable.map(\.fileName), maxHashtags: maxHashtags, research: research),
             cwd: project.folderURL,
-            tools: research ? Self.researchTools : [],
-            maxTurns: research ? 30 : 4,
+            tools: research ? Self.researchTools : ["Read", "Glob", "Grep", "WebFetch"],
+            maxTurns: research ? 30 : 8,
             onActivity: onActivity
         )
     }
@@ -165,7 +171,8 @@ extension ContentAI {
 
         RULES
         - Write only inside the \(folder)/ folder (you may create sub-files for helper components). Do not touch kit files or other folders. Import kit components from the '../../kit' path.
-        - The rules in KIT.md apply: safe area, readable sizes, frame-based animation only, no Math.random, uppercase text written in uppercase in the source (no textTransform, which breaks Turkish i/İ), no official logos.
+        - The rules in KIT.md apply: safe area, readable sizes, frame-based animation only, no Math.random, uppercase text written in uppercase in the source (no textTransform, which breaks Turkish i/İ).
+        - Real logos: props.logos maps each name in the storyboard's logos list to its downloaded image (public path). Show them with <Img src={staticFile(path)}> and objectFit 'contain' wherever the storyboard shows that club/league/brand; never redraw a real logo in SVG/CSS. A name missing from props.logos has no image: use colors and an abbreviation Badge for it. In the verification stills, check that every logo shows the right club/brand; if one is clearly wrong, use a Badge instead and say so in notes.
         - Quality bar: it must look like it came from an agency. Layered backgrounds, depth (shadow, glow, blur), moving camera (drift, shake, punch), clear hierarchy. Do not leave empty or static frames.
         - The entry file is ready: src/entries/\(id).tsx (composition id: \(id)).
 
@@ -196,6 +203,11 @@ extension ContentAI {
             onActivity: onActivity
         )
     }
+
+    /// Real logos: listed with a source URL in the storyboard, downloaded by Promo Studio, shown as images in the code.
+    static let logoRule = """
+    - Real logos: when the video shows real clubs, leagues, competitions or brands, show their real logos instead of drawn ones. List each in the logos field: name (as written in the visual fields) and url, a direct link to the official logo image (PNG, SVG or WebP). Prefer the source the app itself uses (look in the project code, e.g. a football app may load crests from media.api-sports.io/football/teams/<id>.png) or Wikimedia Commons; use WebFetch to confirm a URL if unsure. Never guess an ID or URL. Leave out a logo you can't find a reliable URL for; it falls back to colors and an abbreviation badge (Badge).
+    """
 
     /// Directing principles for an app promo film
     static let promoRules = """
@@ -230,6 +242,8 @@ extension ContentAI {
         let obj: [String: Any] = [
             "title": post.title, "concept": board.concept, "scenes": scenes, "caption": post.caption,
             "hashtags": post.hashtags, "altText": post.altText ?? "", "postingTip": post.postingTip ?? "",
+            "logos": (board.logos ?? []).map { ["name": $0.name, "url": $0.url] },
+            "coverScene": board.coverScene ?? 0,
         ]
         let data = (try? JSONSerialization.data(withJSONObject: obj, options: [.prettyPrinted, .sortedKeys])) ?? Data()
         return String(decoding: data, as: UTF8.self)
@@ -263,6 +277,15 @@ extension ContentAI {
                 "postingTip": str,
                 "findings": str,
                 "sources": strArray,
+                "logos": [
+                    "type": "array",
+                    "items": [
+                        "type": "object",
+                        "properties": ["name": str, "url": str],
+                        "required": ["name", "url"],
+                    ],
+                ],
+                "coverScene": ["type": "integer", "minimum": 0],
             ],
             "required": ["title", "concept", "scenes", "caption", "hashtags", "altText", "postingTip"] + (research ? ["findings", "sources"] : []),
         ]

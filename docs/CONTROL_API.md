@@ -76,6 +76,7 @@ JSON body. The response is `{"ok": true}`, or `202 {"ok": true, "jobId"}` for lo
 | `updatePost` | `postId, title?, caption?, hashtags?, altText?, storyboard?` | Manual edit; `storyboard` is a full `Storyboard` object |
 | `rewriteCaption` | `postId, instruction` | |
 | `render` | `postId` | |
+| `setCover` | `postId, sec` | Use the frame at `sec` seconds as the cover; it is also sent to Instagram as the Reel's cover. Posts carry the current one as `coverSec` |
 | `cancel` | `id` | Cancels a post or project job |
 | `deletePost` | `postId` | |
 | `publish` | `postId` | Publish as a Reel right away |

@@ -494,6 +494,10 @@ final class AppModel {
         }
         let spec = post.spec
         updatePost(post.id) { $0.spec = spec }
+        if post.directed?.storyboard.logos?.isEmpty == false {
+            report(post.id, String(localized: "Downloading logos…"))
+            await StudioService.downloadLogos(post)
+        }
         try StudioService.writeProps(post: post, project: project, storeLabel: ContentLanguage.find(post.language).storeLabel)
     }
 
@@ -521,7 +525,7 @@ final class AppModel {
             let progress: @Sendable (Double, String) -> Void = { [weak self] progress, msg in
                 Task { @MainActor in self?.report(postId, msg, progress: progress) }
             }
-            let result: (video: String, cover: String)
+            let result: (video: String, cover: String, coverSec: Double)
             if post.directed != nil {
                 try await prepareDirectedAssets(&post, project: project)
                 result = try await StudioService.render(post: post, onProgress: progress)
@@ -537,6 +541,7 @@ final class AppModel {
             updatePost(postId) {
                 $0.videoFile = result.video
                 $0.coverFile = result.cover
+                $0.coverSec = result.coverSec
                 $0.status = .ready
             }
             renderedAt[postId] = Date()
@@ -621,6 +626,7 @@ final class AppModel {
         for keyPath in [\ContentPost.videoFile, \.coverFile, \.mediaId, \.permalink, \.lastError, \.voiceSignature, \.postingTip] {
             copy[keyPath: keyPath] = nil
         }
+        copy.coverSec = nil
         copy.scheduledAt = nil
         copy.publishedAt = nil
         copy.metrics = nil
@@ -736,7 +742,7 @@ final class AppModel {
                     return
                 }
                 let files = try await LibraryService.importVideo(from: path, postId: postId)
-                self?.updatePost(postId) { $0.videoFile = files.video; $0.coverFile = files.cover; $0.status = .ready }
+                self?.updatePost(postId) { $0.videoFile = files.video; $0.coverFile = files.cover; $0.coverSec = files.coverSec; $0.status = .ready }
 
                 self?.report(postId, String(localized: "Claude is writing the caption…"))
                 let caption = try await ai.captionForExternal(summary: r.summary, request: request, project: project, cwd: lib.rootURL)
@@ -846,6 +852,20 @@ final class AppModel {
         post.coverFile.map { Paths.post(post.id).appendingPathComponent($0) }
     }
 
+    /// Makes the frame at `sec` the cover (the thumbnail here and the Reel's cover on Instagram).
+    func setCover(_ postId: UUID, at sec: Double) async {
+        guard let post = post(postId), let video = videoURL(post) else { return }
+        do {
+            let name = try await LibraryService.makeCover(for: video, at: sec)
+            if let old = post.coverFile, old != name, old.hasPrefix("cover-") {
+                try? FileManager.default.removeItem(at: Paths.post(postId).appendingPathComponent(old))
+            }
+            updatePost(postId) { $0.coverFile = name; $0.coverSec = sec }
+        } catch {
+            alert = error.localizedDescription
+        }
+    }
+
     // MARK: Posting and scheduling
 
     func schedule(_ postId: UUID, at date: Date) {
@@ -872,7 +892,7 @@ final class AppModel {
         updatePost(postId) { $0.status = .publishing; $0.lastError = nil; $0.accountId = account.userId }
         run(postId, String(localized: "Publishing to @\(account.username)…"), kind: .publish) { [weak self] in
             do {
-                let result = try await client.publishReel(userId: account.userId, videoURL: video, caption: post.fullCaption) { status in
+                let result = try await client.publishReel(userId: account.userId, videoURL: video, caption: post.fullCaption, coverOffsetMs: post.coverSec.map { Int($0 * 1000) }) { status in
                     Task { @MainActor in self?.report(postId, status) }
                 }
                 self?.updatePost(postId) {

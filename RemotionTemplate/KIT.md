@@ -9,6 +9,7 @@ Every custom video is the `Video` component in `src/videos/<CompositionId>/Video
 | `brand` | `appName`, `primary`, `accent`, `background` (hex), `logo?` (public path), `storeLabel?` |
 | `lang` | Language code. Pass `lang={lang}` to the root `AbsoluteFill`. |
 | `fps`, `durationInFrames` | Totals for the whole video. Promo Studio computes them. |
+| `logos?` | Real logos from the storyboard: name → public path. Use `<Img src={staticFile(logos[name])} style={{objectFit: 'contain'}} />`. |
 | `scenes[i]` | `from`, `durationInFrames` (fitted to the voiceover), `text` (on-screen text, `*emphasis*`), `visual` (director's note), `audio?`, `assets` (public paths) |
 
 Do not change scene timings; the voiceover was generated for them. Sequence scenes with `Timeline`; each scene's audio plays automatically.
@@ -67,9 +68,9 @@ If the kit is not enough, write your own component inside the video's folder. Do
 - **Animation:** Use only `useCurrentFrame`, `interpolate` and `spring`. No CSS animations or transitions. No `Math.random`; use `random(seed)` for randomness.
 - **Text:** Write uppercase text in uppercase in the source itself (e.g. Turkish `İ`, `Ş`, `Ğ`). Do not use `textTransform: uppercase`; it breaks letters such as Turkish i/İ.
 - **Images:**
-  - Use only `scene.assets`, `brand.logo` and the kit's drawings.
-  - Do not download images from the internet.
-  - Do not draw official club, league or brand logos. Use `Badge` and colors instead.
+  - Use only `scene.assets`, `brand.logo`, `logos` and the kit's drawings.
+  - Do not download images from the internet; Promo Studio downloads the storyboard's logos into `logos`.
+  - Show real club, league or brand logos only from `logos`. Never redraw them in SVG or CSS; for a name missing from `logos`, use `Badge` and colors.
 - **Scene structure:**
   - Not every scene has to be a screenshot. Build a promo film with kinetic typography, data animation, notifications, counters, pitches and similar scenes.
   - Screenshots prove the product; the video is not a slideshow.

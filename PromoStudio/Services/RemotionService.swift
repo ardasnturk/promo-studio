@@ -57,7 +57,7 @@ enum RemotionService {
         post: ContentPost,
         project: AppProject,
         onProgress: @escaping @Sendable (Double, String) -> Void
-    ) async throws -> (video: String, cover: String) {
+    ) async throws -> (video: String, cover: String, coverSec: Double) {
         // Sync template sources every time (cheap); npm install only runs when dependencies change
         try await prepare { onProgress(0, $0) }
 
@@ -138,6 +138,6 @@ enum RemotionService {
         )
         try? fm.removeItem(at: jobDir)
         onProgress(1, String(localized: "Done"))
-        return (video, cover)
+        return (video, cover, Double(coverFrame) / fps)
     }
 }

@@ -6,6 +6,20 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.2.4] — 2026-11-02
+
+### Fixed
+- Directed videos drew the opponent's crest as a badge when the director had
+  no confirmed image URL for it. Logos may now name an English Wikipedia
+  article (`wiki`); its lead image is the fallback when there's no `url` or it
+  fails. Every real club, league and brand in the video is listed.
+
+### Added
+- Kit `Logo` component; `Matchup` sides take a `logo`.
+- Control API: `generateFromSkill` and `generateIdeas` actions; libraries in
+  the state carry `compositions`, each skill's `argumentHint` and
+  `suggestedProjectId`, and the latest `ideas`.
+
 ## [1.2.3] — 2026-11-02
 
 ### Fixed

@@ -5,8 +5,8 @@
 #
 # `version` and `sha256` are updated by scripts/prepare-release.sh.
 cask "promo-studio" do
-  version "1.2.1"
-  sha256 "4ad7894e966ccd8c6c9acb6b7a9fe2a85aadcddbe5ccd573eb3389f854f4dddb"
+  version "1.2.2"
+  sha256 "72c15bd1eaf23136f49fc7a1108ccc7a44a06b9f2d94148f6ba7cf28d1327d54"
 
   url "https://github.com/ardasnturk/promo-studio/releases/download/v#{version}/PromoStudio-#{version}.dmg"
   name "Promo Studio"

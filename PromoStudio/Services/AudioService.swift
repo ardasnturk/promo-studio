@@ -60,7 +60,8 @@ enum AudioService {
         let indices = post.spec.scenes.indices.filter { !(post.spec.scenes[$0].voiceover ?? "").trimmingCharacters(in: .whitespaces).isEmpty }
         guard !indices.isEmpty else { return }
         let lines = indices.map { post.spec.scenes[$0].voiceover!.trimmingCharacters(in: .whitespacesAndNewlines) }
-        let signature = "\(voice)|\(model)|" + lines.joined(separator: "\n")
+        // "cut2": clips cut before 1.2.3 lost the first consonant, so they are voiced again
+        let signature = "cut2|\(voice)|\(model)|" + lines.joined(separator: "\n")
         let files = indices.map { "vo_\($0 + 1).wav" }
 
         let cached = post.voiceSignature == signature
@@ -209,18 +210,24 @@ enum AudioService {
             prev = endsAt[k] + 1
             let ratio = (b - a) / (chars[k] * rate)
             guard ratio > 0.45, ratio < 2.2 else { throw AudioError.split(String(localized: "line \(k + 1) seems to be split in the wrong place")) }
-            durations.append(try await normalize(take, from: max(0, a - 0.04), to: b + 0.08, into: outputs[k]))
+            // Silence detection only sees the loud part of a word: quiet onsets (f, k, h, s) and fading endings fall
+            // under the threshold. Keep a margin on both sides, without reaching into the neighbouring lines' speech.
+            let earliest = k == 0 ? 0 : cut[endsAt[k - 1]].0 + 0.05
+            let nextSpeechStart = endsAt[k] < s ? cut[endsAt[k]].1 : length
+            let from = max(earliest, a - 0.2)
+            let to = min(b + 0.15, max(b, nextSpeechStart - 0.05))
+            durations.append(try await normalize(take, from: from, to: to, into: outputs[k]))
         }
         return durations
     }
 
-    /// Trims, normalizes to -16 LUFS, writes 44.1 kHz stereo and returns the duration.
+    /// Trims leading silence (keeping a short lead-in so soft first consonants survive), normalizes to -16 LUFS, writes 44.1 kHz stereo and returns the duration.
     @discardableResult
     static func normalize(_ input: URL, from: Double?, to: Double?, into output: URL) async throws -> Double {
         var args = ["-v", "error", "-y", "-i", input.path]
         if let from { args += ["-ss", String(format: "%.3f", from)] }
         if let to { args += ["-to", String(format: "%.3f", to)] }
-        args += ["-af", "silenceremove=start_periods=1:start_threshold=-45dB,afade=t=in:d=0.02,loudnorm=I=-16:TP=-1.5", "-ar", "44100", "-ac", "2", output.path]
+        args += ["-af", "silenceremove=start_periods=1:start_threshold=-60dB:start_silence=0.12,afade=t=in:d=0.01,loudnorm=I=-16:TP=-1.5", "-ar", "44100", "-ac", "2", output.path]
         try await ffmpeg(args)
         return try await duration(of: output)
     }

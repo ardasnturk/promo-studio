@@ -60,7 +60,7 @@ final class AppModel {
     /// Job ID of the Promo Templates install (progress is in `jobs`)
     static let templatesJobId = UUID(uuidString: "00000000-0000-0000-0000-00000000F00D")!
     /// Library ID → latest idea research (not persisted)
-    var libraryIdeas: [UUID: ContentAI.IdeasResult] = [:]
+    var libraryIdeas: [UUID: ContentAI.IdeasResult] = [:] { didSet { control?.dataChanged() } }
 
     private var tasks: [UUID: Task<Void, Never>] = [:]
     /// When each post's video was last rendered (tells a finished job whether it produced a video)

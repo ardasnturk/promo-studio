@@ -172,7 +172,7 @@ extension ContentAI {
         RULES
         - Write only inside the \(folder)/ folder (you may create sub-files for helper components). Do not touch kit files or other folders. Import kit components from the '../../kit' path.
         - The rules in KIT.md apply: safe area, readable sizes, frame-based animation only, no Math.random, uppercase text written in uppercase in the source (no textTransform, which breaks Turkish i/İ).
-        - Real logos: props.logos maps each name in the storyboard's logos list to its downloaded image (public path). Show them with <Img src={staticFile(path)}> and objectFit 'contain' wherever the storyboard shows that club/league/brand; never redraw a real logo in SVG/CSS. A name missing from props.logos has no image: use colors and an abbreviation Badge for it. In the verification stills, check that every logo shows the right club/brand; if one is clearly wrong, use a Badge instead and say so in notes.
+        - Real logos: props.logos maps each name in the storyboard's logos list to its downloaded image (public path). Show them with the kit Logo, Matchup's logo field, or <Img src={staticFile(path)}> with objectFit 'contain', wherever the storyboard shows that club/league/brand, even where a visual field still mentions a Badge for it; never redraw a real logo in SVG/CSS. A name missing from props.logos has no image: use colors and an abbreviation Badge for it. In the verification stills, check that every logo shows the right club/brand; if one is clearly wrong, use a Badge instead and say so in notes.
         - Quality bar: it must look like it came from an agency. Layered backgrounds, depth (shadow, glow, blur), moving camera (drift, shake, punch), clear hierarchy. Do not leave empty or static frames.
         - The entry file is ready: src/entries/\(id).tsx (composition id: \(id)).
 
@@ -206,7 +206,10 @@ extension ContentAI {
 
     /// Real logos: listed with a source URL in the storyboard, downloaded by Promo Studio, shown as images in the code.
     static let logoRule = """
-    - Real logos: when the video shows real clubs, leagues, competitions or brands, show their real logos instead of drawn ones. List each in the logos field: name (as written in the visual fields) and url, a direct link to the official logo image (PNG, SVG or WebP). Prefer the source the app itself uses (look in the project code, e.g. a football app may load crests from media.api-sports.io/football/teams/<id>.png) or Wikimedia Commons; use WebFetch to confirm a URL if unsure. Never guess an ID or URL. Leave out a logo you can't find a reliable URL for; it falls back to colors and an abbreviation badge (Badge).
+    - Real logos: when the video shows real clubs, leagues, competitions or brands, show their real logos instead of drawn ones. List EVERY one of them in the logos field, the opponent as much as the home side, and plan their logos in the visual fields, not badges or drawn crests. Each entry: name (as written in the visual fields), plus at least one of:
+      - wiki: the exact English Wikipedia article title of that club/league/brand (e.g. "VfB Stuttgart", "Galatasaray S.K. (football)", "UEFA Champions League"). Promo Studio downloads the article's lead image, which is the crest or logo. Give it for every entry; use WebFetch on en.wikipedia.org to confirm the title if unsure.
+      - url: a direct link to the official logo image (PNG, SVG or WebP), only if you have confirmed it, e.g. the source the app itself uses (a football app may load crests from media.api-sports.io/football/teams/<id>.png: take the id from the app's code or data, never guess it). It's tried first; wiki is the fallback.
+      Only a logo that can't be downloaded falls back to colors and an abbreviation badge (Badge).
     """
 
     /// Directing principles for an app promo film
@@ -242,7 +245,7 @@ extension ContentAI {
         let obj: [String: Any] = [
             "title": post.title, "concept": board.concept, "scenes": scenes, "caption": post.caption,
             "hashtags": post.hashtags, "altText": post.altText ?? "", "postingTip": post.postingTip ?? "",
-            "logos": (board.logos ?? []).map { ["name": $0.name, "url": $0.url] },
+            "logos": (board.logos ?? []).map { logo in ["name": logo.name, "url": logo.url, "wiki": logo.wiki].compactMapValues { $0 } },
             "coverScene": board.coverScene ?? 0,
         ]
         let data = (try? JSONSerialization.data(withJSONObject: obj, options: [.prettyPrinted, .sortedKeys])) ?? Data()
@@ -281,8 +284,8 @@ extension ContentAI {
                     "type": "array",
                     "items": [
                         "type": "object",
-                        "properties": ["name": str, "url": str],
-                        "required": ["name", "url"],
+                        "properties": ["name": str, "url": str, "wiki": str],
+                        "required": ["name"],
                     ],
                 ],
                 "coverScene": ["type": "integer", "minimum": 0],

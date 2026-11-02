@@ -103,8 +103,9 @@ enum StudioService {
     private static func logoFile(_ logo: StoryLogo) -> String {
         let slug = logo.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
             .components(separatedBy: CharacterSet.alphanumerics.inverted).filter { !$0.isEmpty }.joined(separator: "-")
-        // Stable across launches (hashValue isn't), so a changed URL downloads again
-        let hash = logo.url.utf8.reduce(UInt32(5381)) { ($0 &<< 5) &+ $0 &+ UInt32($1) }
+        // Stable across launches (hashValue isn't), so a changed source downloads again
+        let source = [logo.url, logo.wiki].compactMap { $0 }.joined(separator: "|")
+        let hash = source.utf8.reduce(UInt32(5381)) { ($0 &<< 5) &+ $0 &+ UInt32($1) }
         return "logos/\(slug.isEmpty ? "logo" : slug)-\(hash % 100_000)"
     }
 
@@ -123,14 +124,33 @@ enum StudioService {
         let dir = Paths.ensure(Paths.post(post.id).appendingPathComponent("logos"))
         let have = Set(logoFiles(post).map(\.0))
         for logo in post.directed?.storyboard.logos ?? [] where !have.contains(logo.name) {
-            guard let url = URL(string: logo.url), url.scheme == "https" || url.scheme == "http" else { continue }
-            var req = URLRequest(url: url, timeoutInterval: 20)
-            // Some hosts (e.g. Wikimedia) refuse requests without a user agent
-            req.setValue("PromoStudio/1.0 (macOS)", forHTTPHeaderField: "User-Agent")
-            guard let (data, resp) = try? await URLSession.shared.data(for: req),
-                  (resp as? HTTPURLResponse)?.statusCode == 200, let ext = imageExtension(data, response: resp) else { continue }
-            try? data.write(to: dir.appendingPathComponent(((logoFile(logo) as NSString).lastPathComponent) + "." + ext))
+            var sources = [logo.url].compactMap { $0.flatMap(URL.init(string:)) }
+            if let wiki = logo.wiki, let image = await wikipediaImage(wiki) { sources.append(image) }
+            for url in sources where url.scheme == "https" || url.scheme == "http" {
+                guard let (data, resp) = try? await fetch(url), (resp as? HTTPURLResponse)?.statusCode == 200,
+                      let ext = imageExtension(data, response: resp) else { continue }
+                try? data.write(to: dir.appendingPathComponent(((logoFile(logo) as NSString).lastPathComponent) + "." + ext))
+                break
+            }
         }
+    }
+
+    private static func fetch(_ url: URL) async throws -> (Data, URLResponse) {
+        var req = URLRequest(url: url, timeoutInterval: 20)
+        // Some hosts (e.g. Wikimedia) refuse requests without a user agent
+        req.setValue("PromoStudio/1.0 (macOS)", forHTTPHeaderField: "User-Agent")
+        return try await URLSession.shared.data(for: req)
+    }
+
+    /// Lead image of an English Wikipedia article: for clubs, leagues and brands, their crest or logo.
+    private static func wikipediaImage(_ title: String) async -> URL? {
+        let path = title.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: " ", with: "_")
+        guard let encoded = path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed.subtracting(["/"])),
+              let api = URL(string: "https://en.wikipedia.org/api/rest_v1/page/summary/\(encoded)"),
+              let (data, resp) = try? await fetch(api), (resp as? HTTPURLResponse)?.statusCode == 200,
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
+        let image = (json["originalimage"] as? [String: Any])?["source"] ?? (json["thumbnail"] as? [String: Any])?["source"]
+        return (image as? String).flatMap(URL.init(string:))
     }
 
     private static func imageExtension(_ data: Data, response: URLResponse) -> String? {

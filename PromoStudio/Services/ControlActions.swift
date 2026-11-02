@@ -171,6 +171,20 @@ enum ControlActions {
         case "disconnect":
             model.disconnect(try require("accountId"))
             return ok
+        // MARK: Template libraries
+        case "generateFromSkill":
+            let id = try uuid("libraryId")
+            guard let lib = model.library(id) else { throw ActionError.notFound(String(localized: "Library")) }
+            let skill = try require("skill")
+            guard lib.skills.contains(where: { $0.name == skill }) else { throw ActionError.notFound(String(localized: "Template")) }
+            let projectId = try str("projectId").map { _ in try project().id } ?? model.suggestedProject(forSkill: skill) ?? model.data.projects.first?.id
+            guard let projectId else { throw ActionError.failed(String(localized: "Add a project first")) }
+            return try created(model.generateFromSkill(libraryId: id, skill: skill, request: str("request") ?? "", projectId: projectId))
+        case "generateIdeas":
+            let id = try uuid("libraryId")
+            guard model.library(id) != nil else { throw ActionError.notFound(String(localized: "Library")) }
+            model.generateIdeas(libraryId: id, focus: str("focus") ?? "")
+            return accepted(id)
         case "dismissAlert":
             model.alert = nil
             model.notice = nil

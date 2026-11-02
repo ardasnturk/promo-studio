@@ -1,5 +1,5 @@
 import React from 'react';
-import {interpolate, useCurrentFrame} from 'remotion';
+import {Img, interpolate, staticFile, useCurrentFrame} from 'remotion';
 import {fonts} from './fonts';
 import {useEnter, useProgress} from './motion';
 
@@ -153,9 +153,21 @@ export const Badge: React.FC<{code: string; primary: string; secondary: string; 
 };
 
 /** Two-sided score / matchup board. */
+/** Real logo (a public path from props.logos) that pops in like Badge. */
+export const Logo: React.FC<{src: string; size: number; delay?: number}> = ({src, size, delay = 0}) => {
+  const s = useEnter(delay, true);
+  return (
+    <Img
+      src={staticFile(src)}
+      style={{width: size, height: size * 1.15, objectFit: 'contain', transform: `scale(${s})`, filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.45))'}}
+    />
+  );
+};
+
 export const Matchup: React.FC<{
-  home: {code: string; name: string; primary: string; secondary: string};
-  away: {code: string; name: string; primary: string; secondary: string};
+  /** `logo`: a public path from props.logos; shows the real logo instead of the Badge */
+  home: {code: string; name: string; primary: string; secondary: string; logo?: string};
+  away: {code: string; name: string; primary: string; secondary: string; logo?: string};
   center?: string;
   width: number;
   delay?: number;
@@ -163,7 +175,11 @@ export const Matchup: React.FC<{
   const s = useEnter(delay + 8, true);
   const side = (t: typeof home, d: number) => (
     <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, width: width * 0.36}}>
-      <Badge code={t.code} primary={t.primary} secondary={t.secondary} size={width * 0.26} delay={d} />
+      {t.logo ? (
+        <Logo src={t.logo} size={width * 0.26} delay={d} />
+      ) : (
+        <Badge code={t.code} primary={t.primary} secondary={t.secondary} size={width * 0.26} delay={d} />
+      )}
       <div style={{fontFamily: fonts.heading, fontWeight: 900, fontSize: width * 0.05, color: '#fff', textAlign: 'center'}}>{t.name}</div>
     </div>
   );

@@ -30,7 +30,7 @@ The full app state. The phone fetches it on first launch and on every `changed` 
   "projects": [ProjectDTO],
   "posts": [ContentPost],         // Promo Studio's Codable ContentPost, as is (+ a "media" field)
   "accounts": [InstagramAccount],
-  "libraries": [{"id", "name", "skills": [{"name", "description"}]}],
+  "libraries": [LibraryDTO],
   "jobs": {"<postId|projectId>": {"message": "...", "progress": 0.42, "log": ["last 20 lines"], "kind": "render", "startedAt": "<ISO 8601>", "estimatedEnd": "<ISO 8601>"}},
   "settings": {"loginMode", "metaAppId", "hasAppSecret", "contentLanguage", "voiceoverEnabled", "defaultTheme", "maxHashtags"},
   "languages": [{"id": "en", "label": "English"}],
@@ -39,6 +39,7 @@ The full app state. The phone fetches it on first launch and on every `changed` 
 ```
 
 - `ProjectDTO`: `{id, name, accountId, logo, analysis, assets: [{fileName, label, isFramed, language}]}`. `analysis` is Promo Studio's `ProjectAnalysis` struct (features, suggestions, brand colors). `logo` and assets are `/v1/media/...` paths.
+- `LibraryDTO` (template libraries such as Promo Templates): `{id, name, compositions, skills: [{name, description, argumentHint, suggestedProjectId}], ideas: [VideoIdea], ideaSources: [url]}`. `suggestedProjectId` is the project the skill's name points to (may be null). `ideas` is the latest trend research (`generateIdeas`), not persisted: `{title, hook, flow, why, skill, difficulty, request}`. Videos made from a library are ordinary posts with an `external` field.
 - Each post additionally has `"media": {"video": "/v1/media/posts/<id>/video.mp4" | null, "cover": "/v1/media/posts/<id>/cover.jpg" | null}`.
 
 ### `GET /v1/events` (Server-Sent Events)
@@ -91,6 +92,8 @@ JSON body. The response is `{"ok": true}`, or `202 {"ok": true, "jobId"}` for lo
 | `disconnect` | `accountId` | |
 | `refreshMetrics` | — | |
 | `dismissAlert` | — | Dismisses the alert on the Mac |
+| `generateFromSkill` | `libraryId, skill, request?, projectId?` | Claude Code runs a library's video template (skill) and renders the video. Without `projectId`, the suggested project (else the first). Returns `postId` |
+| `generateIdeas` | `libraryId, focus?` | Trend research for video ideas; results arrive in the library's `ideas` (job id = `libraryId`) |
 
 ## Connecting an account from the phone
 

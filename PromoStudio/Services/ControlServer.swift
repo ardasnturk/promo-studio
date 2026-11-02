@@ -292,7 +292,19 @@ final class ControlServer {
             "projects": projects,
             "posts": posts,
             "accounts": object(model.data.accounts),
-            "libraries": model.data.libraries.map { ["id": $0.id.uuidString, "name": $0.name, "skills": $0.skills.map { ["name": $0.name, "description": $0.description] }] },
+            "libraries": model.data.libraries.map { lib in
+                [
+                    "id": lib.id.uuidString, "name": lib.name, "compositions": lib.compositions.count,
+                    "skills": lib.skills.map { skill in
+                        [
+                            "name": skill.name, "description": skill.description, "argumentHint": skill.argumentHint,
+                            "suggestedProjectId": model.suggestedProject(forSkill: skill.name)?.uuidString ?? NSNull(),
+                        ] as [String: Any]
+                    },
+                    "ideas": model.libraryIdeas[lib.id].map { object($0.ideas) } ?? [],
+                    "ideaSources": model.libraryIdeas[lib.id]?.sources ?? [],
+                ] as [String: Any]
+            },
             "jobs": jobs,
             "alert": model.alert ?? model.notice ?? NSNull(),
             "settings": [

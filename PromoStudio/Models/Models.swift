@@ -321,7 +321,10 @@ struct Storyboard: Codable, Hashable {
 
 struct StoryLogo: Codable, Hashable {
     var name: String
-    var url: String
+    /// Direct link to the logo image, when the director found one
+    var url: String?
+    /// English Wikipedia article title; its lead image is used when there's no url or it fails
+    var wiki: String?
 }
 
 struct StoryScene: Codable, Hashable, Identifiable {

@@ -45,7 +45,8 @@ Do not change scene timings; the voiceover was generated for them. Sequence scen
 - `BarChart`: bar chart.
 - `Countdown`: countdown.
 - `Badge({code, primary, secondary})`: badge drawn from colors.
-- `Matchup({home, away})`: head-to-head board.
+- `Logo({src, size})`: a real logo from `logos` that pops in like `Badge`.
+- `Matchup({home, away})`: head-to-head board. Give a side `logo: logos[name]` to show its real logo instead of the badge.
 
 **Interface**
 - `Notification({title, body, icon})`: notification card.

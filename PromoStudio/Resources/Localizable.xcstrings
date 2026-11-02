@@ -1973,64 +1973,6 @@
         }
       }
     },
-    "Account for the “%@” project": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Konto für das Projekt „%@“"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cuenta del proyecto “%@”"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Compte du projet “%@”"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Account del progetto “%@”"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "「%@」プロジェクトのアカウント"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "‘%@’ 프로젝트의 계정"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Conta do projeto “%@”"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "“%@” projesinin hesabı"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "“%@”项目的账户"
-          }
-        }
-      }
-    },
     "Accounts added: %@.": {
       "localizations": {
         "de": {
@@ -3365,6 +3307,64 @@
         }
       }
     },
+    "Both are optional. Without a project the video isn’t about any app; without an account you can save the video and post it yourself.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beides ist optional. Ohne Projekt handelt das Video von keiner App; ohne Konto kannst du das Video speichern und selbst posten."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambos son opcionales. Sin proyecto, el vídeo no trata de ninguna app; sin cuenta, puedes guardar el vídeo y publicarlo tú."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les deux sont facultatifs. Sans projet, la vidéo ne parle d’aucune app ; sans compte, vous pouvez enregistrer la vidéo et la publier vous‑même."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entrambi sono facoltativi. Senza progetto il video non riguarda nessuna app; senza account puoi salvare il video e pubblicarlo tu."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "どちらも任意です。プロジェクトがなければアプリに関係のない動画になり、アカウントがなければ動画を保存して自分で投稿できます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "둘 다 선택 사항입니다. 프로젝트가 없으면 앱과 무관한 동영상이 되고, 계정이 없으면 동영상을 저장해 직접 게시할 수 있습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambos são opcionais. Sem projeto, o vídeo não é sobre nenhum app; sem conta, você pode salvar o vídeo e publicá-lo você mesmo."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İkisi de isteğe bağlı. Proje seçmezsen video bir uygulamayla ilgili olmaz; hesap seçmezsen videoyu kaydedip kendin paylaşabilirsin."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "两者都是可选的。不选项目，视频就与任何应用无关；不选账号，你可以保存视频后自己发布。"
+          }
+        }
+      }
+    },
     "Build": {
       "localizations": {
         "de": {
@@ -4641,6 +4641,122 @@
         }
       }
     },
+    "Choose an Instagram account for this post first.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle zuerst ein Instagram-Konto für diesen Beitrag."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Primero elige una cuenta de Instagram para esta publicación."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez d’abord un compte Instagram pour cette publication."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli prima un account Instagram per questo post."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "先にこの投稿の Instagram アカウントを選んでください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "먼저 이 게시물의 Instagram 계정을 선택하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolha primeiro uma conta do Instagram para este post."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önce bu gönderi için bir Instagram hesabı seç."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先为这条帖子选择一个 Instagram 账号。"
+          }
+        }
+      }
+    },
+    "Choose an account to publish, or save the video and post it yourself.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle ein Konto zum Veröffentlichen oder speichere das Video und poste es selbst."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige una cuenta para publicar, o guarda el vídeo y publícalo tú."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez un compte pour publier, ou enregistrez la vidéo et publiez‑la vous‑même."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli un account per pubblicare, oppure salva il video e pubblicalo tu."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "投稿するアカウントを選ぶか、動画を保存して自分で投稿してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "게시할 계정을 선택하거나 동영상을 저장해 직접 게시하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolha uma conta para publicar ou salve o vídeo e publique você mesmo."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paylaşmak için bir hesap seç ya da videoyu kaydedip kendin paylaş."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择一个账号来发布，或保存视频后自己发布。"
+          }
+        }
+      }
+    },
     "Choose the folder to download Promo Templates into (a promo-templates folder is created inside it)": {
       "localizations": {
         "de": {
@@ -4869,6 +4985,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "Claude Code"
+          }
+        }
+      }
+    },
+    "Claude Code adds a new video template to the library: a skill and a reference composition, following the library’s rules. It checks the code and renders a test frame. Afterwards the template appears in the list and on the phone. This may take several minutes.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code fügt der Bibliothek nach ihren Regeln eine neue Videovorlage hinzu: einen Skill und eine Referenz-Komposition. Es prüft den Code und rendert ein Testbild. Danach erscheint die Vorlage in der Liste und auf dem Telefon. Das kann einige Minuten dauern."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code añade a la biblioteca una nueva plantilla de vídeo siguiendo sus reglas: un skill y una composición de referencia. Revisa el código y renderiza un fotograma de prueba. Después, la plantilla aparece en la lista y en el teléfono. Puede tardar varios minutos."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code ajoute à la bibliothèque un nouveau modèle vidéo selon ses règles : un skill et une composition de référence. Il vérifie le code et rend une image de test. Le modèle apparaît ensuite dans la liste et sur le téléphone. Cela peut prendre plusieurs minutes."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code aggiunge alla libreria un nuovo modello video secondo le sue regole: uno skill e una composizione di riferimento. Controlla il codice e renderizza un fotogramma di prova. Poi il modello compare nell’elenco e sul telefono. Può richiedere diversi minuti."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code がライブラリのルールに沿って新しい動画テンプレート（スキルと参考コンポジション）を追加します。コードを確認し、テストフレームをレンダリングします。完了するとテンプレートが一覧とスマートフォンに表示されます。数分かかることがあります。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code가 라이브러리 규칙에 따라 새 동영상 템플릿(스킬과 참조 컴포지션)을 추가합니다. 코드를 확인하고 테스트 프레임을 렌더링합니다. 그 후 템플릿이 목록과 휴대폰에 표시됩니다. 몇 분 걸릴 수 있습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Claude Code adiciona à biblioteca um novo modelo de vídeo seguindo as regras dela: um skill e uma composição de referência. Ele verifica o código e renderiza um quadro de teste. Depois, o modelo aparece na lista e no celular. Isso pode levar alguns minutos."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code kütüphaneye kurallarına uygun yeni bir video kalıbı ekler: bir skill ve örnek bir kompozisyon. Kodu kontrol eder ve bir test karesi render eder. Ardından kalıp listede ve telefonda görünür. Birkaç dakika sürebilir."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code 会按照库的规则添加一个新的视频模板：一个技能和一个参考合成。它会检查代码并渲染一帧测试画面。之后模板会出现在列表和手机上。可能需要几分钟。"
           }
         }
       }
@@ -5163,6 +5337,64 @@
         }
       }
     },
+    "Claude Code is creating the template…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code erstellt die Vorlage …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code está creando la plantilla…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code crée le modèle…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code sta creando il modello…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code がテンプレートを作成中…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code가 템플릿을 만드는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Claude Code está criando o modelo…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code kalıbı oluşturuyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code 正在创建模板…"
+          }
+        }
+      }
+    },
     "Claude Code is producing the video…": {
       "localizations": {
         "de": {
@@ -5395,60 +5627,60 @@
         }
       }
     },
-    "Claude Code runs the skill in this library in the background: it writes, validates, and renders the video (this may take a few minutes). New files are added to the library folder.": {
+    "Claude Code runs the template in the library in the background: it writes, checks and renders the video. This may take a few minutes.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code führt den Skill dieser Bibliothek im Hintergrund aus: Es schreibt, prüft und rendert das Video (das kann einige Minuten dauern). Neue Dateien werden dem Bibliotheksordner hinzugefügt."
+            "value": "Claude Code führt die Vorlage im Hintergrund in der Bibliothek aus: Es schreibt, prüft und rendert das Video. Das kann ein paar Minuten dauern."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code ejecuta la skill de esta biblioteca en segundo plano: escribe, valida y renderiza el vídeo (puede tardar unos minutos). Los archivos nuevos se añaden a la carpeta de la biblioteca."
+            "value": "Claude Code ejecuta la plantilla en la biblioteca en segundo plano: escribe, revisa y renderiza el vídeo. Puede tardar unos minutos."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code exécute le skill de cette bibliothèque en arrière-plan : il écrit, valide et effectue le rendu de la vidéo (cela peut prendre quelques minutes). Les nouveaux fichiers sont ajoutés au dossier de la bibliothèque."
+            "value": "Claude Code exécute le modèle dans la bibliothèque en arrière-plan : il écrit, vérifie et rend la vidéo. Cela peut prendre quelques minutes."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code esegue la skill di questa libreria in background: scrive, convalida e renderizza il video (può richiedere qualche minuto). I nuovi file vengono aggiunti alla cartella della libreria."
+            "value": "Claude Code esegue il modello nella libreria in background: scrive, controlla e renderizza il video. Può richiedere alcuni minuti."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Codeがこのライブラリのスキルをバックグラウンドで実行し、動画の作成、検証、レンダリングを行います（数分かかる場合があります）。新しいファイルはライブラリフォルダに追加されます。"
+            "value": "Claude Code がライブラリでテンプレートをバックグラウンド実行し、動画を作成・確認・レンダリングします。数分かかることがあります。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code가 이 라이브러리의 스킬을 백그라운드에서 실행하여 동영상을 작성하고 검증하고 렌더링합니다(몇 분 정도 걸릴 수 있음). 새로운 파일은 라이브러리 폴더에 추가됩니다."
+            "value": "Claude Code가 라이브러리에서 백그라운드로 템플릿을 실행해 동영상을 작성하고 확인한 뒤 렌더링합니다. 몇 분 걸릴 수 있습니다."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "O Claude Code executa a skill desta biblioteca em segundo plano: ele escreve, valida e renderiza o vídeo (isso pode levar alguns minutos). Os novos arquivos são adicionados à pasta da biblioteca."
+            "value": "O Claude Code executa o modelo na biblioteca em segundo plano: escreve, verifica e renderiza o vídeo. Isso pode levar alguns minutos."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code bu kütüphanede skill'i arka planda çalıştırır: videoyu yazar, doğrular ve render eder (birkaç dakika sürebilir). Kütüphane klasörüne yeni dosyalar eklenir."
+            "value": "Claude Code kalıbı kütüphanede arka planda çalıştırır: videoyu yazar, kontrol eder ve render eder. Birkaç dakika sürebilir."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Claude Code 会在后台运行此库中的技能：编写、验证并渲染视频（可能需要几分钟）。新文件会添加到库文件夹中。"
+            "value": "Claude Code 会在库中后台运行该模板：编写、检查并渲染视频。可能需要几分钟。"
           }
         }
       }
@@ -5623,6 +5855,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "Claude 会将你的请求与应用的功能、品牌颜色和截屏结合起来。打开调研后，它会在网上核实最新事实并显示来源。看到脚本后，你可以在工作室中让 Claude 修改它。"
+          }
+        }
+      }
+    },
+    "Claude first writes a scene-by-scene storyboard. Nothing is rendered until you approve it.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude schreibt zuerst ein Storyboard Szene für Szene. Erst nach deiner Freigabe wird gerendert."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude escribe primero un storyboard escena por escena. No se renderiza nada hasta que lo apruebes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude écrit d’abord un storyboard scène par scène. Rien n’est rendu avant votre validation."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude scrive prima uno storyboard scena per scena. Nulla viene renderizzato finché non lo approvi."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude はまずシーンごとのストーリーボードを書きます。承認するまでレンダリングされません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude가 먼저 장면별 스토리보드를 작성합니다. 승인하기 전에는 아무것도 렌더링되지 않습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Claude primeiro escreve um storyboard cena a cena. Nada é renderizado até você aprovar."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude önce sahne sahne bir storyboard yazar. Sen onaylayana kadar hiçbir şey render edilmez."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude 会先写出逐场景的分镜。你批准之前不会渲染任何内容。"
           }
         }
       }
@@ -8179,6 +8469,64 @@
         }
       }
     },
+    "Couldn't create the template: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Vorlage konnte nicht erstellt werden: %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo crear la plantilla: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de créer le modèle : %@"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile creare il modello: %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テンプレートを作成できませんでした：%@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "템플릿을 만들 수 없음: %@"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível criar o modelo: %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalıp oluşturulamadı: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法创建模板：%@"
+          }
+        }
+      }
+    },
     "Couldn't download the update. Check your internet connection and try again.": {
       "localizations": {
         "de": {
@@ -9107,6 +9455,64 @@
         }
       }
     },
+    "Create Template": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorlage erstellen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crear plantilla"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créer le modèle"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crea modello"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テンプレートを作成"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "템플릿 만들기"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Criar Modelo"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalıbı Oluştur"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "创建模板"
+          }
+        }
+      }
+    },
     "Creating container…": {
       "localizations": {
         "de": {
@@ -9567,6 +9973,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "删除"
+          }
+        }
+      }
+    },
+    "Describe the new template": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beschreibe die neue Vorlage"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Describe la nueva plantilla"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Décrivez le nouveau modèle"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Descrivi il nuovo modello"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しいテンプレートを説明してください"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "새 템플릿을 설명하세요"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Descreva o novo modelo"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni kalıbı anlat"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "描述新模板"
           }
         }
       }
@@ -11481,6 +11945,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ 秒处的画面"
+          }
+        }
+      }
+    },
+    "Free-form video": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Freies Video"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vídeo libre"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidéo libre"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video libero"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自由形式の動画"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자유 형식 동영상"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vídeo livre"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serbest video"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自由形式视频"
           }
         }
       }
@@ -13515,6 +14037,64 @@
         }
       }
     },
+    "Instagram account": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram-Konto"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuenta de Instagram"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compte Instagram"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account Instagram"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram アカウント"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram 계정"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conta do Instagram"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram hesabı"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram 账号"
+          }
+        }
+      }
+    },
     "Instagram couldn't process the video: %@": {
       "localizations": {
         "de": {
@@ -15545,6 +16125,64 @@
         }
       }
     },
+    "Make a video from a prompt or a template, without a project. Pick a project or an Instagram account only if you want to.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstelle ein Video aus einem Prompt oder einer Vorlage, ohne Projekt. Wähle ein Projekt oder ein Instagram-Konto nur, wenn du willst."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crea un vídeo a partir de un prompt o una plantilla, sin proyecto. Elige un proyecto o una cuenta de Instagram solo si quieres."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créez une vidéo à partir d’un prompt ou d’un modèle, sans projet. Choisissez un projet ou un compte Instagram seulement si vous le souhaitez."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crea un video da un prompt o da un modello, senza progetto. Scegli un progetto o un account Instagram solo se vuoi."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プロジェクトなしで、プロンプトやテンプレートから動画を作成できます。プロジェクトや Instagram アカウントは必要なときだけ選んでください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "프로젝트 없이 프롬프트나 템플릿으로 동영상을 만드세요. 프로젝트나 Instagram 계정은 원할 때만 선택하면 됩니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crie um vídeo a partir de um prompt ou modelo, sem projeto. Escolha um projeto ou uma conta do Instagram só se quiser."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projeye bağlı olmadan bir prompt ya da kalıpla video üret. Proje veya Instagram hesabını yalnızca istersen seç."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无需项目，用提示词或模板制作视频。只有在需要时才选择项目或 Instagram 账号。"
+          }
+        }
+      }
+    },
     "Menu Bar": {
       "localizations": {
         "de": {
@@ -16299,6 +16937,122 @@
         }
       }
     },
+    "New Template…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Vorlage …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nueva plantilla…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouveau modèle…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuovo modello…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新規テンプレート…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "새 템플릿…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Novo Modelo…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni Kalıp…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新建模板…"
+          }
+        }
+      }
+    },
+    "New Video…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neues Video …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuevo vídeo…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouvelle vidéo…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuovo video…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新規動画…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "새 동영상…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Novo Vídeo…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni Video…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新建视频…"
+          }
+        }
+      }
+    },
     "New promo film": {
       "localizations": {
         "de": {
@@ -16411,6 +17165,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "新场景"
+          }
+        }
+      }
+    },
+    "New template /%@ is ready: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Vorlage /%@ ist fertig: %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La nueva plantilla /%@ está lista: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le nouveau modèle /%@ est prêt : %@"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il nuovo modello /%@ è pronto: %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しいテンプレート /%@ の準備ができました：%@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "새 템플릿 /%@ 준비 완료: %@"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O novo modelo /%@ está pronto: %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni kalıp /%@ hazır: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新模板 /%@ 已就绪：%@"
           }
         }
       }
@@ -16991,64 +17803,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "未连接 Instagram 账户。请存储视频并自行发布，或在“账户与设置”中连接账户。"
-          }
-        }
-      }
-    },
-    "No Instagram account is linked to “%@”. Choose an account on the project screen.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mit „%@“ ist kein Instagram-Konto verknüpft. Wähle ein Konto auf dem Projektbildschirm."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No hay ninguna cuenta de Instagram vinculada a “%@”. Elige una cuenta en la pantalla del proyecto."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aucun compte Instagram n’est lié à “%@”. Choisissez un compte sur l’écran du projet."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nessun account Instagram collegato a “%@”. Scegli un account nella schermata del progetto."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "「%@」にリンクされたInstagramアカウントがありません。プロジェクト画面でアカウントを選択してください。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "‘%@’에 연결된 Instagram 계정이 없습니다. 프로젝트 화면에서 계정을 선택하십시오."
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nenhuma conta do Instagram está vinculada a “%@”. Escolha uma conta na tela do projeto."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "“%@” projesine bağlı bir Instagram hesabı yok. Proje ekranından hesabını seç."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "“%@”未关联 Instagram 账户。请在项目屏幕中选择一个账户。"
           }
         }
       }
@@ -17807,6 +18561,64 @@
         }
       }
     },
+    "No videos yet": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keine Videos"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aún no hay vídeos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune vidéo pour l’instant"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessun video per ora"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "まだ動画はありません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "아직 동영상이 없습니다"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum vídeo ainda"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Henüz video yok"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "还没有视频"
+          }
+        }
+      }
+    },
     "No videos yet.": {
       "localizations": {
         "de": {
@@ -17977,6 +18789,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "无"
+          }
+        }
+      }
+    },
+    "None: Claude directs it from scratch": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine: Claude inszeniert es von Grund auf"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ninguna: Claude lo dirige desde cero"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun : Claude le réalise de zéro"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuno: Claude lo dirige da zero"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "なし：Claude がゼロから演出"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "없음: Claude가 처음부터 연출"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum: o Claude dirige do zero"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yok: Claude sıfırdan yönetsin"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无：由 Claude 从零执导"
           }
         }
       }
@@ -20069,64 +20939,6 @@
         }
       }
     },
-    "Project / account": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Projekt / Konto"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Proyecto / cuenta"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Projet / compte"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Progetto / account"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "プロジェクト / アカウント"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "프로젝트 / 계정"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Projeto / conta"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Proje / hesap"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "项目 / 账户"
-          }
-        }
-      }
-    },
     "Project Not Found": {
       "localizations": {
         "de": {
@@ -20297,6 +21109,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "项目：%@"
+          }
+        }
+      }
+    },
+    "Project’s account (@%@)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konto des Projekts (@%@)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuenta del proyecto (@%@)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compte du projet (@%@)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account del progetto (@%@)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プロジェクトのアカウント（@%@）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "프로젝트 계정(@%@)"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conta do projeto (@%@)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projenin hesabı (@%@)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "项目的账号（@%@）"
           }
         }
       }
@@ -21051,6 +21921,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "宣传片（由 Claude 执导）"
+          }
+        }
+      }
+    },
+    "Promo film for the app": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Werbefilm für die App"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vídeo promocional de la app"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Film promo pour l’app"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spot promozionale per l’app"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリのプロモ映像"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱 홍보 영상"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filme promocional do app"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulama için tanıtım filmi"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用宣传片"
           }
         }
       }
@@ -24357,6 +25285,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "正在运行 npm install（首次可能需要几分钟）…"
+          }
+        }
+      }
+    },
+    "Save": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sichern"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guardar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salva"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "저장"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salvar"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydet"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存"
           }
         }
       }
@@ -30741,6 +31727,64 @@
         }
       }
     },
+    "Videos": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videos"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vídeos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidéos"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "動画"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "동영상"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vídeos"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videolar"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "视频"
+          }
+        }
+      }
+    },
     "Videos can be published and scheduled.": {
       "localizations": {
         "de": {
@@ -30795,6 +31839,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "可以发布和定时发布视频。"
+          }
+        }
+      }
+    },
+    "Videos you make without a project appear here.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videos, die du ohne Projekt erstellst, erscheinen hier."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aquí aparecen los vídeos que haces sin proyecto."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les vidéos créées sans projet apparaissent ici."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qui compaiono i video che crei senza progetto."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プロジェクトなしで作った動画がここに表示されます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "프로젝트 없이 만든 동영상이 여기에 표시됩니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Os vídeos que você faz sem projeto aparecem aqui."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projesiz ürettiğin videolar burada görünür."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不属于任何项目的视频会显示在这里。"
           }
         }
       }
@@ -32365,6 +33467,64 @@
         }
       }
     },
+    "e.g. A wordless video where colored marbles race down a spiral track; the winner’s color is a guess for the comments.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "z. B. Ein Video ohne Worte, in dem bunte Murmeln eine Spiralbahn hinabrasen; die Siegerfarbe wird in den Kommentaren geraten."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "p. ej. Un vídeo sin palabras donde canicas de colores corren por una pista en espiral; el color ganador se adivina en los comentarios."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "p. ex. Une vidéo sans paroles où des billes colorées dévalent une piste en spirale ; la couleur gagnante se devine en commentaire."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ad es. Un video senza parole in cui biglie colorate corrono lungo una pista a spirale; il colore vincente si indovina nei commenti."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "例：色とりどりのビー玉がらせんコースを競走する、言葉のない動画。勝つ色をコメントで予想してもらう。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "예: 색색의 구슬이 나선형 트랙을 달리는 무언 동영상. 우승 색을 댓글로 맞히게 합니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ex.: Um vídeo sem falas em que bolinhas coloridas correm por uma pista em espiral; a cor vencedora é palpite nos comentários."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ör. Renkli bilyelerin spiral bir pistte yarıştığı sözsüz bir video; kazanan rengi yorumlarda tahmin ettir."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "例如：一段无旁白的视频，彩色弹珠沿螺旋轨道竞速；让观众在评论里猜获胜的颜色。"
+          }
+        }
+      }
+    },
     "e.g. Make the hook more aggressive, show the lineup prediction in scene 3, stress that it’s free in the CTA": {
       "localizations": {
         "de": {
@@ -32419,6 +33579,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "例如：让开场钩子更有冲击力，在场景 3 中展示阵容预测，在行动号召中强调它是免费的"
+          }
+        }
+      }
+    },
+    "e.g. Tonight’s derby in 20 seconds: the key stats, the lineups and a prediction.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "z. B. Das Derby heute Abend in 20 Sekunden: die wichtigsten Zahlen, die Aufstellungen und ein Tipp."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "p. ej. El derbi de esta noche en 20 segundos: las estadísticas clave, las alineaciones y un pronóstico."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "p. ex. Le derby de ce soir en 20 secondes : les stats clés, les compositions et un pronostic."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ad es. Il derby di stasera in 20 secondi: le statistiche chiave, le formazioni e un pronostico."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "例：今夜のダービーを20秒で。主なスタッツ、スタメン、予想。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "예: 오늘 밤 더비를 20초로: 핵심 통계, 라인업, 예측."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ex.: O clássico de hoje à noite em 20 segundos: as estatísticas principais, as escalações e um palpite."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ör. Bu akşamki derbi 20 saniyede: önemli istatistikler, kadrolar ve bir tahmin."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "例如：20 秒看懂今晚的德比：关键数据、首发阵容和一个预测。"
           }
         }
       }
@@ -33347,64 +34565,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "“%@”"
-          }
-        }
-      }
-    },
-    "“%@” has no linked Instagram account. Choose one from the header of the project screen.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "„%@“ hat kein verknüpftes Instagram-Konto. Wähle eines in der Kopfzeile des Projektbildschirms."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "“%@” no tiene ninguna cuenta de Instagram vinculada. Elige una en la cabecera de la pantalla del proyecto."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "“%@” n’a aucun compte Instagram lié. Choisissez-en un dans l’en-tête de l’écran du projet."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "“%@” non ha un account Instagram collegato. Scegline uno dall’intestazione della schermata del progetto."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "「%@」にはリンクされたInstagramアカウントがありません。プロジェクト画面のヘッダから選択してください。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "‘%@’에 연결된 Instagram 계정이 없습니다. 프로젝트 화면의 헤더에서 계정을 선택하십시오."
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "“%@” não tem uma conta do Instagram vinculada. Escolha uma no cabeçalho da tela do projeto."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "“%@” projesine bağlı bir Instagram hesabı yok. Proje ekranının başlığından hesap seç."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "“%@”没有关联的 Instagram 账户。请从项目屏幕的标题栏中选择一个。"
           }
         }
       }

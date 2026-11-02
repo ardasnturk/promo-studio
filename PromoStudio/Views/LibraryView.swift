@@ -7,7 +7,8 @@ struct LibraryView: View {
     var onRemoved: () -> Void
 
     @State private var focus = ""
-    @State private var generate: GenerateRequest?
+    @State private var generate: NewVideoRequest?
+    @State private var newTemplate = false
     @State private var openPost: UUID?
 
     var body: some View {
@@ -38,8 +39,9 @@ struct LibraryView: View {
             .brandWindowBackground()
             .navigationTitle(lib.name)
             .sheet(item: $generate) { req in
-                GenerateSheet(request: req) { openPost = $0 }
+                NewVideoSheet(request: req) { openPost = $0 }
             }
+            .sheet(isPresented: $newTemplate) { NewTemplateSheet(libraryId: libraryId) }
             .sheet(item: Binding(get: { openPost.map(PostRef.init) }, set: { openPost = $0?.id })) { ref in
                 PostEditorView(postId: ref.id) { newId in openPost = newId }
             }
@@ -89,7 +91,7 @@ struct LibraryView: View {
                             }
                             Spacer()
                             Button("Generate This") {
-                                generate = GenerateRequest(libraryId: libraryId, skill: idea.skill, request: idea.request)
+                                generate = NewVideoRequest(template: TemplateRef(libraryId: libraryId, skill: idea.skill), prompt: idea.request)
                             }
                             .buttonStyle(.borderedProminent)
                         }
@@ -109,7 +111,12 @@ struct LibraryView: View {
 
     private func skillsSection(_ lib: TemplateLibrary) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Video Templates").font(.title2.bold())
+            HStack {
+                Text("Video Templates").font(.title2.bold())
+                Spacer()
+                Button { newTemplate = true } label: { Label("New Template…", systemImage: "wand.and.stars") }
+                    .disabled(model.jobs[libraryId] != nil)
+            }
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 300), spacing: 12)], spacing: 12) {
                 ForEach(lib.skills) { skill in
                     Card {
@@ -119,7 +126,7 @@ struct LibraryView: View {
                             if !skill.argumentHint.isEmpty {
                                 Text(skill.argumentHint).font(.caption).foregroundStyle(.tertiary)
                             }
-                            Button("Generate…") { generate = GenerateRequest(libraryId: libraryId, skill: skill.name, request: "") }
+                            Button("Generate…") { generate = NewVideoRequest(template: TemplateRef(libraryId: libraryId, skill: skill.name)) }
                                 .buttonStyle(.borderedProminent)
                                 .controlSize(.small)
                         }
@@ -162,36 +169,23 @@ struct LibraryView: View {
     }
 }
 
-struct GenerateRequest: Identifiable {
-    let id = UUID()
-    let libraryId: UUID
-    let skill: String
-    let request: String
-}
-
-struct GenerateSheet: View {
+/// A new video template for the library, described in the user's own words; Claude Code writes the skill and its reference video.
+struct NewTemplateSheet: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
-    let request: GenerateRequest
-    var onCreated: (UUID) -> Void
-
-    @State private var text = ""
-    @State private var projectId: UUID?
+    let libraryId: UUID
+    @State private var prompt = ""
 
     var body: some View {
-        let skill = model.library(request.libraryId)?.skills.first { $0.name == request.skill }
         Form {
-            Section("/\(request.skill)") {
-                if let skill { Text(skill.description).font(.callout).foregroundStyle(.secondary) }
-                TextField(skill?.argumentHint.isEmpty == false ? skill!.argumentHint : String(localized: "Request"), text: $text, axis: .vertical)
-                    .lineLimit(3...8)
-            }
             Section {
-                Picker("Project / account", selection: $projectId) {
-                    ForEach(model.data.projects) { Text($0.name).tag(Optional($0.id)) }
-                }
+                TextField("Template", text: $prompt, prompt: Text("e.g. A wordless video where colored marbles race down a spiral track; the winner’s color is a guess for the comments."), axis: .vertical)
+                    .labelsHidden()
+                    .lineLimit(5...12)
+            } header: {
+                Text("Describe the new template")
             } footer: {
-                Text("Claude Code runs the skill in this library in the background: it writes, validates, and renders the video (this may take a few minutes). New files are added to the library folder.")
+                Text("Claude Code adds a new video template to the library: a skill and a reference composition, following the library’s rules. It checks the code and renders a test frame. Afterwards the template appears in the list and on the phone. This may take several minutes.")
             }
         }
         .formStyle(.grouped)
@@ -199,18 +193,12 @@ struct GenerateSheet: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
-                Button("Generate with Claude Code") {
-                    guard let projectId,
-                          let id = model.generateFromSkill(libraryId: request.libraryId, skill: request.skill, request: text, projectId: projectId) else { return }
+                Button("Create Template") {
+                    model.createTemplate(libraryId: libraryId, prompt: prompt.trimmingCharacters(in: .whitespacesAndNewlines))
                     dismiss()
-                    onCreated(id)
                 }
-                .disabled(projectId == nil)
+                .disabled(prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
-        }
-        .onAppear {
-            text = request.request
-            projectId = model.suggestedProject(forSkill: request.skill) ?? model.data.projects.first?.id
         }
     }
 }

@@ -442,6 +442,47 @@ struct ContentAI {
         )
     }
 
+    struct TemplateResult: Decodable {
+        var status: String
+        var skill: String?
+        var compositionId: String?
+        var summary: String
+        var notes: String
+    }
+
+    /// Adds a new video template (skill + reference composition) to the library from the user's description.
+    func createTemplate(_ description: String, library: TemplateLibrary, onActivity: @escaping @Sendable (String) -> Void) async throws -> TemplateResult {
+        let prompt = """
+        Add a NEW video template to this template library, as the user describes it:
+
+        \(description)
+
+        This session was started in the background by Promo Studio (a macOS promo video studio). You cannot ask the user questions; where things are ambiguous, make the most reasonable choice and say so in notes.
+        - First read CLAUDE.md (its Shared Rules apply) and two or three existing skills in .claude/skills/ to learn their structure, tone and frontmatter (name, description with "Use when…" trigger phrases, argument-hint).
+        - Create the skill: .claude/skills/<name>/SKILL.md, where <name> is a new, short kebab-case name in the style of the existing ones (e.g. video-<topic>) that doesn't exist yet. The skill must work on its own for any later request: variants, the mechanic, the hook and CTA, how to verify the result, and where to render the MP4, like the existing skills.
+        - Create its reference composition as a new folder under \(library.remotionDir)/src/ (don't modify existing compositions) and register it in \(library.remotionDir)/src/Root.tsx. Point the skill's "Reference" line at it.
+        - Add the skill to the skills table in CLAUDE.md (and to PROMPTS.md if the other skills are there).
+        - Verify: the TypeScript compiles (npx tsc --noEmit in \(library.remotionDir)) and one still renders (npx remotion still <id> --frame=60 --port=3100 into /tmp). Do not render the whole video, do not open Studio, do not commit.
+        - Return status "done", skill (the skill's name), compositionId, summary (what the template makes and its variants, short) and notes. If it couldn't be completed, status "failed" with the reason in notes.
+        """
+        return try await claude.structured(
+            TemplateResult.self,
+            prompt: prompt,
+            schema: [
+                "type": "object",
+                "properties": [
+                    "status": ["type": "string", "enum": ["done", "failed"]],
+                    "skill": Self.str, "compositionId": Self.str, "summary": Self.str, "notes": Self.str,
+                ],
+                "required": ["status", "summary", "notes"],
+            ],
+            cwd: library.rootURL,
+            tools: Self.libraryTools,
+            maxTurns: 250,
+            onActivity: onActivity
+        )
+    }
+
     struct IdeasResult: Decodable {
         var ideas: [VideoIdea]
         var sources: [String]
@@ -545,7 +586,10 @@ struct ContentAI {
     }
 
     static func compact(_ a: ProjectAnalysis) -> String {
-        """
+        if a.isStandalone {
+            return "None: this is a standalone video, not tied to any app, brand or product. Do not invent an app, logo, store badge or download CTA; end with a call to comment, save or share instead."
+        }
+        return """
         Name: \(a.appName) — \(a.tagline)
         Summary: \(a.summary)
         Category: \(a.category) · Target audience: \(a.targetAudience) · Tone: \(a.tone)

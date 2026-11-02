@@ -66,6 +66,17 @@ struct ProjectAnalysis: Codable, Hashable {
     var storeURL: String?
 }
 
+extension ProjectAnalysis {
+    /// Stand-in for a standalone video: no app, no features, neutral colors
+    static let standalone = ProjectAnalysis(
+        appName: "", tagline: "", summary: "", category: "", targetAudience: "", platforms: [], tone: "",
+        brandColors: BrandColors(primary: "#7C3AED", accent: "#F472B6", background: "#0B0B14"),
+        features: [], suggestions: [], screenshots: []
+    )
+
+    var isStandalone: Bool { appName.isEmpty }
+}
+
 struct BrandColors: Codable, Hashable {
     var primary: String
     var accent: String
@@ -152,7 +163,8 @@ enum SocialPlatform: String, Codable, CaseIterable {
 
 struct ContentPost: Codable, Identifiable, Hashable {
     var id = UUID()
-    var projectId: UUID
+    /// nil: a standalone video that belongs to no project (prompt or template video)
+    var projectId: UUID?
     var platform: SocialPlatform = .instagram
     var featureId: String?
     var title: String

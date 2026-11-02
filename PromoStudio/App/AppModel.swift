@@ -131,7 +131,20 @@ final class AppModel {
 
     // MARK: Access helpers
 
-    func project(_ id: UUID) -> AppProject? { data.projects.first { $0.id == id } }
+    func project(_ id: UUID?) -> AppProject? { id.flatMap { id in data.projects.first { $0.id == id } } }
+
+    /// What a post's AI work is based on: its project, or for a standalone video a neutral stand-in
+    /// (no app, no brand, no screenshots) so the same storyboard/code/caption pipeline runs without a project.
+    func context(for post: ContentPost) -> (project: AppProject, analysis: ProjectAnalysis)? {
+        guard let id = post.projectId else { return (Self.standaloneProject, ProjectAnalysis.standalone) }
+        guard let project = project(id), let analysis = project.analysis else { return nil }
+        return (project, analysis)
+    }
+
+    static let standaloneProject = AppProject(
+        id: UUID(uuidString: "00000000-0000-0000-0000-00000000057A")!, name: "Promo Studio",
+        folderPath: Paths.ensure(Paths.root.appendingPathComponent("standalone")).path, analysis: .standalone
+    )
     func post(_ id: UUID) -> ContentPost? { data.posts.first { $0.id == id } }
     func posts(for projectId: UUID) -> [ContentPost] {
         data.posts.filter { $0.projectId == projectId }.sorted { $0.createdAt > $1.createdAt }
@@ -323,7 +336,7 @@ final class AppModel {
     func reviseScript(_ postId: UUID, instruction: String, renderAfter: Bool) {
         let instruction = instruction.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !instruction.isEmpty, let post = post(postId), post.external == nil,
-              let project = project(post.projectId), let analysis = project.analysis else { return }
+              let (project, analysis) = context(for: post) else { return }
         let ai = contentAI(language: post.language)
         let message = post.brief?.research == true ? String(localized: "Claude is revising (researching if needed)…") : String(localized: "Claude is revising the script…")
         run(postId, message, kind: .revise) { [weak self] in
@@ -370,13 +383,20 @@ final class AppModel {
     // MARK: Claude-directed videos
 
     /// Has Claude write a storyboard from the user's request; the video is coded with `produce` once the storyboard is approved.
-    func createDirectedPost(projectId: UUID, feature: AppFeature?, seconds: Int, language: String?, brief: PostBrief, voiceover: Bool, style: DirectedStyle = .promo) -> UUID? {
-        guard let analysis = project(projectId)?.analysis else { return nil }
+    /// `projectId` nil: a standalone video (always free-form, no app). `accountId`: Instagram account for this post, overriding the project's.
+    func createDirectedPost(projectId: UUID?, feature: AppFeature?, seconds: Int, language: String?, brief: PostBrief, voiceover: Bool, style: DirectedStyle = .promo, accountId: String? = nil) -> UUID? {
         let language = ContentLanguage.find(language ?? settings.contentLanguage)
         let ai = contentAI(language: language.id)
-        updateProject(projectId) { AssetService.ensureLocalizedAssets(language: language.id, in: &$0) }
-        guard let project = self.project(projectId) else { return nil }
-        let kit = brandKit(for: project, copyAssets: false)
+        if let projectId { updateProject(projectId) { AssetService.ensureLocalizedAssets(language: language.id, in: &$0) } }
+        let project: AppProject, analysis: ProjectAnalysis
+        if let projectId {
+            guard let p = self.project(projectId), let a = p.analysis else { return nil }
+            (project, analysis) = (p, a)
+        } else {
+            (project, analysis) = (Self.standaloneProject, .standalone)
+        }
+        let style = projectId == nil ? .freeform : style
+        let kit = projectId == nil ? nil : brandKit(for: project, copyAssets: false)
         var post = ContentPost(
             projectId: projectId,
             featureId: feature?.id,
@@ -391,6 +411,7 @@ final class AppModel {
             )
         )
         post.brief = brief
+        post.accountId = accountId
         post.directed = DirectedVideo(storyboard: Storyboard(concept: "", scenes: []), compositionId: StudioService.compositionId(for: post.id))
         post.directed?.style = style
         data.posts.append(post)
@@ -408,7 +429,7 @@ final class AppModel {
     /// Generates the voiceover from the approved storyboard, has Claude code the video and renders it.
     /// `voiceover: false` produces without voiceover (e.g. when the Gemini quota is used up); scene durations come from the storyboard.
     func produce(_ postId: UUID, voiceover: Bool = true) {
-        guard let post = post(postId), post.directed != nil, let project = project(post.projectId), let analysis = project.analysis else { return }
+        guard let post = post(postId), post.directed != nil, let (project, analysis) = context(for: post) else { return }
         let ai = contentAI(language: post.language)
         updatePost(postId) { $0.directed?.muted = !voiceover; $0.lastError = nil }
         run(postId, String(localized: "Preparing video…"), kind: .produce) { [weak self] in
@@ -442,7 +463,7 @@ final class AppModel {
     func reviseDirected(_ postId: UUID, instruction: String, renderAfter: Bool) {
         let instruction = instruction.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !instruction.isEmpty, let post = post(postId), let directed = post.directed,
-              let project = project(post.projectId), let analysis = project.analysis else { return }
+              let (project, analysis) = context(for: post) else { return }
         let ai = contentAI(language: post.language)
         let produced = directed.produced && StudioService.hasCode(directed.compositionId)
         run(postId, produced ? String(localized: "Claude is revising the storyboard and video…") : String(localized: "Claude is revising the storyboard…"), kind: .revise) { [weak self] in
@@ -518,7 +539,7 @@ final class AppModel {
     }
 
     private func performRender(_ postId: UUID) async throws {
-        guard var post = post(postId), let project = project(post.projectId) else { return }
+        guard var post = post(postId), let project = project(post.projectId) ?? (post.projectId == nil ? Self.standaloneProject : nil) else { return }
         updatePost(postId) { $0.status = .rendering; $0.lastError = nil }
         report(postId, String(localized: "Preparing render…"), progress: 0)
         do {
@@ -593,7 +614,7 @@ final class AppModel {
     }
 
     func rewriteCaption(_ postId: UUID, instruction: String) {
-        guard let post = post(postId), let project = project(post.projectId), let analysis = project.analysis else { return }
+        guard let post = post(postId), let (project, analysis) = context(for: post) else { return }
         let ai = contentAI(language: post.language)
         run(postId, String(localized: "Claude is rewriting the caption…"), kind: .caption) { [weak self] in
             let r = try await ai.rewriteCaption(post: post, analysis: analysis, instruction: instruction, cwd: project.folderURL)
@@ -607,10 +628,10 @@ final class AppModel {
 
     /// Creates and renders a copy of the post adapted to another language. Returns the new post's ID.
     func translatePost(_ postId: UUID, to code: String) -> UUID? {
-        guard let source = post(postId), source.external == nil, let analysis = project(source.projectId)?.analysis else { return nil }
+        guard let source = post(postId), source.external == nil, let (_, analysis) = context(for: source) else { return nil }
         let language = ContentLanguage.find(code)
-        updateProject(source.projectId) { AssetService.ensureLocalizedAssets(language: language.id, in: &$0) }
-        guard let project = project(source.projectId) else { return nil }
+        if let id = source.projectId { updateProject(id) { AssetService.ensureLocalizedAssets(language: language.id, in: &$0) } }
+        guard let (project, _) = context(for: source) else { return nil }
         var copy = source
         copy.id = UUID()
         copy.language = language.id
@@ -696,6 +717,24 @@ final class AppModel {
         do { data.libraries[i] = try LibraryService.scan(lib.rootURL, existing: lib) } catch { alert = error.localizedDescription }
     }
 
+    /// Claude Code adds a new video template to the library from the user's description, then the library is rescanned.
+    func createTemplate(libraryId: UUID, prompt: String) {
+        guard let lib = library(libraryId), !prompt.isEmpty else { return }
+        let ai = contentAI()
+        run(libraryId, String(localized: "Claude Code is creating the template…"), kind: .generate) { [weak self] in
+            try await LibraryService.ensureInstalled(lib) { line in Task { @MainActor in self?.report(libraryId, line) } }
+            let r = try await ai.createTemplate(prompt, library: lib) { activity in
+                Task { @MainActor in self?.report(libraryId, activity) }
+            }
+            self?.rescanLibrary(libraryId)
+            guard r.status == "done", let skill = r.skill, !skill.isEmpty else {
+                self?.alert = String(localized: "Couldn't create the template: \(r.notes)")
+                return
+            }
+            self?.notice = String(localized: "New template /\(skill) is ready: \(r.summary)")
+        }
+    }
+
     func removeLibrary(_ id: UUID) {
         data.libraries.removeAll { $0.id == id }
     }
@@ -708,15 +747,19 @@ final class AppModel {
 
     /// Produces a video with a library skill: Claude Code writes and renders the video inside the library,
     /// then Promo Studio imports it and has the caption written. Returns the new post's ID.
-    func generateFromSkill(libraryId: UUID, skill: String, request: String, projectId: UUID) -> UUID? {
-        guard let lib = library(libraryId), let project = project(projectId) else { return nil }
+    /// `projectId` nil: the video belongs to no project. `accountId`: Instagram account for this post, overriding the project's.
+    func generateFromSkill(libraryId: UUID, skill: String, request: String, projectId: UUID?, accountId: String? = nil) -> UUID? {
+        guard let lib = library(libraryId) else { return nil }
+        let project = self.project(projectId)
+        if projectId != nil, project == nil { return nil }
         let language = ContentLanguage.find(settings.contentLanguage)
         var post = ContentPost(
             projectId: projectId,
             title: request.isEmpty ? skill : String(request.prefix(70)),
             language: language.id,
-            spec: VideoSpec(theme: settings.defaultTheme, brand: .init(appName: project.name, primary: "#000000", accent: "#FFFFFF", background: "#000000"), scenes: [], lang: language.id)
+            spec: VideoSpec(theme: settings.defaultTheme, brand: .init(appName: project?.name ?? "", primary: "#000000", accent: "#FFFFFF", background: "#000000"), scenes: [], lang: language.id)
         )
+        post.accountId = accountId
         post.external = ExternalVideo(libraryId: libraryId, skill: skill, request: request, summary: "")
         post.status = .rendering
         data.posts.append(post)
@@ -876,11 +919,20 @@ final class AppModel {
         updatePost(postId) { $0.scheduledAt = nil; $0.status = .ready }
     }
 
-    /// Posts to the Instagram account linked to the post's project. Projects without an account are not posted.
+    /// Instagram account a post goes to: the one chosen for the post, else its project's.
+    func account(for post: ContentPost) -> InstagramAccount? {
+        account(post.accountId) ?? project(post.projectId).flatMap { account(for: $0) }
+    }
+
+    func setAccount(_ accountId: String?, forPost postId: UUID) {
+        updatePost(postId) { $0.accountId = accountId }
+    }
+
+    /// Posts to the post's Instagram account (its own, else its project's). Without one nothing is posted.
     func queuePublish(_ postId: UUID) {
-        guard let post = post(postId), let video = videoURL(post), let project = project(post.projectId) else { return }
-        guard let account = account(for: project), let token = token(for: account.userId) else {
-            let message = String(localized: "No Instagram account is linked to “\(project.name)”. Choose an account on the project screen.")
+        guard let post = post(postId), let video = videoURL(post) else { return }
+        guard let account = account(for: post), let token = token(for: account.userId) else {
+            let message = String(localized: "Choose an Instagram account for this post first.")
             if post.status == .scheduled {
                 updatePost(postId) { $0.status = .failed; $0.lastError = message }
             } else {

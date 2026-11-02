@@ -42,6 +42,16 @@ enum ControlActions {
             guard let p = model.post(id) else { throw ActionError.notFound(String(localized: "Post")) }
             return p
         }
+        func optionalProject() throws -> AppProject? {
+            guard let raw = str("projectId"), !raw.isEmpty else { return nil }
+            return try project()
+        }
+        /// Instagram account chosen for a post (nil: the project's)
+        func accountId() throws -> String? {
+            guard let id = str("accountId"), !id.isEmpty else { return nil }
+            guard model.account(id) != nil else { throw ActionError.notFound(String(localized: "Account")) }
+            return id
+        }
         func analysis(_ p: AppProject) throws -> ProjectAnalysis {
             guard let a = p.analysis else { throw ActionError.failed(String(localized: "The project hasn't been analyzed yet; analyze it first.")) }
             return a
@@ -66,9 +76,10 @@ enum ControlActions {
             let theme = str("theme").flatMap(VideoTheme.init(rawValue:)) ?? model.settings.defaultTheme
             return try created(model.createPost(projectId: p.id, feature: a.features.first { $0.id == str("featureId") }, suggestion: nil, theme: theme, seconds: int("seconds", 15), notes: "", autoRender: false, language: str("language"), brief: brief))
         case "createDirectedPost":
-            let p = try project(), a = try analysis(p)
+            // Without projectId: a standalone video (always free-form)
+            let p = try optionalProject(), a = try p.map(analysis)
             let brief = PostBrief(prompt: try require("prompt"), research: bool("research", true))
-            return try created(model.createDirectedPost(projectId: p.id, feature: a.features.first { $0.id == str("featureId") }, seconds: int("seconds", 20), language: str("language"), brief: brief, voiceover: bool("voiceover", model.settings.voiceoverEnabled), style: str("style").flatMap(DirectedStyle.init(rawValue:)) ?? .promo))
+            return try created(model.createDirectedPost(projectId: p?.id, feature: a?.features.first { $0.id == str("featureId") }, seconds: int("seconds", 20), language: str("language"), brief: brief, voiceover: bool("voiceover", model.settings.voiceoverEnabled), style: str("style").flatMap(DirectedStyle.init(rawValue:)) ?? .promo, accountId: try accountId()))
         case "produce":
             let p = try post()
             guard p.directed != nil else { throw ActionError.failed(String(localized: "This post isn't a promo film")) }
@@ -99,6 +110,10 @@ enum ControlActions {
                 if let v = body["hashtags"] as? [String] { q.hashtags = v.map { $0.replacingOccurrences(of: "#", with: "") }.filter { !$0.isEmpty } }
                 if let v = body["altText"] as? String { q.altText = v }
                 if let board { q.directed?.storyboard = board }
+            }
+            // accountId: an account's userId, or "" / null for the project's account
+            if body.keys.contains("accountId") {
+                model.setAccount(try accountId(), forPost: p.id)
             }
             return ok
         case "rewriteCaption":
@@ -177,13 +192,16 @@ enum ControlActions {
             guard let lib = model.library(id) else { throw ActionError.notFound(String(localized: "Library")) }
             let skill = try require("skill")
             guard lib.skills.contains(where: { $0.name == skill }) else { throw ActionError.notFound(String(localized: "Template")) }
-            let projectId = try str("projectId").map { _ in try project().id } ?? model.suggestedProject(forSkill: skill) ?? model.data.projects.first?.id
-            guard let projectId else { throw ActionError.failed(String(localized: "Add a project first")) }
-            return try created(model.generateFromSkill(libraryId: id, skill: skill, request: str("request") ?? "", projectId: projectId))
+            return try created(model.generateFromSkill(libraryId: id, skill: skill, request: str("request") ?? "", projectId: try optionalProject()?.id, accountId: try accountId()))
         case "generateIdeas":
             let id = try uuid("libraryId")
             guard model.library(id) != nil else { throw ActionError.notFound(String(localized: "Library")) }
             model.generateIdeas(libraryId: id, focus: str("focus") ?? "")
+            return accepted(id)
+        case "createTemplate":
+            let id = try uuid("libraryId")
+            guard model.library(id) != nil else { throw ActionError.notFound(String(localized: "Library")) }
+            model.createTemplate(libraryId: id, prompt: try require("prompt"))
             return accepted(id)
         case "dismissAlert":
             model.alert = nil

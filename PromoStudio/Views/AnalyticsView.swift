@@ -7,7 +7,7 @@ struct AnalyticsView: View {
     var body: some View {
         let accountId = selectedAccount ?? model.data.accounts.first?.userId
         let published = model.data.posts.filter { post in
-            post.status == .published && (post.accountId ?? model.project(post.projectId)?.accountId) == accountId
+            post.status == .published && model.account(for: post)?.userId == accountId
         }
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {

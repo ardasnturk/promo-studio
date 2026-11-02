@@ -6,6 +6,22 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Videos without a project. A new Videos section makes a video from a prompt
+  (directed by Claude, free-form, about no app) or from a library template.
+  A project and an Instagram account are both optional and independent.
+- Each post can have its own Instagram account, overriding its project's.
+- Save Video… in every post's Publish tab, with or without an account.
+- New Template…: Claude Code adds a new video template (skill + reference
+  composition) to a library from a description.
+- Control API: `createDirectedPost` and `generateFromSkill` take an optional
+  `projectId` and an `accountId`; `updatePost` takes `accountId`; new
+  `createTemplate` action. A post's `projectId` may be null.
+
+### Changed
+- Library templates no longer need a project; they used to default to the
+  project the skill's name pointed to.
+
 ## [1.2.4] — 2026-11-02
 
 ### Fixed

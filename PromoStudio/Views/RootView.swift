@@ -4,6 +4,7 @@ enum SidebarItem: Hashable {
     case project(UUID)
     case library(UUID)
     case queue
+    case videos
     case analytics
 }
 
@@ -32,6 +33,8 @@ struct RootView: View {
                 Section("Planning") {
                     sidebarLabel("Posting Calendar", symbol: "calendar", colors: [Brand.indigo, Brand.violet])
                         .tag(SidebarItem.queue)
+                    sidebarLabel("Videos", symbol: "film.stack", colors: [Brand.violet, Brand.pink])
+                        .tag(SidebarItem.videos)
                     sidebarLabel("Analytics", symbol: "chart.bar.xaxis", colors: [.green, Brand.teal])
                         .tag(SidebarItem.analytics)
                 }
@@ -103,6 +106,8 @@ struct RootView: View {
                 ProjectDetailView(projectId: id).id(id)
             case let .library(id):
                 LibraryView(libraryId: id) { selection = .queue }.id(id)
+            case .videos:
+                VideosView()
             case .analytics:
                 AnalyticsView()
             default:

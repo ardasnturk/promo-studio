@@ -14,7 +14,7 @@ struct PostEditorView: View {
     @State private var rewriteInstruction = ""
 
     var body: some View {
-        if let post = model.post(postId), let project = model.project(post.projectId) {
+        if let post = model.post(postId), let project = post.projectId == nil ? AppModel.standaloneProject : model.project(post.projectId) {
             VStack(spacing: 0) {
                 HStack {
                     Text(post.title).font(.title2.bold()).lineLimit(1)
@@ -180,7 +180,7 @@ struct PostEditorView: View {
     }
 
     private func hasAccount(_ post: ContentPost) -> Bool {
-        model.project(post.projectId).flatMap { model.account(for: $0) } != nil
+        model.account(for: post) != nil
     }
 
     private func canRender(_ post: ContentPost) -> Bool {
@@ -267,21 +267,34 @@ struct PostEditorView: View {
     private func publishPanel(_ post: ContentPost) -> some View {
         Form {
             Section("Account") {
-                let project = model.project(post.projectId)
+                let projectAccount = model.project(post.projectId).flatMap { model.account(for: $0) }
                 if let published = model.account(post.accountId), post.status == .published {
                     LabeledContent("Published to", value: "@\(published.username)")
-                } else if let project, let a = model.account(for: project) {
-                    LabeledContent("Instagram", value: "@\(a.username)")
-                    Text("Account for the “\(project.name)” project").font(.caption).foregroundStyle(.secondary)
                 } else if !model.isConnected {
                     Text("No Instagram account is connected. Save the video and post it yourself, or connect an account in Account & Settings.")
                         .foregroundStyle(.secondary)
-                    if let url = model.videoURL(post) {
-                        Button("Save Video…") { saveVideo(url, title: post.title) }
-                    }
                 } else {
-                    Label("“\(project?.name ?? "")” has no linked Instagram account. Choose one from the header of the project screen.", systemImage: "exclamationmark.triangle")
-                        .foregroundStyle(.orange)
+                    Picker("Instagram", selection: Binding(
+                        get: { post.accountId ?? "" },
+                        set: { model.setAccount($0.isEmpty ? nil : $0, forPost: postId) }
+                    )) {
+                        if let projectAccount {
+                            Text("Project’s account (@\(projectAccount.username))").tag("")
+                        } else {
+                            Text("None").tag("")
+                        }
+                        ForEach(model.data.accounts) { Text(verbatim: "@\($0.username)").tag($0.userId) }
+                    }
+                    .disabled(post.status == .scheduled || post.status == .publishing)
+                    if model.account(for: post) == nil {
+                        Text("Choose an account to publish, or save the video and post it yourself.")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+            }
+            if let url = model.videoURL(post) {
+                Section("Save") {
+                    Button { saveVideo(url, title: post.title) } label: { Label("Save Video…", systemImage: "square.and.arrow.down") }
                 }
             }
             if let video = model.videoURL(post) {

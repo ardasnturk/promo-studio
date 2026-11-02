@@ -40,6 +40,7 @@ The full app state. The phone fetches it on first launch and on every `changed` 
 
 - `ProjectDTO`: `{id, name, accountId, logo, analysis, assets: [{fileName, label, isFramed, language}]}`. `analysis` is Promo Studio's `ProjectAnalysis` struct (features, suggestions, brand colors). `logo` and assets are `/v1/media/...` paths.
 - `LibraryDTO` (template libraries such as Promo Templates): `{id, name, compositions, skills: [{name, description, argumentHint, suggestedProjectId}], ideas: [VideoIdea], ideaSources: [url]}`. `suggestedProjectId` is the project the skill's name points to (may be null). `ideas` is the latest trend research (`generateIdeas`), not persisted: `{title, hook, flow, why, skill, difficulty, request}`. Videos made from a library are ordinary posts with an `external` field.
+- A post's `projectId` is null for a standalone video. `accountId` is the Instagram account chosen for the post (it overrides the project's) and, once published, the account it went to.
 - Each post additionally has `"media": {"video": "/v1/media/posts/<id>/video.mp4" | null, "cover": "/v1/media/posts/<id>/cover.jpg" | null}`.
 
 ### `GET /v1/events` (Server-Sent Events)
@@ -70,11 +71,11 @@ JSON body. The response is `{"ok": true}`, or `202 {"ok": true, "jobId"}` for lo
 |---|---|---|
 | `createPost` | `projectId, featureId?, suggestionId?, theme?, seconds, notes?, autoRender?, language?` | Quick template video |
 | `createScriptPost` | `projectId, prompt, research, featureId?, theme?, seconds, language?` | Quick template from a custom request (auto-render off) |
-| `createDirectedPost` | `projectId, prompt, research, featureId?, seconds, language?, voiceover, style?` | Claude-directed video, storyboard first. `style`: `promo` (default, app promo film) or `freeform` (any video the prompt describes; the app only appears if asked) |
+| `createDirectedPost` | `projectId?, prompt, research, featureId?, seconds, language?, voiceover, style?, accountId?` | Claude-directed video, storyboard first. `style`: `promo` (default, app promo film) or `freeform` (any video the prompt describes; the app only appears if asked). Without `projectId` a standalone video (always free-form, about no app) |
 | `produce` | `postId, voiceover` | Approve the storyboard, have the video coded and render it |
 | `revise` | `postId, instruction, renderAfter` | Storyboard (+ code) for a promo film, script for a template |
 | `restoreRevision` | `postId, revisionId` | |
-| `updatePost` | `postId, title?, caption?, hashtags?, altText?, storyboard?` | Manual edit; `storyboard` is a full `Storyboard` object |
+| `updatePost` | `postId, title?, caption?, hashtags?, altText?, storyboard?, accountId?` | Manual edit; `storyboard` is a full `Storyboard` object. `accountId`: the Instagram account for this post (""/null: the project's) |
 | `rewriteCaption` | `postId, instruction` | |
 | `render` | `postId` | |
 | `setCover` | `postId, sec` | Use the frame at `sec` seconds as the cover; it is also sent to Instagram as the Reel's cover. Posts carry the current one as `coverSec` |
@@ -92,7 +93,8 @@ JSON body. The response is `{"ok": true}`, or `202 {"ok": true, "jobId"}` for lo
 | `disconnect` | `accountId` | |
 | `refreshMetrics` | — | |
 | `dismissAlert` | — | Dismisses the alert on the Mac |
-| `generateFromSkill` | `libraryId, skill, request?, projectId?` | Claude Code runs a library's video template (skill) and renders the video. Without `projectId`, the suggested project (else the first). Returns `postId` |
+| `generateFromSkill` | `libraryId, skill, request?, projectId?, accountId?` | Claude Code runs a library's video template (skill) and renders the video. Without `projectId` the video belongs to no project. Returns `postId` |
+| `createTemplate` | `libraryId, prompt` | Claude Code adds a new video template (skill + reference composition) to the library from the description, then rescans it (job id = `libraryId`) |
 | `generateIdeas` | `libraryId, focus?` | Trend research for video ideas; results arrive in the library's `ideas` (job id = `libraryId`) |
 
 ## Connecting an account from the phone

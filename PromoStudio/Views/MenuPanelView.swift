@@ -220,7 +220,7 @@ struct MenuPanelView: View {
                                 Text(post.title).font(.callout).lineLimit(1)
                                 HStack(spacing: 4) {
                                     Text(post.scheduledAt?.formatted(.relative(presentation: .named)) ?? "")
-                                    if let account = model.project(post.projectId).flatMap({ model.account(for: $0) }) {
+                                    if let account = model.account(for: post) {
                                         Text(verbatim: "· @\(account.username)")
                                     }
                                 }

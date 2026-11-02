@@ -6,6 +6,14 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.2.3] — 2026-11-02
+
+### Fixed
+- Splitting the voiceover cut 0.04 s before each line's first loud syllable and
+  then trimmed again at -45 dB, so soft opening consonants were lost. Lines now
+  start 0.2 s earlier (never inside the previous line), keep a 0.15 s tail and
+  only trim silence below -60 dB. Clips cut the old way are voiced again.
+
 ## [1.2.2] — 2026-11-02
 
 ### Added

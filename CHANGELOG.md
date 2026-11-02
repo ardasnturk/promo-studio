@@ -6,6 +6,8 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.3.1] — 2026-11-03
+
 ### Added
 - Instagram login without a Facebook Page for new Meta apps: Meta replaced the
   older "API setup with Instagram login" with "Instagram API with Unified

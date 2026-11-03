@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Promo Studio — Videos and posts for your apps, directed by Claude Code</title>
+  <meta name="description" content="Promo Studio is a free, open-source Mac app that turns your app's code into Reels, stories, posts and carousels. Claude Code writes the storyboard and codes every video with Remotion; you approve and post to Instagram.">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0c1124" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f5f6fb" media="(prefers-color-scheme: light)">
+  <meta property="og:title" content="Promo Studio">
+  <meta property="og:description" content="Reels, stories, posts and carousels for your apps, written and directed by Claude Code.">
+  <meta property="og:image" content="https://promo.ardasnturk.com/assets/icon-512.png">
+  <meta property="og:url" content="https://promo.ardasnturk.com/">
+  <link rel="canonical" href="https://promo.ardasnturk.com/">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    // Apply the saved theme before first paint to avoid a flash.
+    try { var t = localStorage.getItem('ps-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+  <header class="nav" id="top">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top" aria-label="Promo Studio">
+        <img src="assets/favicon.png" width="30" height="30" alt="">
+        <span>Promo Studio</span>
+      </a>
+      <nav class="nav-links" aria-label="Sections" data-i18n-attr="aria-label:nav.label">
+        <a href="#formats" data-i18n="nav.formats">Formats</a>
+        <a href="#how" data-i18n="nav.how">How it works</a>
+        <a href="#features" data-i18n="nav.features">Features</a>
+        <a href="#templates" data-i18n="nav.templates">Templates</a>
+        <a href="#faq" data-i18n="nav.faq">FAQ</a>
+      </nav>
+      <div class="nav-tools">
+        <div class="lang" role="group" aria-label="Language" data-i18n-attr="aria-label:lang.label">
+          <button type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-lang="tr" aria-pressed="false">TR</button>
+        </div>
+        <button type="button" class="icon-btn" id="theme-toggle" aria-label="Switch theme" data-i18n-attr="aria-label:theme.toggle">
+          <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg>
+        </button>
+        <a class="btn btn-small btn-primary nav-cta" href="#download" data-i18n="nav.download">Download</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="pill" data-i18n="hero.new">New in 1.5</span> <span data-i18n="hero.newText">Stories, posts and carousels</span></p>
+          <h1 data-i18n="hero.title">Promo videos for your apps, <span class="grad-text">directed by Claude Code.</span></h1>
+          <p class="lead" data-i18n="hero.lead">Promo Studio reads your app's source code, writes a storyboard from your prompt and has <b>Claude Code</b> build every scene in <b>Remotion</b>. You approve it, and it posts the result to <b>Instagram</b> as a Reel, a story, a photo or a carousel.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="https://github.com/ardasnturk/promo-studio/releases/latest">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="i-apple"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.5 2.8-1.3z"/></svg>
+              <span data-i18n="hero.cta">Download for Mac</span>
+            </a>
+            <a class="btn btn-ghost" href="https://github.com/ardasnturk/promo-studio" data-i18n="hero.github">View on GitHub</a>
+          </div>
+          <ul class="hero-facts">
+            <li data-i18n="hero.fact1">Free and open source</li>
+            <li data-i18n="hero.fact2">Runs on your Mac</li>
+            <li data-i18n="hero.fact3">No server, no account</li>
+            <li data-i18n="hero.fact4">10 languages</li>
+          </ul>
+        </div>
+
+        <div class="hero-art" aria-hidden="true">
+          <div class="phone phone-back"><video src="assets/dice.mp4" poster="assets/dice.jpg" muted loop playsinline preload="none"></video></div>
+          <div class="phone phone-front"><video src="assets/chat.mp4" poster="assets/chat.jpg" muted loop playsinline preload="none"></video></div>
+          <div class="phone phone-side"><video src="assets/colorwar.mp4" poster="assets/colorwar.jpg" muted loop playsinline preload="none"></video></div>
+          <div class="spark"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Formats -->
+    <section class="section" id="formats">
+      <div class="wrap">
+        <p class="kicker" data-i18n="formats.kicker">Every format</p>
+        <h2 data-i18n="formats.title">One prompt, wherever it goes on Instagram.</h2>
+        <p class="section-lead" data-i18n="formats.lead">Choose a video or an image when you start, then pick where it's shared. Promo Studio sizes the design for it and posts through Instagram's official API, right away or on a schedule.</p>
+        <div class="formats">
+          <article class="format">
+            <div class="format-art art-reel"><span class="tag">9:16</span><span class="play"></span></div>
+            <h3 data-i18n="formats.reel">Reels</h3>
+            <p data-i18n="formats.reelText">Vertical videos with kinetic type, voiceover, music and sound effects, a cover frame you choose, and a caption written for search.</p>
+          </article>
+          <article class="format">
+            <div class="format-art art-story"><span class="tag">24h</span><span class="bars"><i></i><i></i><i></i></span></div>
+            <h3 data-i18n="formats.story">Stories</h3>
+            <p data-i18n="formats.storyText">Any video or picture as a story. A carousel goes out as one story per slide.</p>
+          </article>
+          <article class="format">
+            <div class="format-art art-post"><span class="tag">4:5</span></div>
+            <h3 data-i18n="formats.post">Photo posts</h3>
+            <p data-i18n="formats.postText">A single picture designed like a poster: portrait 4:5, square or 9:16, built in code and rendered as a sharp JPEG.</p>
+          </article>
+          <article class="format">
+            <div class="format-art art-carousel"><span class="tag">1/5</span><span class="cards"><i></i><i></i><i></i></span></div>
+            <h3 data-i18n="formats.carousel">Carousels</h3>
+            <p data-i18n="formats.carouselText">Two to ten slides in one visual system: a hook, one idea per slide, a closing call to action.</p>
+          </article>
+        </div>
+        <p class="note" data-i18n="formats.note">Instagram fetches pictures from a public address. While one is published, Promo Studio opens a temporary Cloudflare link (cloudflared, no account) for those files only and closes it right after.</p>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section section-alt" id="how">
+      <div class="wrap">
+        <p class="kicker" data-i18n="how.kicker">How it works</p>
+        <h2 data-i18n="how.title">From your code to a finished post in four steps.</h2>
+        <ol class="steps">
+          <li>
+            <span class="num">1</span>
+            <h3 data-i18n="how.s1">It reads your project</h3>
+            <p data-i18n="how.s1Text">Point it at your app's project folder, whatever it's written in. Claude Code finds the app's features, brand colors and screenshots, and can capture new screens in the iOS Simulator.</p>
+          </li>
+          <li>
+            <span class="num">2</span>
+            <h3 data-i18n="how.s2">You describe the video</h3>
+            <p data-i18n="how.s2Text">Write what you want, or add your own images. Claude researches current facts on the web when needed and writes a scene-by-scene storyboard with its sources.</p>
+          </li>
+          <li>
+            <span class="num">3</span>
+            <h3 data-i18n="how.s3">Claude codes it</h3>
+            <p data-i18n="how.s3Text">After you approve the storyboard, Claude writes a custom Remotion composition, renders stills to check its own work and fixes what doesn't look right. Revise it in plain words.</p>
+          </li>
+          <li>
+            <span class="num">4</span>
+            <h3 data-i18n="how.s4">Render and post</h3>
+            <p data-i18n="how.s4Text">The Mac renders the video or image. Post it now, schedule it, or save it, then follow views and reach in the app.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="features">
+      <div class="wrap">
+        <p class="kicker" data-i18n="features.kicker">Features</p>
+        <h2 data-i18n="features.title">A whole studio in your menu bar.</h2>
+        <div class="grid">
+          <article class="card">
+            <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.5v5l4.5-2.5z"/></svg></div>
+            <h3 data-i18n="features.f1">Directed films</h3>
+            <p data-i18n="features.f1Text">Every video is its own Remotion code: counters, phone shots, matchups, charts and transitions, from a kit made for short vertical video.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5"/><path d="M17 4.5l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9z"/></svg></div>
+            <h3 data-i18n="features.f2">Real photos and logos</h3>
+            <p data-i18n="features.f2Text">It finds real club crests and photos of real people on the web and cuts them out. With Codex on your ChatGPT plan it can change an expression or pose, at no extra cost.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9.5" cy="9.5" r="1.8"/><path d="M5 17l4.5-4.5 3.5 3.5 2.5-2.5L20 18"/></svg></div>
+            <h3 data-i18n="features.f3">Your own images</h3>
+            <p data-i18n="features.f3Text">Add photos from your Mac or phone. Claude looks at them, builds the post around them and can place the cut-out subject over a new background.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3"/></svg></div>
+            <h3 data-i18n="features.f4">Research with sources</h3>
+            <p data-i18n="features.f4Text">Dates, line-ups and prices are checked with web search before they go on screen, and the sources stay with the post.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
+            <h3 data-i18n="features.f5">Voiceover and music</h3>
+            <p data-i18n="features.f5Text">Optional Gemini text-to-speech fitted to each scene, a royalty-free beat and sound effects timed to the motion.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.5 3.5 5.3 3.5 8.5s-1 6-3.5 8.5c-2.5-2.5-3.5-5.3-3.5-8.5s1-6 3.5-8.5z"/></svg></div>
+            <h3 data-i18n="features.f6">Ten languages</h3>
+            <p data-i18n="features.f6Text">Videos, captions and the app itself in English, Türkçe, Deutsch, Español, Français, Italiano, Português, 日本語, 한국어 and 简体中文.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M12 3.5l9 15.5H3z"/><path d="M12 10v4M12 16.5v.5"/></svg></div>
+            <h3 data-i18n="features.f7">Errors you can act on</h3>
+            <p data-i18n="features.f7Text">When a step fails, it says what happened in plain words and offers the fix as a button: try again, let Claude repair the code, reconnect an account.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></div>
+            <h3 data-i18n="features.f8">From your iPhone</h3>
+            <p data-i18n="features.f8Text">With <a href="https://rcode.ardasnturk.com">Remote Code</a>, create, approve and post from your phone while the Mac does the work.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Promo Templates -->
+    <section class="section section-alt" id="templates">
+      <div class="wrap templates">
+        <div class="templates-copy">
+          <div class="templates-head">
+            <img src="assets/templates-icon.png" width="56" height="56" alt="">
+            <p class="kicker" data-i18n="templates.kicker">Promo Templates</p>
+          </div>
+          <h2 data-i18n="templates.title">Videos made from code, and the skills that make new ones.</h2>
+          <p class="section-lead" data-i18n="templates.lead">Promo Templates is the open-source template library of Promo Studio: physics loops, puzzles solved by real solvers, wordless machines, relaxing exercises and chat stories, all written as React components. Every kind of video is also a Claude Code skill: describe one, and Claude codes, checks and renders it.</p>
+          <ul class="checks">
+            <li data-i18n="templates.c1">15 skills, from /video-physics to /video-ideas for trend research</li>
+            <li data-i18n="templates.c2">Same seed, same video, in the Studio and in the render</li>
+            <li data-i18n="templates.c3">Promo Studio installs it, keeps it up to date and posts the videos</li>
+          </ul>
+          <a class="btn btn-ghost" href="https://github.com/ardasnturk/promo-templates" data-i18n="templates.cta">Promo Templates on GitHub</a>
+        </div>
+        <div class="reel-wall" aria-label="Videos made with Promo Templates" data-i18n-attr="aria-label:templates.wall">
+          <div class="mini"><video src="assets/jelly.mp4" poster="assets/jelly.jpg" muted loop playsinline preload="none"></video></div>
+          <div class="mini"><video src="assets/fill.mp4" poster="assets/fill.jpg" muted loop playsinline preload="none"></video></div>
+          <div class="mini"><video src="assets/breath.mp4" poster="assets/breath.jpg" muted loop playsinline preload="none"></video></div>
+          <div class="mini"><video src="assets/weight.mp4" poster="assets/weight.jpg" muted loop playsinline preload="none"></video></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy -->
+    <section class="section" id="privacy">
+      <div class="wrap privacy">
+        <div>
+          <p class="kicker" data-i18n="privacy.kicker">Yours</p>
+          <h2 data-i18n="privacy.title">Your code, keys and videos stay on your Mac.</h2>
+        </div>
+        <ul class="privacy-list">
+          <li><b data-i18n="privacy.p1">Your own Claude Code.</b> <span data-i18n="privacy.p1Text">Promo Studio drives the claude CLI signed in with your account; there is no Promo Studio server or account.</span></li>
+          <li><b data-i18n="privacy.p2">Secrets in the Keychain.</b> <span data-i18n="privacy.p2Text">Instagram tokens, the Meta app secret and the Gemini key live in your login keychain.</span></li>
+          <li><b data-i18n="privacy.p3">No telemetry.</b> <span data-i18n="privacy.p3Text">Nothing is collected about you or what you make. The code is MIT-licensed on GitHub.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Download -->
+    <section class="section section-alt" id="download">
+      <div class="wrap download">
+        <img src="assets/icon-512.png" width="112" height="112" alt="" class="dl-icon">
+        <h2 data-i18n="download.title">Get Promo Studio</h2>
+        <p class="section-lead" data-i18n="download.lead">For macOS 15 Sequoia or later. Install it with Homebrew, or download the signed app.</p>
+        <div class="code-row">
+          <code id="brew">brew tap ardasnturk/promo-studio https://github.com/ardasnturk/promo-studio &amp;&amp; brew install --cask promo-studio</code>
+          <button type="button" class="btn btn-small btn-ghost" id="copy" data-i18n="download.copy">Copy</button>
+        </div>
+        <div class="cta-row center">
+          <a class="btn btn-primary" href="https://github.com/ardasnturk/promo-studio/releases/latest" data-i18n="download.dmg">Download the .dmg</a>
+          <a class="btn btn-ghost" href="https://github.com/ardasnturk/promo-studio/blob/main/docs/SETUP.md" data-i18n="download.setup">Setup guide</a>
+        </div>
+        <p class="note" data-i18n="download.needs">It needs Claude Code (signed in) and Node.js 20 or later. On first launch, a checklist shows what's missing and installs the Remotion video engine. Gemini, Instagram, Codex and cloudflared are optional.</p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <div class="wrap faq">
+        <p class="kicker" data-i18n="faq.kicker">FAQ</p>
+        <h2 data-i18n="faq.title">Questions</h2>
+        <details>
+          <summary data-i18n="faq.q1">What does it cost?</summary>
+          <p data-i18n="faq.a1">Promo Studio is free. It uses the Claude Code plan you already have. Voiceover uses your own Gemini API key, and photo edits use Codex on your ChatGPT plan; both are optional.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q2">Which Instagram accounts can it post to?</summary>
+          <p data-i18n="faq.a2">Business and Creator accounts, through Instagram's official API, with Instagram Login (no Facebook Page needed) or Facebook Login. Meta may limit stories to Business accounts.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q3">Do I need a Mac app project?</summary>
+          <p data-i18n="faq.a3">No. Projects make promo films about an app, but you can also make standalone videos and images from a prompt: news, stories, explainers, match previews.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q4">Why does it need cloudflared?</summary>
+          <p data-i18n="faq.a4">Videos are uploaded directly, but Instagram downloads pictures from a web address. cloudflared opens a temporary, random trycloudflare.com link for just those files while they are published. It needs no Cloudflare account and nothing is stored online.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q5">Can I use the videos elsewhere?</summary>
+          <p data-i18n="faq.a5">Yes. Save any video as an MP4 or any picture as a JPEG and post it to TikTok, YouTube Shorts or anywhere else.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div class="footer-brand">
+        <img src="assets/favicon.png" width="24" height="24" alt="">
+        <span>Promo Studio</span>
+      </div>
+      <nav class="footer-links" aria-label="Links" data-i18n-attr="aria-label:footer.links">
+        <a href="https://github.com/ardasnturk/promo-studio">GitHub</a>
+        <a href="https://github.com/ardasnturk/promo-templates">Promo Templates</a>
+        <a href="https://rcode.ardasnturk.com">Remote Code</a>
+        <a href="https://github.com/ardasnturk/promo-studio/blob/main/CHANGELOG.md" data-i18n="footer.changes">Changelog</a>
+      </nav>
+      <p class="disclaimer" data-i18n="footer.disclaimer">An independent open-source project, not affiliated with, endorsed by or sponsored by Anthropic, Remotion, Google, OpenAI, Cloudflare or Meta.</p>
+    </div>
+  </footer>
+
+  <script src="i18n.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

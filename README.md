@@ -11,7 +11,7 @@
   <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-green"></a>
 </p>
 
-<p align="center"><b>English</b> · <a href="README.tr.md">Türkçe</a></p>
+<p align="center"><a href="https://promo.ardasnturk.com">Website</a> · <b>English</b> · <a href="README.tr.md">Türkçe</a></p>
 
 > **Promo Studio works with Claude Code, Remotion, Gemini and Instagram.** It is
 > an independent open-source project and is **not affiliated with, endorsed by

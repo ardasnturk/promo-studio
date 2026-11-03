@@ -11,7 +11,7 @@
   <a href="LICENSE"><img alt="MIT Lisansı" src="https://img.shields.io/badge/license-MIT-green"></a>
 </p>
 
-<p align="center"><a href="README.md">English</a> · <b>Türkçe</b></p>
+<p align="center"><a href="https://promo.ardasnturk.com">Web sitesi</a> · <a href="README.md">English</a> · <b>Türkçe</b></p>
 
 > **Promo Studio; Claude Code, Remotion, Gemini ve Instagram ile çalışır.**
 > Bağımsız, açık kaynak bir projedir; **Anthropic, Remotion, Google ya da Meta

@@ -19,6 +19,8 @@ cask "promo-studio" do
   end
 
   depends_on macos: ">= :sequoia"
+  # Opens the temporary public link Instagram fetches photo posts from
+  depends_on formula: "cloudflared"
 
   app "Promo Studio.app"
 

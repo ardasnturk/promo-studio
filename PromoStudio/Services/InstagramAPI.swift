@@ -271,7 +271,9 @@ struct InstagramAPI {
         return lines.joined(separator: "\n\n")
     }
 
-    // MARK: Reels posting (resumable upload — the video doesn't need to be at a public URL)
+    // MARK: Posting
+    // Videos go up with the resumable upload (the file doesn't need a public URL); Instagram fetches pictures from
+    // `image_url`, so those must be reachable on the web while the container is made (see PublicLink).
 
     func publishReel(
         userId: String,
@@ -289,10 +291,61 @@ struct InstagramAPI {
         ]
         if let coverOffsetMs { params["thumb_offset"] = String(coverOffsetMs) }
         let container = try await post("\(userId)/media", params)
-        guard let containerId = container["id"] as? String else { throw InstagramError.api(String(localized: "No container ID")) }
+        try await upload(videoURL, to: container, onStatus: onStatus)
+        return try await finish(container, userId: userId, onStatus: onStatus)
+    }
 
+    /// A story from a video file or from pictures at public URLs (one story each). Returns the last story.
+    func publishStory(
+        userId: String,
+        videoURL: URL? = nil,
+        imageURLs: [URL] = [],
+        onStatus: @Sendable (String) -> Void = { _ in }
+    ) async throws -> (mediaId: String, permalink: String?) {
+        if let videoURL {
+            onStatus(String(localized: "Creating container…"))
+            let container = try await post("\(userId)/media", ["media_type": "STORIES", "upload_type": "resumable"])
+            try await upload(videoURL, to: container, onStatus: onStatus)
+            return try await finish(container, userId: userId, onStatus: onStatus)
+        }
+        var last: (mediaId: String, permalink: String?)?
+        for (i, url) in imageURLs.enumerated() {
+            onStatus(imageURLs.count > 1 ? String(localized: "Sending story \(i + 1) of \(imageURLs.count)…") : String(localized: "Creating container…"))
+            let container = try await post("\(userId)/media", ["media_type": "STORIES", "image_url": url.absoluteString])
+            last = try await finish(container, userId: userId, onStatus: onStatus)
+        }
+        guard let last else { throw InstagramError.api(String(localized: "No media ID")) }
+        return last
+    }
+
+    /// A photo post, or a carousel when there are 2–10 pictures (they must all have the same aspect ratio).
+    func publishPhotos(
+        userId: String,
+        imageURLs: [URL],
+        caption: String,
+        onStatus: @Sendable (String) -> Void = { _ in }
+    ) async throws -> (mediaId: String, permalink: String?) {
+        onStatus(String(localized: "Creating container…"))
+        guard imageURLs.count > 1 else {
+            let container = try await post("\(userId)/media", ["image_url": imageURLs.first?.absoluteString ?? "", "caption": caption])
+            return try await finish(container, userId: userId, onStatus: onStatus)
+        }
+        var children: [String] = []
+        for (i, url) in imageURLs.prefix(10).enumerated() {
+            onStatus(String(localized: "Sending slide \(i + 1) of \(min(imageURLs.count, 10))…"))
+            let item = try await post("\(userId)/media", ["image_url": url.absoluteString, "is_carousel_item": "true"])
+            guard let id = item["id"] as? String else { throw InstagramError.api(String(localized: "No container ID")) }
+            try await waitUntilReady(id)
+            children.append(id)
+        }
+        let container = try await post("\(userId)/media", ["media_type": "CAROUSEL", "children": children.joined(separator: ","), "caption": caption])
+        return try await finish(container, userId: userId, onStatus: onStatus)
+    }
+
+    private func upload(_ file: URL, to container: [String: Any], onStatus: @Sendable (String) -> Void) async throws {
+        guard let containerId = container["id"] as? String else { throw InstagramError.api(String(localized: "No container ID")) }
         onStatus(String(localized: "Uploading video…"))
-        let data = try Data(contentsOf: videoURL)
+        let data = try Data(contentsOf: file)
         let uploadURL = (container["uri"] as? String).flatMap(URL.init(string:))
             ?? URL(string: "https://rupload.facebook.com/ig-api-upload/\(graphVersion)/\(containerId)")!
         var up = URLRequest(url: uploadURL)
@@ -305,23 +358,33 @@ struct InstagramAPI {
         if let http = upResp as? HTTPURLResponse, http.statusCode >= 300 {
             throw InstagramError.api(String(localized: "Upload error (\(http.statusCode)): \(String(decoding: upData, as: UTF8.self))"))
         }
-
         onStatus(String(localized: "Instagram is processing the video…"))
+    }
+
+    /// Waits for the container to be processed, publishes it and reads its link.
+    private func finish(_ container: [String: Any], userId: String, onStatus: @Sendable (String) -> Void) async throws -> (mediaId: String, permalink: String?) {
+        guard let containerId = container["id"] as? String else { throw InstagramError.api(String(localized: "No container ID")) }
+        try await waitUntilReady(containerId)
+        onStatus(String(localized: "Publishing…"))
+        let published = try await post("\(userId)/media_publish", ["creation_id": containerId])
+        guard let mediaId = published["id"] as? String else { throw InstagramError.api(String(localized: "No media ID")) }
+        let info = try? await get(mediaId, ["fields": "permalink"])
+        return (mediaId, info?["permalink"] as? String)
+    }
+
+    private func waitUntilReady(_ containerId: String) async throws {
         let deadline = Date().addingTimeInterval(600)
+        var delay = 1.0
         while Date() < deadline {
-            try await Task.sleep(for: .seconds(5))
             let s = try await get(containerId, ["fields": "status_code,status"])
             switch s["status_code"] as? String {
-            case "FINISHED":
-                onStatus(String(localized: "Publishing…"))
-                let published = try await post("\(userId)/media_publish", ["creation_id": containerId])
-                guard let mediaId = published["id"] as? String else { throw InstagramError.api(String(localized: "No media ID")) }
-                let info = try? await get(mediaId, ["fields": "permalink"])
-                return (mediaId, info?["permalink"] as? String)
+            case "FINISHED", "PUBLISHED":
+                return
             case "ERROR", "EXPIRED":
                 throw InstagramError.processingFailed(s["status"] as? String ?? "bilinmeyen")
             default:
-                continue
+                try await Task.sleep(for: .seconds(delay))
+                delay = min(delay * 2, 5)
             }
         }
         throw InstagramError.timeout
@@ -329,8 +392,22 @@ struct InstagramAPI {
 
     // MARK: Insights
 
-    func mediaMetrics(_ mediaId: String) async throws -> PostMetrics {
+    func mediaMetrics(_ mediaId: String, story: Bool = false) async throws -> PostMetrics {
         var m = PostMetrics()
+        if story {
+            // Stories have no likes, comments or saves
+            let insights = try await get("\(mediaId)/insights", ["metric": "views,reach,shares"])
+            for item in insights["data"] as? [[String: Any]] ?? [] {
+                let value = (item["values"] as? [[String: Any]])?.first?["value"] as? Int
+                switch item["name"] as? String {
+                case "views": m.views = value
+                case "reach": m.reach = value
+                case "shares": m.shares = value
+                default: break
+                }
+            }
+            return m
+        }
         if let basic = try? await get(mediaId, ["fields": "like_count,comments_count"]) {
             m.likes = basic["like_count"] as? Int
             m.comments = basic["comments_count"] as? Int

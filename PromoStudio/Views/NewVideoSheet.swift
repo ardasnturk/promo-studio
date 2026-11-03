@@ -32,6 +32,7 @@ struct NewVideoSheet: View {
     @State private var research = true
     @State private var format = PostFormat.video
     @State private var size = ImageSize.portrait
+    @State private var slides = 1
     /// Images for Claude to look at and use
     @State private var images: [URL] = []
     @State private var pickingImages = false
@@ -124,6 +125,9 @@ struct NewVideoSheet: View {
                     Picker("Size", selection: $size) {
                         ForEach(ImageSize.allCases, id: \.self) { Text($0.label).tag($0) }
                     }
+                    Stepper(value: $slides, in: 1...10) {
+                        slides == 1 ? Text("Single image") : Text("Carousel: \(slides) slides")
+                    }
                     Picker("Language", selection: $language) {
                         ForEach(ContentLanguage.all) { Text($0.label).tag($0.id) }
                     }
@@ -187,7 +191,7 @@ struct NewVideoSheet: View {
                 projectId: projectId, feature: nil, seconds: seconds, language: language,
                 brief: PostBrief(prompt: request, research: research), voiceover: voiceover && format == .video,
                 style: promo ? .promo : .freeform, accountId: account,
-                image: format == .image ? size : nil, uploads: uploads
+                image: format == .image ? size : nil, slides: slides, uploads: uploads
             )
         }
         guard let id else { return }

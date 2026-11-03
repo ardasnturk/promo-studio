@@ -294,7 +294,8 @@ final class ControlServer {
                 let photos = StudioService.personPhotos(post, person)
                 return ["name": person.name, "original": media(photos.original?.photo), "edited": media(photos.edited?.photo)]
             }
-            d["media"] = ["video": media(post.videoFile), "cover": media(post.coverFile), "image": media(post.imageFile), "people": people]
+            d["media"] = ["video": media(post.videoFile), "cover": media(post.coverFile), "image": media(post.imageFile), "slides": post.imageFiles.map(media), "people": people]
+            d["canPostToFeed"] = post.canPostToFeed
             return d
         }
         var jobs: [String: Any] = [:]
@@ -336,6 +337,7 @@ final class ControlServer {
                 "contentLanguage": s.contentLanguage, "voiceoverEnabled": s.voiceoverEnabled,
                 "defaultTheme": s.defaultTheme.rawValue, "maxHashtags": s.maxHashtags,
                 "editPhotos": s.editPhotosWithCodex && CodexImage.isInstalled,
+                "canPostPictures": PublicLink.isInstalled,
             ],
             "languages": ContentLanguage.all.map { ["id": $0.id, "label": $0.label] },
             "themes": VideoTheme.allCases.map { ["id": $0.rawValue, "label": $0.label] },

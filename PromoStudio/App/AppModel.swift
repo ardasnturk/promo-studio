@@ -480,7 +480,7 @@ final class AppModel {
     /// Has Claude write a storyboard from the user's request; the video is coded with `produce` once the storyboard is approved.
     /// `projectId` nil: a standalone video (always free-form, no app). `accountId`: Instagram account for this post, overriding the project's.
     /// `image`: an image post of that size instead of a video. `uploads`: images the user added for Claude to look at and use.
-    func createDirectedPost(projectId: UUID?, feature: AppFeature?, seconds: Int, language: String?, brief: PostBrief, voiceover: Bool, style: DirectedStyle = .promo, accountId: String? = nil, image: ImageSize? = nil, uploads: [Data] = []) -> UUID? {
+    func createDirectedPost(projectId: UUID?, feature: AppFeature?, seconds: Int, language: String?, brief: PostBrief, voiceover: Bool, style: DirectedStyle = .promo, accountId: String? = nil, image: ImageSize? = nil, slides: Int = 1, uploads: [Data] = []) -> UUID? {
         let language = ContentLanguage.find(language ?? settings.contentLanguage)
         if let projectId { updateProject(projectId) { AssetService.ensureLocalizedAssets(language: language.id, in: &$0) } }
         let project: AppProject, analysis: ProjectAnalysis
@@ -514,6 +514,8 @@ final class AppModel {
         if let image {
             post.format = .image
             post.directed?.size = image
+            post.directed?.slides = slides > 1 ? min(slides, 10) : nil
+            if image == .story { post.placement = .story }
         }
         data.posts.append(post)
         writeStoryboard(post.id, project: project, analysis: analysis, feature: feature, kit: kit, newUploads: uploads)
@@ -527,7 +529,7 @@ final class AppModel {
         let language = ContentLanguage.find(post.language)
         let ai = contentAI(language: language.id)
         let seconds = directed.targetSeconds ?? 20, voiceover = directed.muted != true, style = directed.style ?? .promo
-        let image = post.isImage ? directed.size ?? .portrait : nil
+        let image = post.isImage ? directed.size ?? .portrait : nil, slides = directed.slides ?? 1
         run(postId, brief.research ? String(localized: "Claude is researching and writing the storyboard…") : String(localized: "Claude is writing the storyboard…"), kind: .storyboard) { [weak self] in
             guard let self else { return }
             if !newUploads.isEmpty {
@@ -541,7 +543,7 @@ final class AppModel {
             guard let post = self.post(postId) else { return }
             let uploads = StudioService.uploadFiles(post).map { Paths.post(postId).appendingPathComponent($0.1) }
             if !uploads.isEmpty { self.report(postId, String(localized: "Claude is looking at your images…")) }
-            let result = try await ai.writeStoryboard(project: project, languageCode: language.id, analysis: analysis, feature: feature, brief: brief, targetSeconds: seconds, voiceover: voiceover, style: style, brandKit: kit, uploads: uploads, image: image) { activity in
+            let result = try await ai.writeStoryboard(project: project, languageCode: language.id, analysis: analysis, feature: feature, brief: brief, targetSeconds: seconds, voiceover: voiceover, style: style, brandKit: kit, uploads: uploads, image: image, slides: slides) { activity in
                 Task { @MainActor in self.report(postId, activity) }
             }
             self.updatePost(postId) { $0.applyStoryboard(result) }
@@ -738,10 +740,11 @@ final class AppModel {
             let result: (video: String, cover: String, coverSec: Double)
             if post.isImage {
                 try await prepareDirectedAssets(&post, project: project)
-                let image = try await StudioService.renderImage(post: post, onProgress: progress)
+                let images = try await StudioService.renderImage(post: post, onProgress: progress)
                 updatePost(postId) {
-                    $0.imageFile = image
-                    $0.coverFile = image
+                    $0.imageFile = images.first
+                    $0.slideFiles = images.count > 1 ? images : nil
+                    $0.coverFile = images.first
                     $0.status = .ready
                 }
                 renderedAt[postId] = Date()
@@ -1143,13 +1146,19 @@ final class AppModel {
         updatePost(postId) { $0.accountId = accountId }
     }
 
+    /// Where the post goes when shared or scheduled
+    func setPlacement(_ placement: PostPlacement, forPost postId: UUID) {
+        updatePost(postId) { $0.placement = placement == .feed ? nil : placement }
+    }
+
     /// Posts to the post's Instagram account (its own, else its project's). Without one nothing is posted.
+    /// A video goes up as a Reel or a story; pictures (a photo, a carousel, picture stories) through a temporary public link.
     func queuePublish(_ postId: UUID) {
-        if post(postId)?.isImage == true {
-            alert = String(localized: "Instagram’s API can publish a picture only from a public web address, which Promo Studio doesn’t have. Save the image and post it from Instagram.")
-            return
-        }
-        guard let post = post(postId), let video = videoURL(post) else { return }
+        guard let post = post(postId) else { return }
+        let folder = Paths.post(post.id)
+        let images = post.imageFiles.map { folder.appendingPathComponent($0) }
+        let video = videoURL(post)
+        guard post.isImage ? !images.isEmpty : video != nil else { return }
         guard let account = account(for: post), let token = token(for: account.userId) else {
             let message = String(localized: "Choose an Instagram account for this post first.")
             if post.status == .scheduled {
@@ -1159,18 +1168,31 @@ final class AppModel {
             }
             return
         }
+        let story = post.isStory || !post.canPostToFeed
         let client = api(token, mode: account.loginMode)
         updatePost(postId) { $0.status = .publishing; $0.lastError = nil; $0.accountId = account.userId }
         run(postId, String(localized: "Publishing to @\(account.username)…"), kind: .publish) { [weak self] in
             do {
-                let result = try await client.publishReel(userId: account.userId, videoURL: video, caption: post.fullCaption, coverOffsetMs: post.coverSec.map { Int($0 * 1000) }) { status in
-                    Task { @MainActor in self?.report(postId, status) }
+                let status: @Sendable (String) -> Void = { status in Task { @MainActor in self?.report(postId, status) } }
+                let result: (mediaId: String, permalink: String?)
+                if let video, !post.isImage {
+                    result = story
+                        ? try await client.publishStory(userId: account.userId, videoURL: video, onStatus: status)
+                        : try await client.publishReel(userId: account.userId, videoURL: video, caption: post.fullCaption, coverOffsetMs: post.coverSec.map { Int($0 * 1000) }, onStatus: status)
+                } else {
+                    status(String(localized: "Opening a temporary link for Instagram…"))
+                    result = try await PublicLink.serving(images) { urls in
+                        story
+                            ? try await client.publishStory(userId: account.userId, imageURLs: urls, onStatus: status)
+                            : try await client.publishPhotos(userId: account.userId, imageURLs: urls, caption: post.fullCaption, onStatus: status)
+                    }
                 }
                 self?.updatePost(postId) {
                     $0.status = .published
                     $0.publishedAt = Date()
                     $0.mediaId = result.mediaId
                     $0.permalink = result.permalink
+                    if story { $0.placement = .story }
                 }
             } catch {
                 self?.updatePost(postId) { $0.status = .failed; $0.lastError = Self.shortened(error.localizedDescription) }
@@ -1406,15 +1428,17 @@ final class AppModel {
 
     /// Fetches insights for posted posts with the token of the account they were posted to.
     func refreshMetrics() {
-        let targets: [(UUID, String, InstagramAPI)] = data.posts.compactMap { post in
+        let targets: [(UUID, String, Bool, InstagramAPI)] = data.posts.compactMap { post in
             guard post.status == .published, let mediaId = post.mediaId,
                   let accountId = post.accountId ?? project(post.projectId)?.accountId,
                   let token = token(for: accountId) else { return nil }
-            return (post.id, mediaId, api(token, mode: account(accountId)?.loginMode))
+            // A story's insights are gone a day after it disappears
+            if post.isStory, (post.publishedAt ?? .distantPast) < Date().addingTimeInterval(-2 * 86400) { return nil }
+            return (post.id, mediaId, post.isStory, api(token, mode: account(accountId)?.loginMode))
         }
         Task {
-            for (postId, mediaId, client) in targets {
-                if let m = try? await client.mediaMetrics(mediaId) {
+            for (postId, mediaId, story, client) in targets {
+                if let m = try? await client.mediaMetrics(mediaId, story: story) {
                     updatePost(postId) { $0.metrics = m }
                 }
             }
@@ -1430,6 +1454,23 @@ final class AppModel {
             do {
                 try await RemotionService.prepare { line in
                     Task { @MainActor in self.setupJob?.message = line }
+                }
+            } catch {
+                problem = Problem(error)
+            }
+            setupJob = nil
+            await refreshRequirements()
+        }
+    }
+
+    /// Installs cloudflared (for photo posts) with Homebrew, or opens its download page.
+    func installCloudflared() {
+        guard setupJob == nil else { return }
+        setupJob = JobState(message: String(localized: "Installing cloudflared…"))
+        Task {
+            do {
+                if try await !SetupService.installCloudflared() {
+                    NSWorkspace.shared.open(URL(string: "https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/")!)
                 }
             } catch {
                 problem = Problem(error)

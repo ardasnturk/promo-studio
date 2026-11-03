@@ -44,6 +44,7 @@ extension ContentAI {
         brandKit: BrandKit?,
         uploads: [URL] = [],
         image: ImageSize? = nil,
+        slides: Int = 1,
         onActivity: @escaping @Sendable (String) -> Void
     ) async throws -> StoryboardResult {
         let usable = Self.assets(for: languageCode, in: project)
@@ -51,7 +52,9 @@ extension ContentAI {
         let opening: String
         if let image {
             let px = image.pixels
-            opening = "You are an award-winning art director and graphic designer. Design a single \(px.width)×\(px.height) IMAGE post for Instagram exactly as the user describes it below\(freeform ? ". It is posted from the account of the app below, but it is NOT an ad for the app" : ", promoting the app below"). The image will be built in code with Remotion and rendered as a still. At this stage you are only writing the DESIGN BRIEF as a one-scene storyboard; once the user approves it, a developer will build it one-to-one."
+            opening = slides > 1
+                ? "You are an award-winning art director and graphic designer. Design a \(slides)-slide CAROUSEL post for Instagram, each slide \(px.width)×\(px.height), exactly as the user describes it below\(freeform ? ". It is posted from the account of the app below, but it is NOT an ad for the app" : ", promoting the app below"). People swipe through the slides: the first stops the scroll, the middle ones deliver the content one idea per slide, the last one closes it (a takeaway or a CTA). One visual system across all slides. The slides will be built in code with Remotion and rendered as stills. At this stage you are only writing the DESIGN BRIEF as a storyboard with one scene per slide; once the user approves it, a developer will build it one-to-one."
+                : "You are an award-winning art director and graphic designer. Design a single \(px.width)×\(px.height) IMAGE post for Instagram exactly as the user describes it below\(freeform ? ". It is posted from the account of the app below, but it is NOT an ad for the app" : ", promoting the app below"). The image will be built in code with Remotion and rendered as a still. At this stage you are only writing the DESIGN BRIEF as a one-scene storyboard; once the user approves it, a developer will build it one-to-one."
         } else if freeform {
             opening = "You are an award-winning director and motion graphics designer. Design a \(targetSeconds)-second vertical (1080×1920) video for Instagram/TikTok exactly as the user describes it below. It is posted from the account of the app below, but it is NOT an ad for the app. The video will be custom-built scene by scene in code with Remotion. At this stage you are only writing the STORYBOARD; once the user approves it, a developer will turn it into code one-to-one."
         } else {
@@ -85,7 +88,12 @@ extension ContentAI {
         PROJECT IMAGES (use the file name exactly as given in the assets field)
         \(usable.isEmpty ? "(none)" : Self.assetList(usable))
 
-        \(image != nil ? """
+        \(image != nil && slides > 1 ? """
+        THE SLIDES (exactly \(slides) scenes, one per slide, in order)
+        - visual: the complete layout of that slide: what is where (top to bottom), sizes, colors, typography, photos and how they are treated. Repeat the shared elements (background, type, a slide counter or swipe cue if used) so each slide can be built on its own.
+        - text: the slide's headline, short (≤7 words), in \(language). Wrap the word to emphasize in *asterisks*. Other texts on the slide go in visual.
+        - durationSec: 2 for every slide. Leave voiceover and sfx empty. coverScene: 0.
+        """ : image != nil ? """
         THE IMAGE (exactly one scene)
         - visual: the complete layout: what is where (top to bottom), sizes, colors, typography, photos and how they are treated, depth and light. Everything must read in a second on a phone.
         - text: the headline, short (≤7 words), in \(language). Wrap the word to emphasize in *asterisks*. Other texts on the image go in visual.
@@ -111,7 +119,7 @@ extension ContentAI {
         return try await claude.structured(
             StoryboardResult.self,
             prompt: prompt,
-            schema: Self.storyboardSchema(assetNames: usable.map(\.fileName) + uploadNames, maxHashtags: maxHashtags, research: brief.research, image: image != nil),
+            schema: Self.storyboardSchema(assetNames: usable.map(\.fileName) + uploadNames, maxHashtags: maxHashtags, research: brief.research, image: image != nil, slides: slides),
             cwd: project.folderURL,
             tools: brief.research ? Self.researchTools : ["Read", "Glob", "Grep", "WebFetch"],
             additionalDirectories: uploads.isEmpty ? [] : [uploads[0].deletingLastPathComponent()],
@@ -128,8 +136,9 @@ extension ContentAI {
         let current = Self.storyboardJSON(post: post, board: board)
         let freeform = post.directed?.isFreeform == true
         let uploads = StudioService.uploadFiles(post).map { Paths.post(post.id).appendingPathComponent($0.1) }
+        let slides = post.isImage ? max(1, board.scenes.count) : 1
         let prompt = """
-        You are an award-winning \(post.isImage ? "art director" : freeform ? "director" : "commercial director"). Update the \(post.isImage ? "image post design (a one-scene storyboard; keep it one scene)" : freeform ? "video" : "promo film") storyboard below according to the user's REVISION INSTRUCTION.
+        You are an award-winning \(post.isImage ? "art director" : freeform ? "director" : "commercial director"). Update the \(slides > 1 ? "carousel design (one scene per slide; keep exactly \(slides) scenes)" : post.isImage ? "image post design (a one-scene storyboard; keep it one scene)" : freeform ? "video" : "promo film") storyboard below according to the user's REVISION INSTRUCTION.
 
         REVISION INSTRUCTION
         \(instruction)
@@ -160,7 +169,7 @@ extension ContentAI {
         return try await claude.structured(
             StoryboardResult.self,
             prompt: prompt,
-            schema: Self.storyboardSchema(assetNames: usable.map(\.fileName) + (post.uploads ?? []), maxHashtags: maxHashtags, research: research, image: post.isImage),
+            schema: Self.storyboardSchema(assetNames: usable.map(\.fileName) + (post.uploads ?? []), maxHashtags: maxHashtags, research: research, image: post.isImage, slides: slides),
             cwd: project.folderURL,
             tools: research ? Self.researchTools : ["Read", "Glob", "Grep", "WebFetch"],
             additionalDirectories: uploads.isEmpty ? [] : [uploads[0].deletingLastPathComponent()],
@@ -185,7 +194,10 @@ extension ContentAI {
             TASK: Turn the approved storyboard below into code in \(folder)/Video.tsx as `export const Video: React.FC<StudioProps>`. Stay faithful to the storyboard; implement every motion and effect in the director's notes.
             """
         let px = (directed.size ?? .portrait).pixels
-        let imageRules = post.isImage ? """
+        let slides = directed.storyboard.scenes.count
+        let imageRules = post.isImage && slides > 1 ? """
+            - THIS IS A CAROUSEL OF \(slides) STILL SLIDES, each \(px.width)×\(px.height) (props.width × props.height; read them with useVideoConfig, don't assume 1080×1920). Each storyboard scene is one slide: use the Timeline component so scene i plays from props.scenes[i].from for 60 frames. Promo Studio renders the last frame of each scene (frames 59, 119, 179…) as that slide: everything in a slide must be fully in place by its 45th frame (entrance animations are fine, but nothing may still be moving or fading at its last frame). No audio or sound effects. Keep one visual system across the slides. Adapt the safe area to the size (60 px from every edge).
+            """ : post.isImage ? """
             - THIS IS A STILL IMAGE, \(px.width)×\(px.height) (props.width × props.height; read them with useVideoConfig, don't assume 1080×1920). The storyboard has one scene that describes the whole image. Promo Studio renders frame 59, the last frame, as the picture: everything must be fully in place by frame 45 (entrance animations are fine, but nothing may still be moving or fading at frame 59). No Timeline, audio or sound effects. Adapt the safe area to the size (60 px from every edge).
             """ : ""
         let prompt = """
@@ -210,7 +222,7 @@ extension ContentAI {
 
         VERIFICATION (mandatory)
         1. Run `npx tsc --noEmit`; fix all errors in \(folder)/ (ignore errors in other folders).
-        2. \(post.isImage ? "Take frame 59 at --scale=0.5 (that is the picture) and check it like a designer: hierarchy, contrast, readable at phone size, nothing cut off." : "Take a frame from the middle of each scene and from the first second of the hook:")
+        2. \(post.isImage && slides > 1 ? "Take the last frame of each slide (59, 119, 179…) at --scale=0.5 and check each like a designer: hierarchy, contrast, readable at phone size, nothing cut off, and the slides look like one set." : post.isImage ? "Take frame 59 at --scale=0.5 (that is the picture) and check it like a designer: hierarchy, contrast, readable at phone size, nothing cut off." : "Take a frame from the middle of each scene and from the first second of the hook:")
            `npx remotion still src/entries/\(id).tsx \(id) \(previews)/sN.png --props=\(props) --frame=<frame> --scale=0.4 --log=error`
            Open the frames with Read and inspect them: text overflow, unreadable text, overlapping elements, empty frames, deviations from the storyboard. Fix the problems and check again.
         3. When finished, return summary (a short description of the video) and notes (known limitations, deviations from the storyboard). Promo Studio will do the final render; do not render it yourself.
@@ -310,7 +322,7 @@ extension ContentAI {
         return String(decoding: data, as: UTF8.self)
     }
 
-    static func storyboardSchema(assetNames: [String], maxHashtags: Int, research: Bool, image: Bool = false) -> [String: Any] {
+    static func storyboardSchema(assetNames: [String], maxHashtags: Int, research: Bool, image: Bool = false, slides: Int = 1) -> [String: Any] {
         var asset: [String: Any] = ["type": "string"]
         if !assetNames.isEmpty { asset["enum"] = assetNames }
         return [
@@ -320,8 +332,8 @@ extension ContentAI {
                 "concept": str,
                 "scenes": [
                     "type": "array",
-                    "minItems": image ? 1 : 3,
-                    "maxItems": image ? 1 : 10,
+                    "minItems": image ? slides : 3,
+                    "maxItems": image ? slides : 10,
                     "items": [
                         "type": "object",
                         "properties": [

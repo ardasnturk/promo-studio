@@ -87,7 +87,7 @@ enum ControlActions {
             guard let prompt else { throw ActionError.missing("prompt") }
             let brief = PostBrief(prompt: prompt, research: bool("research", true))
             let image = str("format") == "image" ? str("size").flatMap(ImageSize.init(rawValue:)) ?? .portrait : nil
-            return try created(model.createDirectedPost(projectId: p?.id, feature: a?.features.first { $0.id == str("featureId") }, seconds: int("seconds", 20), language: str("language"), brief: brief, voiceover: bool("voiceover", model.settings.voiceoverEnabled), style: str("style").flatMap(DirectedStyle.init(rawValue:)) ?? .promo, accountId: try accountId(), image: image, uploads: uploads))
+            return try created(model.createDirectedPost(projectId: p?.id, feature: a?.features.first { $0.id == str("featureId") }, seconds: int("seconds", 20), language: str("language"), brief: brief, voiceover: bool("voiceover", model.settings.voiceoverEnabled), style: str("style").flatMap(DirectedStyle.init(rawValue:)) ?? .promo, accountId: try accountId(), image: image, slides: int("slides", 1), uploads: uploads))
         case "uploadImage":
             // An image for a new post, sent ahead (base64, at most a few MB); returns its uploadId
             guard let raw = body["data"] as? String, let data = Data(base64Encoded: raw), !data.isEmpty else { throw ActionError.missing("data") }
@@ -151,14 +151,27 @@ enum ControlActions {
 
         // MARK: Posting
         case "publish":
+            // placement: "feed" (a Reel, photo or carousel) or "story"; left out, the post's own
             let p = try post()
-            guard p.videoFile != nil else { throw ActionError.failed(String(localized: "Render the video first")) }
+            if p.isImage {
+                guard !p.imageFiles.isEmpty else { throw ActionError.failed(String(localized: "Create the image first")) }
+                guard PublicLink.isInstalled else { throw ActionError.failed(String(localized: "Posting pictures needs cloudflared on the Mac: install it from the setup checklist.")) }
+            } else {
+                guard p.videoFile != nil else { throw ActionError.failed(String(localized: "Render the video first")) }
+            }
+            if let placement = str("placement").flatMap(PostPlacement.init(rawValue:)) { model.setPlacement(placement, forPost: p.id) }
             model.queuePublish(p.id)
             return accepted(p.id)
         case "schedule":
             let p = try post()
             guard let at = ISO8601DateFormatter().date(from: try require("at")) else { throw ActionError.missing("at") }
+            if let placement = str("placement").flatMap(PostPlacement.init(rawValue:)) { model.setPlacement(placement, forPost: p.id) }
             model.schedule(p.id, at: at)
+            return ok
+        case "setPlacement":
+            let p = try post()
+            guard let placement = PostPlacement(rawValue: try require("placement")) else { throw ActionError.missing("placement") }
+            model.setPlacement(placement, forPost: p.id)
             return ok
         case "unschedule":
             model.unschedule(try post().id)

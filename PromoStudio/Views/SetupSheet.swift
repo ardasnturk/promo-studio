@@ -117,6 +117,9 @@ struct SetupSheet: View {
             }
         case .codex:
             Link("Get Codex", destination: URL(string: "https://developers.openai.com/codex/cli")!)
+        case .cloudflared:
+            Button("Install") { model.installCloudflared() }
+                .disabled(model.setupJob != nil)
         case .git, .xcode, .disk:
             EmptyView()
         }

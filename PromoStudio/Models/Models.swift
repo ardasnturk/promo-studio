@@ -208,8 +208,18 @@ struct ContentPost: Codable, Identifiable, Hashable {
     var imageFile: String?
     /// Images the user added for Claude to look at and use (files in the post's `uploads` folder)
     var uploads: [String]?
+    /// The rendered slides of a carousel image post, in order (`imageFile` is the first)
+    var slideFiles: [String]?
+    /// Where it is shared on Instagram; nil is the feed (a Reel for a video, a photo or carousel for an image)
+    var placement: PostPlacement?
 
     var isImage: Bool { format == .image }
+    var isCarousel: Bool { (slideFiles?.count ?? 0) > 1 }
+    var isStory: Bool { placement == .story }
+    /// Pictures of an image post: every slide of a carousel, else the one image
+    var imageFiles: [String] { slideFiles ?? imageFile.map { [$0] } ?? [] }
+    /// A 9:16 picture can't go to the feed (Instagram allows 4:5 at most there), only to a story
+    var canPostToFeed: Bool { !(isImage && directed?.size == .story) }
 
     /// Full text to post to Instagram
     var fullCaption: String {
@@ -341,6 +351,8 @@ struct DirectedVideo: Codable, Hashable {
     var muted: Bool?
     /// Size of an image post (videos are always 1080×1920)
     var size: ImageSize?
+    /// Slides of a carousel image post (one storyboard scene each); nil or 1 is a single image
+    var slides: Int?
     /// Length asked for when the storyboard was written (to write it again after a failure)
     var targetSeconds: Int?
     /// Claude's short summary and notes on the video it made
@@ -386,6 +398,21 @@ struct StoryPerson: Codable, Hashable {
 
 enum PostFormat: String, Codable {
     case video, image
+}
+
+/// Where a post goes on Instagram
+enum PostPlacement: String, Codable, CaseIterable {
+    /// The feed and the profile grid: a Reel, a photo or a carousel
+    case feed
+    /// A story (24 hours; no caption). A carousel goes out as one story per slide
+    case story
+
+    func label(for post: ContentPost) -> String {
+        switch self {
+        case .feed: post.isImage ? (post.isCarousel ? String(localized: "Carousel") : String(localized: "Post")) : String(localized: "Reel")
+        case .story: String(localized: "Story")
+        }
+    }
 }
 
 /// Image post sizes (Instagram feed portrait, square, story)

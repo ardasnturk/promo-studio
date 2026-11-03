@@ -71,7 +71,7 @@ enum StudioService {
         var scenes: [[String: Any]] = []
         for (i, s) in board.scenes.enumerated() {
             let specScene = post.spec.scenes.indices.contains(i) ? post.spec.scenes[i] : nil
-            // An image is one 2-second scene; its last frame is the picture
+            // An image is one 2-second scene per slide; each scene's last frame is a picture
             let frames = post.isImage ? imageFrames : max(20, Int(((specScene?.durationSec ?? s.durationSec) * Double(fps)).rounded()))
             var scene: [String: Any] = [
                 "from": from, "durationInFrames": frames, "text": s.text, "visual": s.visual,
@@ -115,7 +115,7 @@ enum StudioService {
         for (name, file, cutout) in uploadFiles(post) { uploads[name] = photo(file, cutout: cutout) }
         let size = post.isImage ? (post.directed?.size ?? .portrait).pixels : (width: 1080, height: 1920)
         let props: [String: Any] = [
-            "brand": brand, "lang": post.language ?? "tr", "fps": fps, "durationInFrames": post.isImage ? imageFrames : max(30, from), "scenes": scenes,
+            "brand": brand, "lang": post.language ?? "tr", "fps": fps, "durationInFrames": post.isImage ? from : max(30, from), "scenes": scenes,
             "logos": logos, "people": people, "uploads": uploads,
             "width": size.width, "height": size.height, "format": post.isImage ? "image" : "video",
         ]
@@ -366,23 +366,33 @@ enum StudioService {
     }
 
     /// Renders an image post's picture (its last frame) into the post folder; it is also the post's cover.
-    static func renderImage(post: ContentPost, onProgress: @escaping @Sendable (Double, String) -> Void) async throws -> String {
+    /// Renders the last frame of each scene: the picture, or a carousel's slides in order. Returns the files written.
+    static func renderImage(post: ContentPost, onProgress: @escaping @Sendable (Double, String) -> Void) async throws -> [String] {
         guard let directed = post.directed else { throw StudioError.noStoryboard }
         let id = directed.compositionId
         guard hasCode(id) else { throw StudioError.noCode }
         try writeEntry(id)
-        let image = "image.jpg"
-        let out = Paths.post(post.id).appendingPathComponent(image)
-        try? FileManager.default.removeItem(at: out)
-        onProgress(0.1, String(localized: "Rendering the image…"))
-        try await ProcessRunner.run(
-            Paths.remotion.appendingPathComponent("node_modules/.bin/remotion").path,
-            ["still", "src/entries/\(id).tsx", id, out.path, "--props=\(propsFile(post.id).path)", "--frame=\(imageFrames - 1)", "--image-format=jpeg", "--jpeg-quality=95"],
-            cwd: Paths.remotion
-        )
-        guard FileManager.default.fileExists(atPath: out.path) else { throw RemotionError.noOutput }
+        let count = max(1, directed.storyboard.scenes.count)
+        let fm = FileManager.default
+        // Slides of an earlier, longer carousel would linger
+        for file in (try? fm.contentsOfDirectory(atPath: Paths.post(post.id).path)) ?? [] where file.hasPrefix("image") && file.hasSuffix(".jpg") {
+            try? fm.removeItem(at: Paths.post(post.id).appendingPathComponent(file))
+        }
+        var images: [String] = []
+        for i in 0..<count {
+            let image = i == 0 ? "image.jpg" : "image-\(i + 1).jpg"
+            let out = Paths.post(post.id).appendingPathComponent(image)
+            onProgress(0.1 + 0.9 * Double(i) / Double(count), count > 1 ? String(localized: "Rendering slide \(i + 1) of \(count)…") : String(localized: "Rendering the image…"))
+            try await ProcessRunner.run(
+                Paths.remotion.appendingPathComponent("node_modules/.bin/remotion").path,
+                ["still", "src/entries/\(id).tsx", id, out.path, "--props=\(propsFile(post.id).path)", "--frame=\(imageFrames * (i + 1) - 1)", "--image-format=jpeg", "--jpeg-quality=95"],
+                cwd: Paths.remotion
+            )
+            guard fm.fileExists(atPath: out.path) else { throw RemotionError.noOutput }
+            images.append(image)
+        }
         onProgress(1, String(localized: "Done"))
-        return image
+        return images
     }
 
     // MARK: Code versions

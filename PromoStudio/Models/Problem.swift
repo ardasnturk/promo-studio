@@ -20,7 +20,7 @@ struct Problem: Codable, Hashable {
         case claudeMissing, claudeSignedOut, claudeLimit, claudeTurns, claudeNoResult, claude
         case voiceQuota, voiceKey, voice
         case renderCode, render, diskFull, toolMissing
-        case instagramSession, instagramRejected, instagramLimit, instagramAccount, instagram
+        case instagramSession, instagramRejected, instagramLimit, instagramAccount, instagram, publicLink
         case offline, template, unknown
     }
 
@@ -68,6 +68,8 @@ struct Problem: Codable, Hashable {
             classify(render: text)
         } else if error is RemotionError {
             set(.render, String(localized: "The video couldn’t be rendered"), Self.firstLine(raw), .retry)
+        } else if error is PublicLinkError {
+            set(.publicLink, String(localized: "The temporary link couldn’t be opened"), String(localized: "Instagram fetches pictures from a temporary Cloudflare link, which didn’t come up. Check the internet connection and try again."), .retry)
         } else if error is LibraryError {
             set(.template, String(localized: "The template couldn’t make the video"), Self.firstLine(raw), .retry)
         } else if let e = error as? URLError {

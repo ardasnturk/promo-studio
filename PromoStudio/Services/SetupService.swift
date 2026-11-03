@@ -3,7 +3,7 @@ import Foundation
 /// One row of the setup checklist: a tool or setting Promo Studio needs.
 struct Requirement: Identifiable, Sendable {
     enum Item: String, CaseIterable, Sendable {
-        case claude, node, remotion, git, xcode, gemini, instagram, templates, disk, codex
+        case claude, node, remotion, git, xcode, gemini, instagram, templates, disk, codex, cloudflared
     }
 
     enum Status: String, Sendable {
@@ -35,6 +35,7 @@ struct Requirement: Identifiable, Sendable {
         case .templates: "Promo Templates"
         case .disk: String(localized: "Disk Space")
         case .codex: "Codex"
+        case .cloudflared: "cloudflared"
         }
     }
     /// Videos cannot be produced without these
@@ -51,6 +52,7 @@ enum SetupService {
         async let git = checkGit()
         async let xcode = checkXcode()
         async let codex = checkCodex()
+        async let cloudflared = checkCloudflared()
         let nodeResult = await node
         return [
             await claude,
@@ -68,6 +70,7 @@ enum SetupService {
                             ? String(localized: "A template library is connected.")
                             : String(localized: "Ready-made video formats and skills. Optional.")),
             await codex,
+            await cloudflared,
             checkDisk(),
         ]
     }
@@ -98,6 +101,22 @@ enum SetupService {
                                detail: String(localized: "For editing people’s photos (expression, pose, light) with your ChatGPT plan. Optional."))
         }
         return Requirement(item: .codex, status: .ready, detail: String(localized: "\(version.replacingOccurrences(of: "codex-cli ", with: "")), edits people’s photos"))
+    }
+
+    private static func checkCloudflared() async -> Requirement {
+        guard let version = await output("cloudflared", ["--version"]) else {
+            return Requirement(item: .cloudflared, status: .notSetUp,
+                               detail: String(localized: "For posting photos, carousels and picture stories (Instagram fetches pictures from a temporary link). Videos don’t need it."))
+        }
+        let number = version.firstMatch(of: /[0-9]+\.[0-9]+\.[0-9]+/).map { String($0.0) } ?? version
+        return Requirement(item: .cloudflared, status: .ready, detail: String(localized: "\(number), opens temporary links for photo posts"))
+    }
+
+    /// Installs cloudflared with Homebrew; false if Homebrew isn't there.
+    static func installCloudflared() async throws -> Bool {
+        guard ProcessRunner.which("brew") != nil else { return false }
+        try await ProcessRunner.run("brew", ["install", "cloudflared"], extraEnvironment: ["HOMEBREW_NO_AUTO_UPDATE": "1"])
+        return true
     }
 
     private static func checkDisk() -> Requirement {

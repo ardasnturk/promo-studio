@@ -20,6 +20,9 @@ struct StoryboardPanel: View {
                                 .lineLimit(2...8)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
+                        if let people = directed.storyboard.people, !people.isEmpty {
+                            PeoplePhotosBox(post: post, people: people, busy: busy)
+                        }
                         ForEach(Array(directed.storyboard.scenes.enumerated()), id: \.element.id) { index, scene in
                             sceneCard(index: index, scene: scene, durationOverride: post.spec.scenes.indices.contains(index) && directed.produced ? post.spec.scenes[index].durationSec : nil)
                         }
@@ -132,5 +135,85 @@ struct StoryboardPanel: View {
                 }
             }
         )
+    }
+}
+
+/// The real people of the storyboard: the downloaded photo and Codex's edit side by side, to pick one or edit again.
+struct PeoplePhotosBox: View {
+    @Environment(AppModel.self) private var model
+    let post: ContentPost
+    let people: [StoryPerson]
+    let busy: Bool
+    @State private var instructions: [String: String] = [:]
+
+    var body: some View {
+        GroupBox("People") {
+            VStack(alignment: .leading, spacing: 14) {
+                ForEach(people, id: \.name) { person in
+                    row(person)
+                    if person.name != people.last?.name { Divider() }
+                }
+                if model.usesEditedPhotos(post) {
+                    Label("Photos edited with AI: label the post as AI-made on Instagram, and don’t present the edit as a real moment.", systemImage: "sparkles")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private func row(_ person: StoryPerson) -> some View {
+        let photos = StudioService.personPhotos(post, person)
+        let dir = Paths.post(post.id)
+        let usingEdit = person.useOriginal != true && photos.edited != nil
+        return VStack(alignment: .leading, spacing: 8) {
+            Text(person.name).font(.headline)
+            HStack(alignment: .top, spacing: 10) {
+                thumbnail(photos.original.map { dir.appendingPathComponent($0.photo) }, label: "Original", selected: !usingEdit && photos.original != nil) {
+                    model.setUseOriginalPhoto(true, name: person.name, postId: post.id)
+                }
+                if model.settings.editPhotosWithCodex || photos.edited != nil {
+                    thumbnail(photos.edited.map { dir.appendingPathComponent($0.photo) }, label: "Edited", selected: usingEdit) {
+                        model.setUseOriginalPhoto(false, name: person.name, postId: post.id)
+                    }
+                }
+                VStack(alignment: .leading, spacing: 6) {
+                    if photos.original == nil {
+                        Text(busy ? "Looking for a photo…" : "No photo found; the video shows the name instead.")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                    if let error = person.editError {
+                        Text(error).font(.caption).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
+                    }
+                    if photos.original != nil, CodexImage.isInstalled {
+                        TextField("How Codex should change the photo", text: Binding(
+                            get: { instructions[person.name] ?? person.edit ?? "" },
+                            set: { instructions[person.name] = $0 }
+                        ), axis: .vertical)
+                        .lineLimit(2...4)
+                        .font(.caption)
+                        Button(photos.edited == nil ? "Edit with Codex" : "Edit Again") {
+                            model.editPersonPhoto(name: person.name, postId: post.id, instruction: instructions[person.name])
+                        }
+                        .controlSize(.small)
+                        .disabled(busy || (instructions[person.name] ?? person.edit ?? "").trimmingCharacters(in: .whitespaces).isEmpty)
+                    }
+                }
+            }
+        }
+    }
+
+    private func thumbnail(_ url: URL?, label: LocalizedStringKey, selected: Bool, choose: @escaping () -> Void) -> some View {
+        Button(action: choose) {
+            VStack(spacing: 4) {
+                LocalImage(url: url, contentMode: .fill)
+                    .frame(width: 84, height: 112)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(selected ? Color.accentColor : .clear, lineWidth: 3))
+                Text(label).font(.caption2).foregroundStyle(selected ? .primary : .secondary)
+            }
+        }
+        .buttonStyle(.plain)
+        .disabled(url == nil || busy)
     }
 }

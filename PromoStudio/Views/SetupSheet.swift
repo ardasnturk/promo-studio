@@ -73,7 +73,7 @@ struct SetupSheet: View {
                 .font(.title3)
                 .frame(width: 22)
             VStack(alignment: .leading, spacing: 2) {
-                Text(title(requirement.item)).fontWeight(.medium)
+                Text(requirement.title).fontWeight(.medium)
                 Text(requirement.detail)
                     .font(.callout).foregroundStyle(.secondary)
                     .textSelection(.enabled)
@@ -91,19 +91,7 @@ struct SetupSheet: View {
         case .ready: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
         case .missing: Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
         case .notSetUp: Image(systemName: "circle.dashed").foregroundStyle(.secondary)
-        }
-    }
-
-    private func title(_ item: Requirement.Item) -> LocalizedStringKey {
-        switch item {
-        case .claude: "Claude Code"
-        case .node: "Node.js"
-        case .remotion: "Remotion (Video Engine)"
-        case .git: "git"
-        case .xcode: "Xcode"
-        case .gemini: "Gemini API Key"
-        case .instagram: "Instagram"
-        case .templates: "Promo Templates"
+        case .warning: Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
         }
     }
 
@@ -127,7 +115,9 @@ struct SetupSheet: View {
                 dismiss()
                 onInstallTemplates()
             }
-        case .git, .xcode:
+        case .codex:
+            Link("Get Codex", destination: URL(string: "https://developers.openai.com/codex/cli")!)
+        case .git, .xcode, .disk:
             EmptyView()
         }
     }

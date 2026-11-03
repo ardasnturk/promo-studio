@@ -10,6 +10,9 @@ Every custom video is the `Video` component in `src/videos/<CompositionId>/Video
 | `lang` | Language code. Pass `lang={lang}` to the root `AbsoluteFill`. |
 | `fps`, `durationInFrames` | Totals for the whole video. Promo Studio computes them. |
 | `logos?` | Real logos from the storyboard: name → public path. Use `<Img src={staticFile(logos[name])} style={{objectFit: 'contain'}} />`. |
+| `people?` | Real people from the storyboard: name → `{photo, cutout?}` (public paths; `cutout` is the photo with the background removed). Show them with `Portrait` or `FaceOff`. |
+| `uploads?` | Images the user added: file name → `{photo, cutout?}`. They are also in `scenes[i].assets` where the storyboard uses them. |
+| `width`, `height`, `format?` | Output size (1080×1920 for videos). `format: 'image'` is a single picture: the last frame is rendered as the image, so everything must be in place by frame 45. Read the size with `useVideoConfig`. |
 | `scenes[i]` | `from`, `durationInFrames` (fitted to the voiceover), `text` (on-screen text, `*emphasis*`), `visual` (director's note), `audio?`, `assets` (public paths) |
 
 Do not change scene timings; the voiceover was generated for them. Sequence scenes with `Timeline`; each scene's audio plays automatically.
@@ -39,6 +42,11 @@ Do not change scene timings; the voiceover was generated for them. Sequence scen
 - `ZoomShot({src, width, height, focusX, focusY, zoom})`: zooms into part of a screen.
 - `AppIcon({src, size, glow})`: app icon.
 
+**People and photos**
+- `Portrait({person, height, mood, color, flip, from})`: a real person from `people` (or an upload). Uses the cut-out when there is one. `mood`: `fierce` (hard contrast, rim light in `color`), `heroic` (warm glow), `mono` (black and white, `color` duotone), `natural`. `flip` mirrors; `from` slides in from `left`, `right` or `bottom`.
+- `FaceOff({left, right, center, mood})`: two people face to face on a split background in their colors, with a slamming `VS`. Each side is `{person, name?, color}`. The right side is mirrored by default so they face each other; set `flipLeft`/`flipRight` if a photo already faces inward.
+- A photo's pose and expression can't change: create the feeling with the mood, color, light, framing and motion.
+
 **Data**
 - `Counter`: counting number.
 - `ProbabilityBar({values, colors, labels})`: three-part probability bar.
@@ -63,14 +71,15 @@ If the kit is not enough, write your own component inside the video's folder. Do
 
 ## Rules
 
-- **Format:** 1080×1920.
+- **Format:** 1080×1920 for videos; an image post uses `width`×`height` from the props.
   - Safe area: 80 px from the sides, 120 px from the top and bottom.
   - Headlines ≥ 84 px, supporting text ≥ 44 px.
 - **Animation:** Use only `useCurrentFrame`, `interpolate` and `spring`. No CSS animations or transitions. No `Math.random`; use `random(seed)` for randomness.
 - **Text:** Write uppercase text in uppercase in the source itself (e.g. Turkish `İ`, `Ş`, `Ğ`). Do not use `textTransform: uppercase`; it breaks letters such as Turkish i/İ.
 - **Images:**
-  - Use only `scene.assets`, `brand.logo`, `logos` and the kit's drawings.
-  - Do not download images from the internet; Promo Studio downloads the storyboard's logos into `logos`.
+  - Use only `scene.assets`, `brand.logo`, `logos`, `people`, `uploads` and the kit's drawings.
+  - Do not download images from the internet; Promo Studio downloads the storyboard's logos into `logos` and people's photos into `people`.
+  - Never draw a real person as a silhouette, stick figure or avatar. Use their photo from `people`; without one, show their name, number and colors as typography.
   - Show real club, league or brand logos only from `logos`. Never redraw them in SVG or CSS; for a name missing from `logos`, use `Badge` and colors.
 - **Scene structure:**
   - Not every scene has to be a screenshot. Build a promo film with kinetic typography, data animation, notifications, counters, pitches and similar scenes.

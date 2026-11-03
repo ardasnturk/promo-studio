@@ -26,6 +26,12 @@ export type StudioScene = {
   assets: string[];
 };
 
+/** A real photo: `photo` as downloaded or uploaded, `cutout` the same photo with the background removed (PNG, when one was found). Paths relative to public/. */
+export type StudioPhoto = {
+  photo: string;
+  cutout?: string;
+};
+
 export type StudioProps = {
   brand: StudioBrand;
   /** BCP-47 language code (needed for Turkish uppercasing) */
@@ -35,4 +41,13 @@ export type StudioProps = {
   scenes: StudioScene[];
   /** Real logos (clubs, leagues, brands) from the storyboard: name → path relative to public/. Missing names have no image. */
   logos?: Record<string, string>;
+  /** Real people (players, coaches…) from the storyboard: name → photo. Missing names have no photo. */
+  people?: Record<string, StudioPhoto>;
+  /** Images the user uploaded for this post: file name → photo */
+  uploads?: Record<string, StudioPhoto>;
+  /** Output size: 1080×1920 for videos; an image post can be 1080×1350 or 1080×1080 */
+  width?: number;
+  height?: number;
+  /** `image`: a single picture; Promo Studio renders the last frame as the image */
+  format?: 'video' | 'image';
 };

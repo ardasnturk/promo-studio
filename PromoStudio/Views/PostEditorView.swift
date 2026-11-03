@@ -43,7 +43,9 @@ struct PostEditorView: View {
                 if let job = model.jobs[postId] {
                     JobBanner(job: job) { model.cancel(postId) }.padding(.horizontal)
                 }
-                if let err = post.lastError {
+                if let problem = post.problem {
+                    ProblemBanner(problem: problem, busy: model.jobs[postId] != nil).padding(.horizontal)
+                } else if let err = post.lastError {
                     // Keep a long error message from pushing the title and buttons out of the window
                     ScrollView {
                         Text(err).font(.caption).foregroundStyle(.red).textSelection(.enabled)
@@ -95,7 +97,12 @@ struct PostEditorView: View {
         VStack(spacing: 10) {
             ZStack {
                 RoundedRectangle(cornerRadius: 16).fill(.black)
-                if let url = model.videoURL(post), post.status != .rendering {
+                if let url = model.imageURL(post), post.status != .rendering {
+                    // Re-renders keep the file name; the modification date makes the preview reload
+                    LocalImage(url: url, contentMode: .fit)
+                        .id((try? url.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                } else if let url = model.videoURL(post), post.status != .rendering {
                     VideoPreview(url: url).clipShape(RoundedRectangle(cornerRadius: 16))
                 } else if post.external != nil, model.jobs[postId] != nil {
                     VStack { ProgressView(); Text("Claude Code is producing the video…").foregroundStyle(.white.opacity(0.7)) }
@@ -130,19 +137,25 @@ struct PostEditorView: View {
                     Button {
                         model.produce(postId)
                     } label: {
-                        Label("Approve and Produce Video", systemImage: "film.stack")
+                        if post.isImage {
+                            Label("Approve and Create Image", systemImage: "photo")
+                        } else {
+                            Label("Approve and Produce Video", systemImage: "film.stack")
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                     .disabled(directed.storyboard.scenes.isEmpty || model.jobs[postId] != nil)
-                    Button("Without Voiceover") { model.produce(postId, voiceover: false) }
-                        .disabled(directed.storyboard.scenes.isEmpty || model.jobs[postId] != nil)
-                        .help("Produce without voiceover (e.g. if the Gemini quota is used up); scene durations come from the storyboard")
+                    if !post.isImage {
+                        Button("Without Voiceover") { model.produce(postId, voiceover: false) }
+                            .disabled(directed.storyboard.scenes.isEmpty || model.jobs[postId] != nil)
+                            .help("Produce without voiceover (e.g. if the Gemini quota is used up); scene durations come from the storyboard")
+                    }
                 } else {
                 Button {
                     model.render(postId)
                 } label: {
                     Label {
-                        post.videoFile == nil ? Text("Render") : Text("Re-render")
+                        post.videoFile == nil && post.imageFile == nil ? Text("Render") : Text("Re-render")
                     } icon: {
                         Image(systemName: "play.rectangle")
                     }
@@ -150,9 +163,9 @@ struct PostEditorView: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(!canRender(post) || model.jobs[postId] != nil)
                 }
-                if let url = model.videoURL(post) {
-                    Button { saveVideo(url, title: post.title) } label: { Label("Save Video…", systemImage: "square.and.arrow.down") }
-                        .labelStyle(.iconOnly).help("Save Video…")
+                if let url = model.imageURL(post) ?? model.videoURL(post) {
+                    Button { save(url, title: post.title) } label: { Label(post.isImage ? "Save Image…" : "Save Video…", systemImage: "square.and.arrow.down") }
+                        .labelStyle(.iconOnly).help(post.isImage ? "Save Image…" : "Save Video…")
                     ShareLink(item: url) { Label("Share", systemImage: "square.and.arrow.up") }
                         .labelStyle(.iconOnly).help("Share")
                     Button { NSWorkspace.shared.activateFileViewerSelecting([url]) } label: { Label("Show in Finder", systemImage: "folder") }
@@ -167,6 +180,9 @@ struct PostEditorView: View {
             Group {
                 if let external = post.external {
                     Text(verbatim: "\(external.skill.map { "/" + $0 } ?? "") · \(external.compositionId ?? String(localized: "no composition"))")
+                } else if let directed = post.directed, post.isImage {
+                    let px = (directed.size ?? .portrait).pixels
+                    Text("\(px.width)×\(px.height) · image · designed by Claude")
                 } else if let directed = post.directed {
                     let duration = Int(directed.storyboard.scenes.reduce(0) { $0 + $1.durationSec })
                     let sceneCount = directed.storyboard.scenes.count
@@ -246,15 +262,16 @@ struct PostEditorView: View {
 
     // MARK: Publishing
 
-    /// Copies the rendered video to a user-chosen location (for sharing without connecting Instagram)
-    private func saveVideo(_ url: URL, title: String) {
+    /// Copies the rendered video or image to a user-chosen location (for sharing without connecting Instagram)
+    private func save(_ url: URL, title: String) {
+        let image = url.pathExtension == "jpg"
         let panel = NSSavePanel()
-        panel.allowedContentTypes = [.mpeg4Movie]
+        panel.allowedContentTypes = [image ? .jpeg : .mpeg4Movie]
         panel.canCreateDirectories = true
         let name = title.components(separatedBy: CharacterSet(charactersIn: "/:\\?%*|\"<>")).joined(separator: "-")
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        panel.nameFieldStringValue = (name.isEmpty ? "Promo Studio" : name) + ".mp4"
-        panel.directoryURL = FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first
+        panel.nameFieldStringValue = (name.isEmpty ? "Promo Studio" : name) + (image ? ".jpg" : ".mp4")
+        panel.directoryURL = FileManager.default.urls(for: image ? .picturesDirectory : .moviesDirectory, in: .userDomainMask).first
         guard panel.runModal() == .OK, let dest = panel.url else { return }
         do {
             if FileManager.default.fileExists(atPath: dest.path) { try FileManager.default.removeItem(at: dest) }
@@ -264,7 +281,40 @@ struct PostEditorView: View {
         }
     }
 
+    @ViewBuilder
     private func publishPanel(_ post: ContentPost) -> some View {
+        if post.isImage {
+            Form {
+                Section("Save") {
+                    if let url = model.imageURL(post) {
+                        Button { save(url, title: post.title) } label: { Label("Save Image…", systemImage: "square.and.arrow.down") }
+                        ShareLink(item: url) { Label("Share…", systemImage: "square.and.arrow.up") }
+                    } else {
+                        Text("Approve the design to create the image.").foregroundStyle(.secondary)
+                    }
+                }
+                Section("Posting") {
+                    Text("Instagram’s API can publish a picture only from a public web address, which Promo Studio doesn’t have. Save the image, copy the caption from Caption & SEO and post it from Instagram.")
+                        .foregroundStyle(.secondary)
+                }
+                if model.usesEditedPhotos(post) {
+                    Section {
+                        Label("This image uses photos edited with AI. Turn on the AI label when you post it from Instagram, or add a note to the caption.", systemImage: "sparkles")
+                            .foregroundStyle(.secondary)
+                        Button("Add AI Note to Caption") {
+                            model.updatePost(postId) { $0.caption += "\n\n" + String(localized: "📸 Photos edited with AI.") }
+                        }
+                        .disabled(post.caption.contains(String(localized: "📸 Photos edited with AI.")))
+                    }
+                }
+            }
+            .formStyle(.grouped)
+        } else {
+            videoPublishPanel(post)
+        }
+    }
+
+    private func videoPublishPanel(_ post: ContentPost) -> some View {
         Form {
             Section("Account") {
                 let projectAccount = model.project(post.projectId).flatMap { model.account(for: $0) }
@@ -294,7 +344,7 @@ struct PostEditorView: View {
             }
             if let url = model.videoURL(post) {
                 Section("Save") {
-                    Button { saveVideo(url, title: post.title) } label: { Label("Save Video…", systemImage: "square.and.arrow.down") }
+                    Button { save(url, title: post.title) } label: { Label("Save Video…", systemImage: "square.and.arrow.down") }
                 }
             }
             if let video = model.videoURL(post) {
@@ -313,6 +363,16 @@ struct PostEditorView: View {
                     }
                 }
                 .sheet(isPresented: $pickingCover) { CoverPickerSheet(post: post, videoURL: video) }
+            }
+            if model.usesEditedPhotos(post) {
+                Section {
+                    Label("This video uses photos edited with AI. Instagram asks for realistic AI-made content to be labeled: add a note to the caption, or turn on the AI label when you post from Instagram.", systemImage: "sparkles")
+                        .foregroundStyle(.secondary)
+                    Button("Add AI Note to Caption") {
+                        model.updatePost(postId) { $0.caption += "\n\n" + String(localized: "📸 Photos edited with AI.") }
+                    }
+                    .disabled(post.caption.contains(String(localized: "📸 Photos edited with AI.")) || post.status == .published)
+                }
             }
             Section("Publish Now") {
                 Button {

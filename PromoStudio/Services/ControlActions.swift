@@ -76,10 +76,22 @@ enum ControlActions {
             let theme = str("theme").flatMap(VideoTheme.init(rawValue:)) ?? model.settings.defaultTheme
             return try created(model.createPost(projectId: p.id, feature: a.features.first { $0.id == str("featureId") }, suggestion: nil, theme: theme, seconds: int("seconds", 15), notes: "", autoRender: false, language: str("language"), brief: brief))
         case "createDirectedPost":
-            // Without projectId: a standalone video (always free-form)
+            // Without projectId: a standalone video (always free-form). format "image": an image post of `size`.
+            // uploads: IDs from uploadImage, images for Claude to look at and use
             let p = try optionalProject(), a = try p.map(analysis)
-            let brief = PostBrief(prompt: try require("prompt"), research: bool("research", true))
-            return try created(model.createDirectedPost(projectId: p?.id, feature: a?.features.first { $0.id == str("featureId") }, seconds: int("seconds", 20), language: str("language"), brief: brief, voiceover: bool("voiceover", model.settings.voiceoverEnabled), style: str("style").flatMap(DirectedStyle.init(rawValue:)) ?? .promo, accountId: try accountId()))
+            let uploads = try (body["uploads"] as? [String] ?? []).map { id in
+                guard let data = UploadStaging.take(id) else { throw ActionError.notFound(String(localized: "Uploaded image")) }
+                return data
+            }
+            let prompt = str("prompt").flatMap { $0.isEmpty ? nil : $0 } ?? (uploads.isEmpty ? nil : String(localized: "Make it from my images."))
+            guard let prompt else { throw ActionError.missing("prompt") }
+            let brief = PostBrief(prompt: prompt, research: bool("research", true))
+            let image = str("format") == "image" ? str("size").flatMap(ImageSize.init(rawValue:)) ?? .portrait : nil
+            return try created(model.createDirectedPost(projectId: p?.id, feature: a?.features.first { $0.id == str("featureId") }, seconds: int("seconds", 20), language: str("language"), brief: brief, voiceover: bool("voiceover", model.settings.voiceoverEnabled), style: str("style").flatMap(DirectedStyle.init(rawValue:)) ?? .promo, accountId: try accountId(), image: image, uploads: uploads))
+        case "uploadImage":
+            // An image for a new post, sent ahead (base64, at most a few MB); returns its uploadId
+            guard let raw = body["data"] as? String, let data = Data(base64Encoded: raw), !data.isEmpty else { throw ActionError.missing("data") }
+            return (200, ["ok": true, "uploadId": try UploadStaging.put(data)])
         case "produce":
             let p = try post()
             guard p.directed != nil else { throw ActionError.failed(String(localized: "This post isn't a promo film")) }
@@ -205,6 +217,31 @@ enum ControlActions {
             guard model.library(id) != nil else { throw ActionError.notFound(String(localized: "Library")) }
             model.createTemplate(libraryId: id, prompt: try require("prompt"))
             return accepted(id)
+        // MARK: Fixing failures
+        case "fix":
+            // The fix of the post's (or the alert's) failure: retry, repair or withoutVoiceover
+            guard let fix = str("fix").flatMap(Problem.Fix.init(rawValue:)) else { throw ActionError.missing("fix") }
+            let p = try post()
+            var problem = p.problem ?? Problem(message: p.lastError ?? "")
+            problem.subject = p.id
+            model.apply(fix, to: problem)
+            return accepted(p.id)
+        case "setPersonPhoto":
+            // Which photo of a person the video uses: the downloaded one (useOriginal) or Codex's edit
+            let p = try post(), name = try require("name")
+            guard p.directed?.storyboard.people?.contains(where: { $0.name == name }) == true else { throw ActionError.notFound(name) }
+            model.setUseOriginalPhoto(bool("useOriginal", false), name: name, postId: p.id)
+            return ok
+        case "editPersonPhoto":
+            // Codex edits the person's photo again; `instruction` (optional) replaces Claude's
+            let p = try post(), name = try require("name")
+            guard p.directed?.storyboard.people?.contains(where: { $0.name == name }) == true else { throw ActionError.notFound(name) }
+            guard CodexImage.isInstalled else { throw ActionError.failed(String(localized: "Codex isn’t installed on the Mac. Install it and sign in with your ChatGPT account to edit photos.")) }
+            model.editPersonPhoto(name: name, postId: p.id, instruction: str("instruction"))
+            return accepted(p.id)
+        case "checkHealth":
+            await model.refreshRequirements()
+            return ok
         case "dismissAlert":
             model.alert = nil
             model.notice = nil
@@ -212,5 +249,31 @@ enum ControlActions {
         default:
             throw ActionError.unknown(name)
         }
+    }
+}
+
+/// Images the phone sends before the post exists (one request each, to stay under the relay's message size).
+/// They wait in a folder until createDirectedPost takes them; leftovers older than a day are removed.
+enum UploadStaging {
+    private static var dir: URL { Paths.ensure(Paths.root.appendingPathComponent("uploads")) }
+
+    static func put(_ data: Data) throws -> String {
+        let fm = FileManager.default
+        for name in (try? fm.contentsOfDirectory(atPath: dir.path)) ?? [] {
+            let url = dir.appendingPathComponent(name)
+            if let date = (try? url.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate, date.timeIntervalSinceNow < -86400 {
+                try? fm.removeItem(at: url)
+            }
+        }
+        let id = UUID().uuidString
+        try data.write(to: dir.appendingPathComponent(id))
+        return id
+    }
+
+    static func take(_ id: String) -> Data? {
+        guard UUID(uuidString: id) != nil else { return nil }
+        let url = dir.appendingPathComponent(id)
+        defer { try? FileManager.default.removeItem(at: url) }
+        return try? Data(contentsOf: url)
     }
 }

@@ -286,6 +286,16 @@ private struct VoiceoverSettings: View {
             Section("Music") {
                 Toggle("Background music (royalty-free beat)", isOn: $model.settings.musicEnabled)
             }
+            Section {
+                Toggle("Edit people’s photos with Codex", isOn: $model.settings.editPhotosWithCodex)
+                    .disabled(!CodexImage.isInstalled)
+            } header: {
+                Text("Photos")
+            } footer: {
+                Text(CodexImage.isInstalled
+                    ? "When a video needs a look a photo doesn’t have (a fierce expression, looking at the camera, a celebration), Claude asks Codex to edit it. It uses your ChatGPT plan, with no extra cost. You can always go back to the original photo."
+                    : "Install Codex and sign in with your ChatGPT account to edit people’s photos (expression, pose, light).")
+            }
         }
     }
 }

@@ -4,6 +4,8 @@ enum InstagramError: LocalizedError {
     case notConnected
     case missingConfig(String)
     case api(String)
+    /// A Graph API error with its code and subcode (they tell an expired session from a rejected video)
+    case graph(String, code: Int?, subcode: Int?)
     case processingFailed(String)
     case timeout
 
@@ -12,6 +14,7 @@ enum InstagramError: LocalizedError {
         case .notConnected: String(localized: "No Instagram account is connected.")
         case let .missingConfig(what): String(localized: "Missing setting: \(what)")
         case let .api(msg): "Instagram API: \(msg)"
+        case let .graph(msg, code, _): "Instagram API: \(msg)" + (code.map { " (\($0))" } ?? "")
         case let .processingFailed(msg): String(localized: "Instagram couldn't process the video: \(msg)")
         case .timeout: String(localized: "Instagram video processing timed out.")
         }
@@ -379,7 +382,7 @@ struct InstagramAPI {
         let (data, resp) = try await URLSession.shared.data(for: req)
         let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
         if let err = json["error"] as? [String: Any] {
-            throw InstagramError.api(err["message"] as? String ?? "\(err)")
+            throw InstagramError.graph(err["message"] as? String ?? "\(err)", code: err["code"] as? Int, subcode: err["error_subcode"] as? Int)
         }
         if let err = json["error_message"] as? String { throw InstagramError.api(err) }
         if let http = resp as? HTTPURLResponse, http.statusCode >= 300 {

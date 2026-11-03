@@ -3,15 +3,17 @@ import Foundation
 /// One row of the setup checklist: a tool or setting Promo Studio needs.
 struct Requirement: Identifiable, Sendable {
     enum Item: String, CaseIterable, Sendable {
-        case claude, node, remotion, git, xcode, gemini, instagram, templates
+        case claude, node, remotion, git, xcode, gemini, instagram, templates, disk, codex
     }
 
-    enum Status: Sendable {
+    enum Status: String, Sendable {
         case ready
         /// Required item is missing or not working
         case missing
         /// Optional item is not installed
         case notSetUp
+        /// Works, but needs attention soon (an expiring session, little disk space)
+        case warning
     }
 
     let item: Item
@@ -20,6 +22,21 @@ struct Requirement: Identifiable, Sendable {
     var detail: String
 
     var id: Item { item }
+
+    var title: String {
+        switch item {
+        case .claude: "Claude Code"
+        case .node: "Node.js"
+        case .remotion: String(localized: "Remotion (Video Engine)")
+        case .git: "git"
+        case .xcode: "Xcode"
+        case .gemini: String(localized: "Gemini API Key")
+        case .instagram: "Instagram"
+        case .templates: "Promo Templates"
+        case .disk: String(localized: "Disk Space")
+        case .codex: "Codex"
+        }
+    }
     /// Videos cannot be produced without these
     var isRequired: Bool { [.claude, .node, .remotion].contains(item) }
 }
@@ -28,11 +45,12 @@ struct Requirement: Identifiable, Sendable {
 enum SetupService {
     static let minimumNodeMajor = 20
 
-    static func check(hasGeminiKey: Bool, isConnected: Bool, hasLibrary: Bool) async -> [Requirement] {
+    static func check(hasGeminiKey: Bool, accounts: [InstagramAccount], hasLibrary: Bool) async -> [Requirement] {
         async let claude = checkClaude()
         async let node = checkNode()
         async let git = checkGit()
         async let xcode = checkXcode()
+        async let codex = checkCodex()
         let nodeResult = await node
         return [
             await claude,
@@ -44,15 +62,53 @@ enum SetupService {
                         detail: hasGeminiKey
                             ? String(localized: "Voiceover is enabled.")
                             : String(localized: "For voiceover. Videos can be made without it.")),
-            Requirement(item: .instagram, status: isConnected ? .ready : .notSetUp,
-                        detail: isConnected
-                            ? String(localized: "Videos can be published and scheduled.")
-                            : String(localized: "For publishing. Without it, save videos and post them yourself.")),
+            checkInstagram(accounts),
             Requirement(item: .templates, status: hasLibrary ? .ready : .notSetUp,
                         detail: hasLibrary
                             ? String(localized: "A template library is connected.")
                             : String(localized: "Ready-made video formats and skills. Optional.")),
+            await codex,
+            checkDisk(),
         ]
+    }
+
+    /// Sessions that have run out or are about to (Promo Studio renews them in the last week; this is when that failed)
+    private static func checkInstagram(_ accounts: [InstagramAccount]) -> Requirement {
+        guard !accounts.isEmpty else {
+            return Requirement(item: .instagram, status: .notSetUp,
+                               detail: String(localized: "For publishing. Without it, save videos and post them yourself."))
+        }
+        let now = Date()
+        let expired = accounts.filter { ($0.tokenExpiresAt ?? .distantFuture) <= now }.map { "@\($0.username)" }
+        if !expired.isEmpty {
+            return Requirement(item: .instagram, status: .warning,
+                               detail: String(localized: "The session of \(expired.joined(separator: ", ")) has expired. Reconnect to publish again."))
+        }
+        let soon = accounts.filter { ($0.tokenExpiresAt ?? .distantFuture).timeIntervalSince(now) < 3 * 86400 }.map { "@\($0.username)" }
+        if !soon.isEmpty {
+            return Requirement(item: .instagram, status: .warning,
+                               detail: String(localized: "The session of \(soon.joined(separator: ", ")) expires in a few days and couldn’t be renewed. Reconnect to keep publishing."))
+        }
+        return Requirement(item: .instagram, status: .ready, detail: String(localized: "Videos can be published and scheduled."))
+    }
+
+    private static func checkCodex() async -> Requirement {
+        guard let version = await output("codex", ["--version"]) else {
+            return Requirement(item: .codex, status: .notSetUp,
+                               detail: String(localized: "For editing people’s photos (expression, pose, light) with your ChatGPT plan. Optional."))
+        }
+        return Requirement(item: .codex, status: .ready, detail: String(localized: "\(version.replacingOccurrences(of: "codex-cli ", with: "")), edits people’s photos"))
+    }
+
+    private static func checkDisk() -> Requirement {
+        let free = (try? Paths.root.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey]))?.volumeAvailableCapacityForImportantUsage ?? 0
+        let text = ByteCountFormatter.string(fromByteCount: free, countStyle: .file)
+        guard free > 0 else { return Requirement(item: .disk, status: .ready, detail: "") }
+        if free < 5_000_000_000 {
+            return Requirement(item: .disk, status: .warning,
+                               detail: String(localized: "Only \(text) free. Rendering needs a few GB; free up space if renders fail."))
+        }
+        return Requirement(item: .disk, status: .ready, detail: String(localized: "\(text) free"))
     }
 
     private static func checkClaude() async -> Requirement {

@@ -186,7 +186,10 @@ struct ContentPost: Codable, Identifiable, Hashable {
     var publishedAt: Date?
     var mediaId: String?
     var permalink: String?
-    var lastError: String?
+    /// Message of the last failure; changing it drops a `problem` that no longer matches
+    var lastError: String? { didSet { if problem?.message != lastError { problem = nil } } }
+    /// The last failure, explained (what happened, the fix, the raw output)
+    var problem: Problem?
     var metrics: PostMetrics?
     var createdAt = Date()
     /// Set if produced from a library (e.g. Promo Templates); `spec` is unused in that case
@@ -199,6 +202,14 @@ struct ContentPost: Codable, Identifiable, Hashable {
     var revisions: [ScriptRevision]?
     /// Custom video Claude wrote from a storyboard (if set, `spec` is only used for voiceover/duration)
     var directed: DirectedVideo?
+    /// nil: a video. `.image`: a single picture made the same way (storyboard → code → the last frame as a still)
+    var format: PostFormat?
+    /// The rendered picture of an image post (in the post folder)
+    var imageFile: String?
+    /// Images the user added for Claude to look at and use (files in the post's `uploads` folder)
+    var uploads: [String]?
+
+    var isImage: Bool { format == .image }
 
     /// Full text to post to Instagram
     var fullCaption: String {
@@ -206,8 +217,14 @@ struct ContentPost: Codable, Identifiable, Hashable {
         return tags.isEmpty ? caption : "\(caption)\n\n\(tags)"
     }
 
+    /// Records a failure so it stays visible on the post after the alert closes.
+    mutating func fail(_ problem: Problem) {
+        lastError = problem.message
+        self.problem = problem
+    }
+
     /// The rendered video belongs to an older script
-    var isVideoOutdated: Bool { videoFile != nil && status == .draft && external == nil }
+    var isVideoOutdated: Bool { (videoFile != nil || imageFile != nil) && status == .draft && external == nil }
 
     func snapshot(instruction: String, code: String? = nil) -> ScriptRevision {
         ScriptRevision(instruction: instruction, title: title, scenes: spec.scenes, caption: caption, hashtags: hashtags, altText: altText, postingTip: postingTip, storyboard: directed?.storyboard, code: code)
@@ -248,6 +265,14 @@ struct ContentPost: Codable, Identifiable, Hashable {
         }
         // A revision that leaves these out keeps the previous ones
         if board.logos == nil { board.logos = directed?.storyboard.logos }
+        if board.people == nil { board.people = directed?.storyboard.people }
+        // The user's choice of photo and the last edit error stay with a person whose edit didn't change
+        let previous = directed?.storyboard.people ?? []
+        for i in (board.people ?? []).indices {
+            guard let old = previous.first(where: { $0.name == board.people?[i].name }), old.edit == board.people?[i].edit else { continue }
+            board.people?[i].useOriginal = old.useOriginal
+            board.people?[i].editError = old.editError
+        }
         if board.coverScene == nil { board.coverScene = directed?.storyboard.coverScene }
         directed?.storyboard = board
         caption = result.caption
@@ -314,6 +339,10 @@ struct DirectedVideo: Codable, Hashable {
     var produced = false
     /// Produced without voiceover (scene durations come from the storyboard)
     var muted: Bool?
+    /// Size of an image post (videos are always 1080×1920)
+    var size: ImageSize?
+    /// Length asked for when the storyboard was written (to write it again after a failure)
+    var targetSeconds: Int?
     /// Claude's short summary and notes on the video it made
     var summary: String?
     var notes: String?
@@ -327,6 +356,8 @@ struct Storyboard: Codable, Hashable {
     var scenes: [StoryScene]
     /// Real logos (clubs, leagues, brands) the video shows; Promo Studio downloads them
     var logos: [StoryLogo]?
+    /// Real people (players, coaches, celebrities) the video shows; Promo Studio downloads their photos and cuts them out
+    var people: [StoryPerson]?
     /// Scene whose most striking moment becomes the cover (index into `scenes`)
     var coverScene: Int?
 }
@@ -337,6 +368,45 @@ struct StoryLogo: Codable, Hashable {
     var url: String?
     /// English Wikipedia article title; its lead image is used when there's no url or it fails
     var wiki: String?
+}
+
+struct StoryPerson: Codable, Hashable {
+    var name: String
+    /// Direct link to a photo of them, when the director found one
+    var url: String?
+    /// English Wikipedia article title; its lead image (usually a photo of them) is used when there's no url or it fails
+    var wiki: String?
+    /// How Codex should edit the photo (expression, gaze, pose, light); nil: used as downloaded
+    var edit: String?
+    /// The user chose the downloaded photo over the edited one
+    var useOriginal: Bool?
+    /// Why the last edit failed (Codex refused or made no image)
+    var editError: String?
+}
+
+enum PostFormat: String, Codable {
+    case video, image
+}
+
+/// Image post sizes (Instagram feed portrait, square, story)
+enum ImageSize: String, Codable, CaseIterable {
+    case portrait, square, story
+
+    var pixels: (width: Int, height: Int) {
+        switch self {
+        case .portrait: (1080, 1350)
+        case .square: (1080, 1080)
+        case .story: (1080, 1920)
+        }
+    }
+
+    var label: String {
+        switch self {
+        case .portrait: String(localized: "Portrait 4:5")
+        case .square: String(localized: "Square 1:1")
+        case .story: String(localized: "Story 9:16")
+        }
+    }
 }
 
 struct StoryScene: Codable, Hashable, Identifiable {

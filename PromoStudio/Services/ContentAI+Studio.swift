@@ -13,9 +13,10 @@ extension ContentAI {
         var findings: String?
         var sources: [String]?
         var logos: [StoryLogo]?
+        var people: [StoryPerson]?
         var coverScene: Int?
 
-        var storyboard: Storyboard { Storyboard(concept: concept, scenes: scenes, logos: logos, coverScene: coverScene) }
+        var storyboard: Storyboard { Storyboard(concept: concept, scenes: scenes, logos: logos, people: people, coverScene: coverScene) }
     }
 
     struct ProductionResult: Decodable {
@@ -41,14 +42,24 @@ extension ContentAI {
         voiceover: Bool,
         style: DirectedStyle,
         brandKit: BrandKit?,
+        uploads: [URL] = [],
+        image: ImageSize? = nil,
         onActivity: @escaping @Sendable (String) -> Void
     ) async throws -> StoryboardResult {
         let usable = Self.assets(for: languageCode, in: project)
         let freeform = style == .freeform
+        let opening: String
+        if let image {
+            let px = image.pixels
+            opening = "You are an award-winning art director and graphic designer. Design a single \(px.width)×\(px.height) IMAGE post for Instagram exactly as the user describes it below\(freeform ? ". It is posted from the account of the app below, but it is NOT an ad for the app" : ", promoting the app below"). The image will be built in code with Remotion and rendered as a still. At this stage you are only writing the DESIGN BRIEF as a one-scene storyboard; once the user approves it, a developer will build it one-to-one."
+        } else if freeform {
+            opening = "You are an award-winning director and motion graphics designer. Design a \(targetSeconds)-second vertical (1080×1920) video for Instagram/TikTok exactly as the user describes it below. It is posted from the account of the app below, but it is NOT an ad for the app. The video will be custom-built scene by scene in code with Remotion. At this stage you are only writing the STORYBOARD; once the user approves it, a developer will turn it into code one-to-one."
+        } else {
+            opening = "You are an award-winning commercial director and motion graphics designer. Design a \(targetSeconds)-second vertical (1080×1920) promo film for the Instagram/TikTok account of the app below. The film will be custom-built scene by scene in code with Remotion. At this stage you are only writing the STORYBOARD; once the user approves it, a developer will turn it into code one-to-one."
+        }
+        let uploadNames = uploads.map(\.lastPathComponent)
         let prompt = """
-        \(freeform
-            ? "You are an award-winning director and motion graphics designer. Design a \(targetSeconds)-second vertical (1080×1920) video for Instagram/TikTok exactly as the user describes it below. It is posted from the account of the app below, but it is NOT an ad for the app. The video will be custom-built scene by scene in code with Remotion. At this stage you are only writing the STORYBOARD; once the user approves it, a developer will turn it into code one-to-one."
-            : "You are an award-winning commercial director and motion graphics designer. Design a \(targetSeconds)-second vertical (1080×1920) promo film for the Instagram/TikTok account of the app below. The film will be custom-built scene by scene in code with Remotion. At this stage you are only writing the STORYBOARD; once the user approves it, a developer will turn it into code one-to-one.")
+        \(opening)
 
         USER'S REQUEST
         \(brief.prompt)
@@ -64,14 +75,22 @@ extension ContentAI {
         - In each scene's visual field, write with enough clarity for the developer to understand: what is visible, where, how it enters/exits, which kit components (from the list below), timing accents ("flash at 0.5 s", "number counts from 0 to 78").
         - Real-world information (date, time, team, numbers) is used only if verified or present in the app information.
         \(Self.logoRule)
+        \(peopleRule)
+        \(uploads.isEmpty ? "" : Self.uploadsRule(uploads))
 
         KIT (the building blocks available to the developer)
-        Kinetic (title with rise/pop/slam word animation), Typewriter, Caption, Phone (phone frame, tilt, float), ZoomShot (zoom into a region of the screen), AppIcon, Counter (counting number), ProbabilityBar (three-way probability bar), BarChart, Countdown, Badge (color badge), Matchup (matchup scoreboard), Notification (notification card), Chip (LIVE/NEW/PRO label), GlassCard, Ticker (scrolling band), StaggerList, GradientBg, Spotlight, GridFloor, Pitch (football pitch), Particles, Burst (confetti), Flash, Vignette, useShake/usePunch/useDrift; sound effects: whoosh, whip, switch, ding, click, pageTurn, shutter, notification, boom, dramatic, recordScratch, yippee, wow. If needed, the developer can also do custom drawing (SVG, CSS shapes).
+        Portrait (a real person's cut-out photo with a mood: fierce, heroic, mono, natural, and a team-color rim light), FaceOff (two people face to face with VS), Kinetic (title with rise/pop/slam word animation), Typewriter, Caption, Phone (phone frame, tilt, float), ZoomShot (zoom into a region of the screen), AppIcon, Counter (counting number), ProbabilityBar (three-way probability bar), BarChart, Countdown, Badge (color badge), Matchup (matchup scoreboard), Notification (notification card), Chip (LIVE/NEW/PRO label), GlassCard, Ticker (scrolling band), StaggerList, GradientBg, Spotlight, GridFloor, Pitch (football pitch), Particles, Burst (confetti), Flash, Vignette, useShake/usePunch/useDrift; sound effects: whoosh, whip, switch, ding, click, pageTurn, shutter, notification, boom, dramatic, recordScratch, yippee, wow. If needed, the developer can also do custom drawing (SVG, CSS shapes).
         \(brandKit.map { "\nBRAND KIT\nThis project has a ready-made brand kit: \($0.sourceFolder.path) (you may read it; especially the brand rules in CLAUDE.md, if present: \($0.libraryRoot.appendingPathComponent("CLAUDE.md").path)). You may refer to kit elements such as stickers, icons and intro animations by name in the storyboard." } ?? "")
 
         PROJECT IMAGES (use the file name exactly as given in the assets field)
         \(usable.isEmpty ? "(none)" : Self.assetList(usable))
 
+        \(image != nil ? """
+        THE IMAGE (exactly one scene)
+        - visual: the complete layout: what is where (top to bottom), sizes, colors, typography, photos and how they are treated, depth and light. Everything must read in a second on a phone.
+        - text: the headline, short (≤7 words), in \(language). Wrap the word to emphasize in *asterisks*. Other texts on the image go in visual.
+        - durationSec: 2. Leave voiceover and sfx empty. coverScene: 0.
+        """ : """
         SCENES
         - 5–9 scenes, total duration about \(targetSeconds) s (via durationSec; hook 1.2–2 s).
         - text: the main on-screen text, short (≤7 words), in \(language). Wrap the word to emphasize in *asterisks*.
@@ -82,6 +101,7 @@ extension ContentAI {
         - sfx: the scene's sound effect(s) and their moment (e.g. "boom 0.2 s"), empty if none.
         - assets: project images to use in the scene (empty array if none\(freeform ? "; leave empty unless the request calls for the app" : "")).
         - coverScene: index (0-based) of the scene whose fully settled frame makes the most eye-catching cover (big readable title or the key visual on screen, not a transition). This frame becomes the Instagram cover.
+        """)
 
         CAPTION
         - caption: optimized for Instagram SEO; the first line is a strong keyword hook (first 125 characters), 2–4 short lines, suitable emoji, \(freeform ? "a CTA at the end only if it fits the request" : "a clear CTA at the end"). Do not put hashtags in the caption.
@@ -91,9 +111,10 @@ extension ContentAI {
         return try await claude.structured(
             StoryboardResult.self,
             prompt: prompt,
-            schema: Self.storyboardSchema(assetNames: usable.map(\.fileName), maxHashtags: maxHashtags, research: brief.research),
+            schema: Self.storyboardSchema(assetNames: usable.map(\.fileName) + uploadNames, maxHashtags: maxHashtags, research: brief.research, image: image != nil),
             cwd: project.folderURL,
             tools: brief.research ? Self.researchTools : ["Read", "Glob", "Grep", "WebFetch"],
+            additionalDirectories: uploads.isEmpty ? [] : [uploads[0].deletingLastPathComponent()],
             maxTurns: brief.research ? 40 : 12,
             onActivity: onActivity
         )
@@ -106,8 +127,9 @@ extension ContentAI {
         let board = post.directed?.storyboard ?? Storyboard(concept: "", scenes: [])
         let current = Self.storyboardJSON(post: post, board: board)
         let freeform = post.directed?.isFreeform == true
+        let uploads = StudioService.uploadFiles(post).map { Paths.post(post.id).appendingPathComponent($0.1) }
         let prompt = """
-        You are an award-winning \(freeform ? "director" : "commercial director"). Update the \(freeform ? "video" : "promo film") storyboard below according to the user's REVISION INSTRUCTION.
+        You are an award-winning \(post.isImage ? "art director" : freeform ? "director" : "commercial director"). Update the \(post.isImage ? "image post design (a one-scene storyboard; keep it one scene)" : freeform ? "video" : "promo film") storyboard below according to the user's REVISION INSTRUCTION.
 
         REVISION INSTRUCTION
         \(instruction)
@@ -118,7 +140,9 @@ extension ContentAI {
         - If there is a voiceover, every sentence must start with a tone tag ([excited], [curious], [amazed], [friendly], [serious]).
         \(Self.pronunciationRule(language))
         \(Self.logoRule)
-        - Keep the logos list and coverScene unless the instruction changes them; update coverScene if the scenes change.
+        \(peopleRule)
+        \(uploads.isEmpty ? "" : Self.uploadsRule(uploads))
+        - Keep the logos and people lists and coverScene unless the instruction changes them; update coverScene if the scenes change.
         \(freeform ? "- This is a free-form video, not an app ad: do not add app features, screenshots or a store CTA unless the instruction or the original request asks for them." : "")
 
         APP
@@ -136,9 +160,10 @@ extension ContentAI {
         return try await claude.structured(
             StoryboardResult.self,
             prompt: prompt,
-            schema: Self.storyboardSchema(assetNames: usable.map(\.fileName), maxHashtags: maxHashtags, research: research),
+            schema: Self.storyboardSchema(assetNames: usable.map(\.fileName) + (post.uploads ?? []), maxHashtags: maxHashtags, research: research, image: post.isImage),
             cwd: project.folderURL,
             tools: research ? Self.researchTools : ["Read", "Glob", "Grep", "WebFetch"],
+            additionalDirectories: uploads.isEmpty ? [] : [uploads[0].deletingLastPathComponent()],
             maxTurns: research ? 30 : 8,
             onActivity: onActivity
         )
@@ -159,6 +184,10 @@ extension ContentAI {
             """ } ?? """
             TASK: Turn the approved storyboard below into code in \(folder)/Video.tsx as `export const Video: React.FC<StudioProps>`. Stay faithful to the storyboard; implement every motion and effect in the director's notes.
             """
+        let px = (directed.size ?? .portrait).pixels
+        let imageRules = post.isImage ? """
+            - THIS IS A STILL IMAGE, \(px.width)×\(px.height) (props.width × props.height; read them with useVideoConfig, don't assume 1080×1920). The storyboard has one scene that describes the whole image. Promo Studio renders frame 59, the last frame, as the picture: everything must be fully in place by frame 45 (entrance animations are fine, but nothing may still be moving or fading at frame 59). No Timeline, audio or sound effects. Adapt the safe area to the size (60 px from every edge).
+            """ : ""
         let prompt = """
         You are a senior motion graphics developer (Remotion 4, React). \(directed.isFreeform ? "You are coding a vertical video for an app's social account. It is not an app ad: build exactly what the storyboard describes and do not add app screenshots, store badges or CTA cards it doesn't have." : "You are coding an app's vertical promo film.") The working folder is Promo Studio's Remotion studio.
 
@@ -172,13 +201,16 @@ extension ContentAI {
         RULES
         - Write only inside the \(folder)/ folder (you may create sub-files for helper components). Do not touch kit files or other folders. Import kit components from the '../../kit' path.
         - The rules in KIT.md apply: safe area, readable sizes, frame-based animation only, no Math.random, uppercase text written in uppercase in the source (no textTransform, which breaks Turkish i/İ).
+        \(imageRules)
+        - Real people: props.people maps each name in the storyboard's people list to {photo, cutout?} (cutout: the same photo with the background removed). Show them with the kit Portrait or FaceOff, or an <Img> of the cutout/photo, wherever the storyboard shows that person. Never draw a real person as a silhouette, stick figure, emoji or avatar. A name missing from props.people has no photo: show them with typography instead (name, shirt number, team colors). In the verification stills, check that each photo shows that person, is not cut off awkwardly, and faces the way the scene needs (use flip); the mood comes from the treatment, color, light and motion, since the photo itself can't be changed.
+        - Uploaded images: props.uploads maps the user's image file names to {photo, cutout?}, and scene.assets include them as public paths. Use them as the storyboard says (full-bleed with a slow push, the cutout over a new background, a framed card…).
         - Real logos: props.logos maps each name in the storyboard's logos list to its downloaded image (public path). Show them with the kit Logo, Matchup's logo field, or <Img src={staticFile(path)}> with objectFit 'contain', wherever the storyboard shows that club/league/brand, even where a visual field still mentions a Badge for it; never redraw a real logo in SVG/CSS. A name missing from props.logos has no image: use colors and an abbreviation Badge for it. In the verification stills, check that every logo shows the right club/brand; if one is clearly wrong, use a Badge instead and say so in notes.
         - Quality bar: it must look like it came from an agency. Layered backgrounds, depth (shadow, glow, blur), moving camera (drift, shake, punch), clear hierarchy. Do not leave empty or static frames.
         - The entry file is ready: src/entries/\(id).tsx (composition id: \(id)).
 
         VERIFICATION (mandatory)
         1. Run `npx tsc --noEmit`; fix all errors in \(folder)/ (ignore errors in other folders).
-        2. Take a frame from the middle of each scene and from the first second of the hook:
+        2. \(post.isImage ? "Take frame 59 at --scale=0.5 (that is the picture) and check it like a designer: hierarchy, contrast, readable at phone size, nothing cut off." : "Take a frame from the middle of each scene and from the first second of the hook:")
            `npx remotion still src/entries/\(id).tsx \(id) \(previews)/sN.png --props=\(props) --frame=<frame> --scale=0.4 --log=error`
            Open the frames with Read and inspect them: text overflow, unreadable text, overlapping elements, empty frames, deviations from the storyboard. Fix the problems and check again.
         3. When finished, return summary (a short description of the video) and notes (known limitations, deviations from the storyboard). Promo Studio will do the final render; do not render it yourself.
@@ -211,6 +243,31 @@ extension ContentAI {
       - url: a direct link to the official logo image (PNG, SVG or WebP), only if you have confirmed it, e.g. the source the app itself uses (a football app may load crests from media.api-sports.io/football/teams/<id>.png: take the id from the app's code or data, never guess it). It's tried first; wiki is the fallback.
       Only a logo that can't be downloaded falls back to colors and an abbreviation badge (Badge).
     """
+
+    /// Real people: listed with a photo source in the storyboard, downloaded and cut out by Promo Studio, shown with Portrait/FaceOff.
+    var peopleRule: String {
+        Self.peopleBaseRule + (editPhotos ? Self.photoEditRule : "")
+    }
+
+    static let peopleBaseRule = """
+    - Real people: when the video shows real, well-known people (players, coaches, athletes, artists, public figures), show their real photos, never silhouettes, stick figures or drawn avatars. List EVERY one of them in the people field: name (as written in the visual fields), plus wiki (the exact English Wikipedia article title, e.g. "Deniz Undav", "Ermedin Demirović"; use WebFetch on en.wikipedia.org to confirm it if unsure) and/or url (a direct link to a photo of them that you confirmed). Promo Studio downloads the photo and cuts the person out of the background. Many articles have no photo: if the article shows none, look for a direct photo link (the club's or league's player page, a press image) and give it as url; a clear, front-facing photo of just that person works best. If the user uploaded a photo of the person, use that upload instead.
+      In the visual fields, plan how they appear with the kit: Portrait (one person; mood fierce, heroic, mono or natural; a rim light in the team color) or FaceOff (two people face to face with a VS). Without an edit, a photo keeps its pose and facial expression: create the feeling (e.g. ambitious, fierce, face to face) with the mood, color, light, contrast, framing and motion.
+    """
+
+    /// Codex edits the downloaded photos when the storyboard asks for it
+    static let photoEditRule = """
+
+      PHOTO EDITS: Promo Studio can have an image model (Codex image generation) edit each downloaded photo before it is cut out. When the request asks for a look the photo is unlikely to have (an ambitious or fierce expression, looking at the camera, a celebration, a pose, dramatic stadium light) or two people have to face each other, give the person an edit: one instruction in English for the image model, e.g. "fierce, determined expression, looking straight into the camera, clenched fist, dramatic red stadium backlight". The person's face, identity and kit are kept as they are; ask only for expression, gaze, pose, light and framing (not other people, logos, text or a different kit). For two people facing each other, have one look toward the right of the frame and the other toward the left. Leave edit empty when the downloaded photo works as it is.
+    """
+
+    /// Images the user added to the post
+    static func uploadsRule(_ uploads: [URL]) -> String {
+        """
+        - THE USER'S IMAGES: the user added these images for this post:
+        \(uploads.map { "  - \($0.lastPathComponent): \($0.path)" }.joined(separator: "\n"))
+          Open each one with Read and look at it closely (who or what is in it, any text, the mood and colors). Build the video around them as the request says; if the request is just the images, tell their story. Use them in scenes via the assets field with the exact file name. Each also has a cut-out version (subject without its background) the developer can place over a new background.
+        """
+    }
 
     /// Directing principles for an app promo film
     static let promoRules = """
@@ -246,13 +303,14 @@ extension ContentAI {
             "title": post.title, "concept": board.concept, "scenes": scenes, "caption": post.caption,
             "hashtags": post.hashtags, "altText": post.altText ?? "", "postingTip": post.postingTip ?? "",
             "logos": (board.logos ?? []).map { logo in ["name": logo.name, "url": logo.url, "wiki": logo.wiki].compactMapValues { $0 } },
+            "people": (board.people ?? []).map { p in ["name": p.name, "url": p.url, "wiki": p.wiki, "edit": p.edit].compactMapValues { $0 } },
             "coverScene": board.coverScene ?? 0,
         ]
         let data = (try? JSONSerialization.data(withJSONObject: obj, options: [.prettyPrinted, .sortedKeys])) ?? Data()
         return String(decoding: data, as: UTF8.self)
     }
 
-    static func storyboardSchema(assetNames: [String], maxHashtags: Int, research: Bool) -> [String: Any] {
+    static func storyboardSchema(assetNames: [String], maxHashtags: Int, research: Bool, image: Bool = false) -> [String: Any] {
         var asset: [String: Any] = ["type": "string"]
         if !assetNames.isEmpty { asset["enum"] = assetNames }
         return [
@@ -262,8 +320,8 @@ extension ContentAI {
                 "concept": str,
                 "scenes": [
                     "type": "array",
-                    "minItems": 3,
-                    "maxItems": 10,
+                    "minItems": image ? 1 : 3,
+                    "maxItems": image ? 1 : 10,
                     "items": [
                         "type": "object",
                         "properties": [
@@ -285,6 +343,14 @@ extension ContentAI {
                     "items": [
                         "type": "object",
                         "properties": ["name": str, "url": str, "wiki": str],
+                        "required": ["name"],
+                    ],
+                ],
+                "people": [
+                    "type": "array",
+                    "items": [
+                        "type": "object",
+                        "properties": ["name": str, "url": str, "wiki": str, "edit": str],
                         "required": ["name"],
                     ],
                 ],

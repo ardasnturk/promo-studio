@@ -4,6 +4,8 @@ import AppKit
 /// The kit and its guide live in `RemotionTemplate/src/kit` and `KIT.md`.
 enum StudioService {
     static let fps = 30
+    /// Length of an image post's composition; the last frame is rendered as the picture
+    static let imageFrames = 60
 
     static func compositionId(for postId: UUID) -> String {
         "V" + postId.uuidString.replacingOccurrences(of: "-", with: "").prefix(10)
@@ -51,6 +53,13 @@ enum StudioService {
         let assetDir = Paths.projectAssets(project.id)
 
         func publish(_ file: String) -> String? {
+            // An uploaded image of the post, or a project image
+            if post.uploads?.contains(file) == true {
+                let dest = postDir.appendingPathComponent("uploads/\(file)")
+                Paths.ensure(dest.deletingLastPathComponent())
+                try? fm.removeItem(at: dest)
+                return (try? fm.copyItem(at: Paths.post(post.id).appendingPathComponent("uploads/\(file)"), to: dest)) != nil ? "\(postRel)/uploads/\(file)" : nil
+            }
             let src = assetDir.appendingPathComponent(file)
             guard fm.fileExists(atPath: src.path) else { return nil }
             let dest = projDir.appendingPathComponent(file)
@@ -62,7 +71,8 @@ enum StudioService {
         var scenes: [[String: Any]] = []
         for (i, s) in board.scenes.enumerated() {
             let specScene = post.spec.scenes.indices.contains(i) ? post.spec.scenes[i] : nil
-            let frames = max(20, Int(((specScene?.durationSec ?? s.durationSec) * Double(fps)).rounded()))
+            // An image is one 2-second scene; its last frame is the picture
+            let frames = post.isImage ? imageFrames : max(20, Int(((specScene?.durationSec ?? s.durationSec) * Double(fps)).rounded()))
             var scene: [String: Any] = [
                 "from": from, "durationInFrames": frames, "text": s.text, "visual": s.visual,
                 "assets": (s.assets ?? []).compactMap(publish),
@@ -82,16 +92,32 @@ enum StudioService {
         ]
         if let label = storeLabel { brand["storeLabel"] = label }
         if let logo = project.logoFile, let path = publish(logo) { brand["logo"] = path }
-        var logos: [String: String] = [:]
-        for (name, file) in logoFiles(post) {
+        /// Copies a file of the post folder into the studio; returns its public path
+        func publishPostFile(_ file: String) -> String? {
             let dest = postDir.appendingPathComponent(file)
             Paths.ensure(dest.deletingLastPathComponent())
             try? fm.removeItem(at: dest)
-            if (try? fm.copyItem(at: Paths.post(post.id).appendingPathComponent(file), to: dest)) != nil { logos[name] = "\(postRel)/\(file)" }
+            return (try? fm.copyItem(at: Paths.post(post.id).appendingPathComponent(file), to: dest)) != nil ? "\(postRel)/\(file)" : nil
         }
+        var logos: [String: String] = [:]
+        for (name, file) in logoFiles(post) {
+            if let path = publishPostFile(file) { logos[name] = path }
+        }
+        func photo(_ file: String, cutout: String?) -> [String: String]? {
+            guard let path = publishPostFile(file) else { return nil }
+            var d = ["photo": path]
+            if let cutout, let cut = publishPostFile(cutout) { d["cutout"] = cut }
+            return d
+        }
+        var people: [String: [String: String]] = [:]
+        for (name, file, cutout) in peopleFiles(post) { people[name] = photo(file, cutout: cutout) }
+        var uploads: [String: [String: String]] = [:]
+        for (name, file, cutout) in uploadFiles(post) { uploads[name] = photo(file, cutout: cutout) }
+        let size = post.isImage ? (post.directed?.size ?? .portrait).pixels : (width: 1080, height: 1920)
         let props: [String: Any] = [
-            "brand": brand, "lang": post.language ?? "tr", "fps": fps, "durationInFrames": max(30, from), "scenes": scenes,
-            "logos": logos,
+            "brand": brand, "lang": post.language ?? "tr", "fps": fps, "durationInFrames": post.isImage ? imageFrames : max(30, from), "scenes": scenes,
+            "logos": logos, "people": people, "uploads": uploads,
+            "width": size.width, "height": size.height, "format": post.isImage ? "image" : "video",
         ]
         let url = propsFile(post.id)
         try JSONSerialization.data(withJSONObject: props, options: [.prettyPrinted, .sortedKeys]).write(to: url)
@@ -100,13 +126,15 @@ enum StudioService {
 
     // MARK: Real logos
 
-    private static func logoFile(_ logo: StoryLogo) -> String {
-        let slug = logo.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+    private static func logoFile(_ logo: StoryLogo) -> String { downloadName("logos", logo.name, logo.url, logo.wiki) }
+
+    private static func downloadName(_ folder: String, _ name: String, _ url: String?, _ wiki: String?) -> String {
+        let slug = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
             .components(separatedBy: CharacterSet.alphanumerics.inverted).filter { !$0.isEmpty }.joined(separator: "-")
         // Stable across launches (hashValue isn't), so a changed source downloads again
-        let source = [logo.url, logo.wiki].compactMap { $0 }.joined(separator: "|")
+        let source = [url, wiki].compactMap { $0 }.joined(separator: "|")
         let hash = source.utf8.reduce(UInt32(5381)) { ($0 &<< 5) &+ $0 &+ UInt32($1) }
-        return "logos/\(slug.isEmpty ? "logo" : slug)-\(hash % 100_000)"
+        return "\(folder)/\(slug.isEmpty ? "photo" : slug)-\(hash % 100_000)"
     }
 
     /// Downloaded logos of the storyboard: name → file in the post folder.
@@ -135,6 +163,86 @@ enum StudioService {
         }
     }
 
+    // MARK: Real people
+
+    private static func personFile(_ person: StoryPerson) -> String { downloadName("people", person.name, person.url, person.wiki) }
+
+    /// Photos of the storyboard's people the video uses: name → photo and its cut-out (if Vision found the person).
+    /// The Codex-edited photo when there is one and the user didn't choose the original.
+    static func peopleFiles(_ post: ContentPost) -> [(String, String, String?)] {
+        (post.directed?.storyboard.people ?? []).compactMap { person in
+            let photos = personPhotos(post, person)
+            if person.useOriginal != true, let edited = photos.edited { return (person.name, edited.photo, edited.cutout) }
+            return photos.original.map { (person.name, $0.photo, $0.cutout) }
+        }
+    }
+
+    /// The downloaded photo of a person and its Codex edit (for the current instruction), each with its cut-out; paths in the post folder.
+    static func personPhotos(_ post: ContentPost, _ person: StoryPerson) -> (original: (photo: String, cutout: String?)?, edited: (photo: String, cutout: String?)?) {
+        let files = (try? FileManager.default.contentsOfDirectory(atPath: Paths.post(post.id).appendingPathComponent("people").path)) ?? []
+        func find(_ base: String) -> (photo: String, cutout: String?)? {
+            guard let photo = files.first(where: { ($0 as NSString).deletingPathExtension == base }) else { return nil }
+            return ("people/\(photo)", files.contains("\(base)-cut.png") ? "people/\(base)-cut.png" : nil)
+        }
+        let base = (personFile(person) as NSString).lastPathComponent
+        return (find(base), editedBase(person).flatMap(find))
+    }
+
+    /// File name of a person's edit; it changes with the instruction, so a new instruction makes a new edit
+    private static func editedBase(_ person: StoryPerson) -> String? {
+        guard let edit = person.edit?.trimmingCharacters(in: .whitespacesAndNewlines), !edit.isEmpty else { return nil }
+        let hash = edit.utf8.reduce(UInt32(5381)) { ($0 &<< 5) &+ $0 &+ UInt32($1) }
+        return ((personFile(person) as NSString).lastPathComponent) + "-edit-\(hash % 100_000)"
+    }
+
+    /// Has Codex edit the person's downloaded photo per their instruction and cuts the result out.
+    static func editPerson(_ post: ContentPost, _ person: StoryPerson) async throws {
+        guard let original = personPhotos(post, person).original, let base = editedBase(person), let edit = person.edit else { return }
+        let dir = Paths.post(post.id).appendingPathComponent("people")
+        let saved = try await CodexImage.edit(photo: Paths.post(post.id).appendingPathComponent(original.photo), name: person.name, instruction: edit, to: dir.appendingPathComponent(base))
+        _ = await PhotoService.cutout(saved, to: dir.appendingPathComponent("\(base)-cut.png"))
+    }
+
+    /// Downloads a photo of each person in the storyboard and cuts them out of the background.
+    /// Ones that can't be found are skipped (the video shows them without a photo).
+    static func downloadPeople(_ post: ContentPost) async {
+        let dir = Paths.ensure(Paths.post(post.id).appendingPathComponent("people"))
+        for person in post.directed?.storyboard.people ?? [] where personPhotos(post, person).original == nil {
+            var sources = [person.url].compactMap { $0.flatMap(URL.init(string:)) }
+            if let wiki = person.wiki, let image = await wikipediaImage(wiki) { sources.append(image) }
+            let base = dir.appendingPathComponent((personFile(person) as NSString).lastPathComponent)
+            for url in sources where url.scheme == "https" || url.scheme == "http" {
+                guard let (data, resp) = try? await fetch(url), (resp as? HTTPURLResponse)?.statusCode == 200,
+                      let saved = PhotoService.normalize(data, to: base) else { continue }
+                _ = await PhotoService.cutout(saved, to: URL(fileURLWithPath: base.path + "-cut.png"))
+                break
+            }
+        }
+    }
+
+    // MARK: Uploaded images
+
+    /// Images the user added to the post: name → file and its cut-out
+    static func uploadFiles(_ post: ContentPost) -> [(String, String, String?)] {
+        let dir = Paths.post(post.id).appendingPathComponent("uploads")
+        return (post.uploads ?? []).compactMap { name in
+            guard FileManager.default.fileExists(atPath: dir.appendingPathComponent(name).path) else { return nil }
+            let cut = "\((name as NSString).deletingPathExtension)-cut.png"
+            return (name, "uploads/\(name)", FileManager.default.fileExists(atPath: dir.appendingPathComponent(cut).path) ? "uploads/\(cut)" : nil)
+        }
+    }
+
+    /// Saves an image the user added into the post's uploads (resized and upright) and makes its cut-out; returns its file name.
+    static func addUpload(_ data: Data, to postId: UUID) async -> String? {
+        let dir = Paths.ensure(Paths.post(postId).appendingPathComponent("uploads"))
+        let existing = (try? FileManager.default.contentsOfDirectory(atPath: dir.path)) ?? []
+        var n = 1
+        while existing.contains(where: { ($0 as NSString).deletingPathExtension == "image-\(n)" }) { n += 1 }
+        guard let saved = PhotoService.normalize(data, to: dir.appendingPathComponent("image-\(n)")) else { return nil }
+        _ = await PhotoService.cutout(saved, to: dir.appendingPathComponent("image-\(n)-cut.png"))
+        return saved.lastPathComponent
+    }
+
     private static func fetch(_ url: URL) async throws -> (Data, URLResponse) {
         var req = URLRequest(url: url, timeoutInterval: 20)
         // Some hosts (e.g. Wikimedia) refuse requests without a user agent
@@ -142,7 +250,8 @@ enum StudioService {
         return try await URLSession.shared.data(for: req)
     }
 
-    /// Lead image of an English Wikipedia article: for clubs, leagues and brands, their crest or logo.
+    /// Lead image of an English Wikipedia article: for clubs, leagues and brands their crest or logo, for people their photo.
+    /// Without one, the image Wikidata has for the article's item (P18, on Wikimedia Commons).
     private static func wikipediaImage(_ title: String) async -> URL? {
         let path = title.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: " ", with: "_")
         guard let encoded = path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed.subtracting(["/"])),
@@ -150,7 +259,20 @@ enum StudioService {
               let (data, resp) = try? await fetch(api), (resp as? HTTPURLResponse)?.statusCode == 200,
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
         let image = (json["originalimage"] as? [String: Any])?["source"] ?? (json["thumbnail"] as? [String: Any])?["source"]
-        return (image as? String).flatMap(URL.init(string:))
+        if let url = (image as? String).flatMap(URL.init(string:)) { return url }
+        guard let item = json["wikibase_item"] as? String else { return nil }
+        return await wikidataImage(item)
+    }
+
+    private static func wikidataImage(_ item: String) async -> URL? {
+        guard let api = URL(string: "https://www.wikidata.org/wiki/Special:EntityData/\(item).json"),
+              let (data, resp) = try? await fetch(api), (resp as? HTTPURLResponse)?.statusCode == 200,
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let entity = (json["entities"] as? [String: Any])?[item] as? [String: Any],
+              let claims = (entity["claims"] as? [String: Any])?["P18"] as? [[String: Any]],
+              let file = ((claims.first?["mainsnak"] as? [String: Any])?["datavalue"] as? [String: Any])?["value"] as? String,
+              let name = file.replacingOccurrences(of: " ", with: "_").addingPercentEncoding(withAllowedCharacters: .urlPathAllowed.subtracting(["/"])) else { return nil }
+        return URL(string: "https://commons.wikimedia.org/wiki/Special:FilePath/\(name)?width=1800")
     }
 
     private static func imageExtension(_ data: Data, response: URLResponse) -> String? {
@@ -200,7 +322,7 @@ enum StudioService {
             durationInFrames={300}
             calculateMetadata={({props}) => {
               const p = props as unknown as StudioProps;
-              return {fps: p.fps, durationInFrames: p.durationInFrames};
+              return {fps: p.fps, durationInFrames: p.durationInFrames, width: p.width ?? 1080, height: p.height ?? 1920};
             }}
           />
         );
@@ -241,6 +363,26 @@ enum StudioService {
         try await ProcessRunner.run(bin, ["still", entry, id, outDir.appendingPathComponent(cover).path, props, "--frame=\(frame)", "--image-format=jpeg"], cwd: Paths.remotion)
         onProgress(1, String(localized: "Done"))
         return (video, cover, Double(frame) / Double(fps))
+    }
+
+    /// Renders an image post's picture (its last frame) into the post folder; it is also the post's cover.
+    static func renderImage(post: ContentPost, onProgress: @escaping @Sendable (Double, String) -> Void) async throws -> String {
+        guard let directed = post.directed else { throw StudioError.noStoryboard }
+        let id = directed.compositionId
+        guard hasCode(id) else { throw StudioError.noCode }
+        try writeEntry(id)
+        let image = "image.jpg"
+        let out = Paths.post(post.id).appendingPathComponent(image)
+        try? FileManager.default.removeItem(at: out)
+        onProgress(0.1, String(localized: "Rendering the image…"))
+        try await ProcessRunner.run(
+            Paths.remotion.appendingPathComponent("node_modules/.bin/remotion").path,
+            ["still", "src/entries/\(id).tsx", id, out.path, "--props=\(propsFile(post.id).path)", "--frame=\(imageFrames - 1)", "--image-format=jpeg", "--jpeg-quality=95"],
+            cwd: Paths.remotion
+        )
+        guard FileManager.default.fileExists(atPath: out.path) else { throw RemotionError.noOutput }
+        onProgress(1, String(localized: "Done"))
+        return image
     }
 
     // MARK: Code versions

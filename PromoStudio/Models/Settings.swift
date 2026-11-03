@@ -44,6 +44,8 @@ struct AppSettings: Codable, Equatable {
     var ttsVoice: String = "Fenrir"
     var ttsModel: String = "gemini-3.1-flash-tts-preview"
     var musicEnabled: Bool = true
+    /// Claude may ask Codex (image generation, on the ChatGPT plan) to edit people's photos: expression, pose, light
+    var editPhotosWithCodex: Bool = true
     /// Check daily for new versions of Promo Studio and the template libraries
     var automaticallyChecksForUpdates: Bool = true
     /// Don't show the Promo Templates install suggestion again
@@ -76,6 +78,7 @@ struct AppSettings: Codable, Equatable {
         ttsVoice = try c.decodeIfPresent(String.self, forKey: .ttsVoice) ?? d.ttsVoice
         ttsModel = try c.decodeIfPresent(String.self, forKey: .ttsModel) ?? d.ttsModel
         musicEnabled = try c.decodeIfPresent(Bool.self, forKey: .musicEnabled) ?? d.musicEnabled
+        editPhotosWithCodex = try c.decodeIfPresent(Bool.self, forKey: .editPhotosWithCodex) ?? d.editPhotosWithCodex
         automaticallyChecksForUpdates = try c.decodeIfPresent(Bool.self, forKey: .automaticallyChecksForUpdates) ?? d.automaticallyChecksForUpdates
         templatesPromptDismissed = try c.decodeIfPresent(Bool.self, forKey: .templatesPromptDismissed) ?? d.templatesPromptDismissed
     }

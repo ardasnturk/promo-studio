@@ -7,3 +7,4 @@ export * from './data';
 export * from './ui';
 export * from './bg';
 export * from './timeline';
+export * from './people';

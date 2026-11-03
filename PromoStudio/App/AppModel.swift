@@ -48,9 +48,15 @@ final class AppModel {
     /// Opens the studio window (the menu bar label sets it via `openWindow`)
     @ObservationIgnored var openStudio: () -> Void = {}
     var isSetupIncomplete: Bool { requirements?.contains { $0.isRequired && $0.status != .ready } ?? false }
-    var alert: String? { didSet { if let alert, alert != oldValue { control?.alertShown(title: String(localized: "Something went wrong"), message: alert) } } }
+    /// The failure shown in the alert (and on the phone): what happened, the fix, the raw output
+    var problem: Problem? { didSet { if let problem, problem != oldValue { control?.problemShown(problem) } } }
+    /// A plain message for the alert
+    var alert: String? {
+        get { problem?.message }
+        set { problem = newValue.map { Problem(message: $0) } }
+    }
     /// Non-error notice (e.g. accounts added)
-    var notice: String? { didSet { if let notice, notice != oldValue { control?.alertShown(title: String(localized: "Info"), message: notice) } } }
+    var notice: String? { didSet { if let notice, notice != oldValue { control?.noticeShown(notice) } } }
     /// Local control API so Remote Code can drive the app from an iPhone
     @ObservationIgnored private var control: ControlServer?
     /// Promo Studio's own updates (GitHub Releases)
@@ -165,16 +171,18 @@ final class AppModel {
         ContentAI(
             claude: ClaudeCode(model: settings.claudeModel),
             language: ContentLanguage.find(code ?? settings.contentLanguage).promptName,
-            maxHashtags: settings.maxHashtags
+            maxHashtags: settings.maxHashtags,
+            editPhotos: settings.editPhotosWithCodex && CodexImage.isInstalled
         )
     }
 
-    private func run(_ id: UUID, _ message: String, kind: JobKind = .other, _ work: @escaping () async throws -> Void) {
+    /// `input`: what the job was asked to do (a revision instruction), kept with a failure so it can run again
+    private func run(_ id: UUID, _ message: String, kind: JobKind = .other, input: String? = nil, _ work: @escaping () async throws -> Void) {
         guard tasks[id] == nil else { return }
         let started = Date()
         jobs[id] = JobState(message: message, kind: kind, startedAt: started, estimatedEnd: JobTimings.shared.typicalDuration(of: kind).map { started + $0 })
         tasks[id] = Task {
-            var failure: String?
+            var failure: Problem?
             var cancelled = false
             do {
                 try await work()
@@ -185,8 +193,16 @@ final class AppModel {
                 if Task.isCancelled {
                     cancelled = true
                 } else {
-                    failure = Self.shortened(error.localizedDescription)
-                    alert = failure
+                    var p = Problem(error, kind: kind)
+                    p.kind = kind
+                    p.subject = id
+                    p.input = input
+                    if p.fix == .retry, !canRetry(id, kind) { p.fix = nil }
+                    if p.fix == .repair, post(id)?.directed?.produced != true { p.fix = canRetry(id, kind) ? .retry : nil }
+                    if p.fix == .withoutVoiceover, post(id)?.directed == nil { p.fix = nil }
+                    failure = p
+                    if post(id) != nil { updatePost(id) { $0.fail(p) } }
+                    problem = p
                 }
             }
             if !cancelled, failure == nil { JobTimings.shared.record(kind, duration: Date().timeIntervalSince(started)) }
@@ -197,7 +213,7 @@ final class AppModel {
     }
 
     /// Tells Remote Code (and through it the phone) that a job ended and whether there is something to see.
-    private func jobFinished(_ id: UUID, kind: JobKind, startedAt: Date, failure: String?, cancelled: Bool) {
+    private func jobFinished(_ id: UUID, kind: JobKind, startedAt: Date, failure: Problem?, cancelled: Bool) {
         guard !cancelled, let control else { return }
         let post = post(id)
         let title = post?.title ?? project(id)?.name ?? library(id)?.name ?? ""
@@ -206,6 +222,8 @@ final class AppModel {
             notice = [.caption, .ideas, .other].contains(kind) ? nil : "failed"
         } else if kind == .publish {
             notice = "published"
+        } else if let post, post.isImage, (renderedAt[id] ?? .distantPast) >= startedAt {
+            notice = "imageReady"
         } else if let post, (renderedAt[id] ?? .distantPast) >= startedAt || (kind == .generate && post.videoFile != nil) || (kind == .translate && post.videoFile != nil) {
             notice = "videoReady"
         } else if let post, [.storyboard, .script, .revise].contains(kind), post.status == .draft {
@@ -213,11 +231,88 @@ final class AppModel {
         } else {
             notice = nil
         }
-        control.jobFinished(id, kind: kind, notice: notice, title: title, postId: post?.id, error: failure)
+        control.jobFinished(id, kind: kind, notice: notice, title: title, postId: post?.id, problem: failure)
     }
 
     func cancel(_ id: UUID) {
         tasks[id]?.cancel()
+    }
+
+    // MARK: Fixing failures
+
+    /// Whether the failed step of this kind can simply run again for the post or project.
+    private func canRetry(_ id: UUID, _ kind: JobKind) -> Bool {
+        if project(id) != nil { return kind == .analyze }
+        guard let post = post(id) else { return false }
+        switch kind {
+        case .storyboard: return post.directed != nil && post.brief != nil
+        case .produce, .render: return true
+        case .revise: return post.directed != nil
+        case .generate: return post.external?.skill != nil
+        case .publish: return post.videoFile != nil
+        default: return false
+        }
+    }
+
+    /// Applies the fix of a failure that is done in the model (the views open settings, setup and login themselves).
+    func apply(_ fix: Problem.Fix, to problem: Problem) {
+        guard let id = problem.subject else { return }
+        switch fix {
+        case .retry: retry(id, problem: problem)
+        case .repair: repairVideo(id, error: problem.details ?? problem.message)
+        case .withoutVoiceover: produce(id, voiceover: false)
+        case .reconnect, .settings, .setup: break
+        }
+        if self.problem?.subject == id { self.problem = nil }
+    }
+
+    /// Runs the step that failed again; work that already succeeded (storyboard, code, video) is kept.
+    func retry(_ id: UUID, problem: Problem? = nil) {
+        guard tasks[id] == nil else { return }
+        if project(id) != nil { return analyze(id) }
+        guard let post = post(id) else { return }
+        let kind = problem?.kind ?? post.problem?.kind
+        updatePost(id) { $0.lastError = nil }
+        if let directed = post.directed {
+            if directed.storyboard.scenes.isEmpty || kind == .storyboard {
+                guard let (project, analysis) = context(for: post) else { return }
+                let kit = post.projectId == nil ? nil : brandKit(for: project, copyAssets: false)
+                return writeStoryboard(id, project: project, analysis: analysis, feature: analysis.features.first { $0.id == post.featureId }, kit: kit)
+            }
+            if kind == .revise, let instruction = problem?.input ?? post.problem?.input {
+                // The storyboard part may already be applied; coding the revision again is what's left
+                if directed.produced, post.revisions?.last?.instruction == instruction { return recode(id, revision: instruction) }
+                return reviseDirected(id, instruction: instruction, renderAfter: true)
+            }
+            if kind == .publish { return queuePublish(id) }
+            if directed.produced, StudioService.hasCode(directed.compositionId) { return render(id) }
+            return produce(id, voiceover: directed.muted != true)
+        }
+        if post.external != nil, post.videoFile == nil || kind == .generate { return runSkill(id) }
+        if kind == .publish { return queuePublish(id) }
+        render(id)
+    }
+
+    /// Claude fixes the video code from the render error, then the video is rendered again.
+    func repairVideo(_ postId: UUID, error: String) {
+        guard let post = post(postId), post.directed?.produced == true else { return retry(postId) }
+        recode(postId, revision: """
+        The final render failed with the error below. Find the cause in the video code and fix it so the whole video renders; keep the design, texts and timing as they are. Verify with tsc and stills as usual.
+
+        RENDER ERROR
+        \(String(error.suffix(4000)))
+        """)
+    }
+
+    /// Codes the video again for an instruction (a revision or a fix) and renders it.
+    private func recode(_ postId: UUID, revision: String) {
+        guard let post = post(postId), let (project, analysis) = context(for: post) else { return }
+        let ai = contentAI(language: post.language)
+        run(postId, String(localized: "Claude is fixing the video…"), kind: .produce) { [weak self] in
+            guard let self else { return }
+            try await self.codeVideo(postId, project: project, analysis: analysis, ai: ai, revision: revision)
+            try await self.performRender(postId)
+        }
     }
 
     private func report(_ id: UUID, _ message: String, progress: Double? = nil) {
@@ -280,7 +375,7 @@ final class AppModel {
                 let asset = try await AssetService.captureSimulator(label: label, projectId: id)
                 updateProject(id) { $0.assets.append(asset) }
             } catch {
-                alert = error.localizedDescription
+                problem = Problem(error)
             }
         }
     }
@@ -361,7 +456,7 @@ final class AppModel {
         if let id = post.directed?.compositionId {
             code = StudioService.snapshotCode(id, postId: postId)
             if let name = revision.code {
-                do { try StudioService.restoreCode(name, id: id, postId: postId) } catch { alert = error.localizedDescription; return }
+                do { try StudioService.restoreCode(name, id: id, postId: postId) } catch { problem = Problem(error); return }
             }
         }
         updatePost(postId) { p in
@@ -384,9 +479,9 @@ final class AppModel {
 
     /// Has Claude write a storyboard from the user's request; the video is coded with `produce` once the storyboard is approved.
     /// `projectId` nil: a standalone video (always free-form, no app). `accountId`: Instagram account for this post, overriding the project's.
-    func createDirectedPost(projectId: UUID?, feature: AppFeature?, seconds: Int, language: String?, brief: PostBrief, voiceover: Bool, style: DirectedStyle = .promo, accountId: String? = nil) -> UUID? {
+    /// `image`: an image post of that size instead of a video. `uploads`: images the user added for Claude to look at and use.
+    func createDirectedPost(projectId: UUID?, feature: AppFeature?, seconds: Int, language: String?, brief: PostBrief, voiceover: Bool, style: DirectedStyle = .promo, accountId: String? = nil, image: ImageSize? = nil, uploads: [Data] = []) -> UUID? {
         let language = ContentLanguage.find(language ?? settings.contentLanguage)
-        let ai = contentAI(language: language.id)
         if let projectId { updateProject(projectId) { AssetService.ensureLocalizedAssets(language: language.id, in: &$0) } }
         let project: AppProject, analysis: ProjectAnalysis
         if let projectId {
@@ -414,16 +509,104 @@ final class AppModel {
         post.accountId = accountId
         post.directed = DirectedVideo(storyboard: Storyboard(concept: "", scenes: []), compositionId: StudioService.compositionId(for: post.id))
         post.directed?.style = style
-        data.posts.append(post)
-        let postId = post.id
-
-        run(postId, brief.research ? String(localized: "Claude is researching and writing the storyboard…") : String(localized: "Claude is writing the storyboard…"), kind: .storyboard) { [weak self] in
-            let result = try await ai.writeStoryboard(project: project, languageCode: language.id, analysis: analysis, feature: feature, brief: brief, targetSeconds: seconds, voiceover: voiceover, style: style, brandKit: kit) { activity in
-                Task { @MainActor in self?.report(postId, activity) }
-            }
-            self?.updatePost(postId) { $0.applyStoryboard(result) }
+        post.directed?.targetSeconds = seconds
+        post.directed?.muted = !voiceover || image != nil
+        if let image {
+            post.format = .image
+            post.directed?.size = image
         }
-        return postId
+        data.posts.append(post)
+        writeStoryboard(post.id, project: project, analysis: analysis, feature: feature, kit: kit, newUploads: uploads)
+        return post.id
+    }
+
+    /// Claude writes the post's storyboard from its brief (also when trying again after a failure).
+    /// `newUploads` are saved into the post first (resized, cut out), so Claude can look at them.
+    private func writeStoryboard(_ postId: UUID, project: AppProject, analysis: ProjectAnalysis, feature: AppFeature?, kit: ContentAI.BrandKit?, newUploads: [Data] = []) {
+        guard let post = post(postId), let directed = post.directed, let brief = post.brief else { return }
+        let language = ContentLanguage.find(post.language)
+        let ai = contentAI(language: language.id)
+        let seconds = directed.targetSeconds ?? 20, voiceover = directed.muted != true, style = directed.style ?? .promo
+        let image = post.isImage ? directed.size ?? .portrait : nil
+        run(postId, brief.research ? String(localized: "Claude is researching and writing the storyboard…") : String(localized: "Claude is writing the storyboard…"), kind: .storyboard) { [weak self] in
+            guard let self else { return }
+            if !newUploads.isEmpty {
+                self.report(postId, String(localized: "Preparing your images…"))
+                var names: [String] = []
+                for data in newUploads {
+                    if let name = await StudioService.addUpload(data, to: postId) { names.append(name) }
+                }
+                self.updatePost(postId) { $0.uploads = ($0.uploads ?? []) + names }
+            }
+            guard let post = self.post(postId) else { return }
+            let uploads = StudioService.uploadFiles(post).map { Paths.post(postId).appendingPathComponent($0.1) }
+            if !uploads.isEmpty { self.report(postId, String(localized: "Claude is looking at your images…")) }
+            let result = try await ai.writeStoryboard(project: project, languageCode: language.id, analysis: analysis, feature: feature, brief: brief, targetSeconds: seconds, voiceover: voiceover, style: style, brandKit: kit, uploads: uploads, image: image) { activity in
+                Task { @MainActor in self.report(postId, activity) }
+            }
+            self.updatePost(postId) { $0.applyStoryboard(result) }
+            // The people's photos (and their edits) are ready to review before the storyboard is approved
+            await self.preparePeople(postId)
+        }
+    }
+
+    // MARK: People's photos
+
+    /// Downloads the photos of the storyboard's people, cuts them out and, if enabled, has Codex edit them.
+    /// A failed edit doesn't fail the job: the person keeps the downloaded photo and the reason is shown with it.
+    private func preparePeople(_ postId: UUID) async {
+        guard let post = post(postId), let people = post.directed?.storyboard.people, !people.isEmpty else { return }
+        report(postId, String(localized: "Finding photos of the people and cutting them out…"))
+        await StudioService.downloadPeople(post)
+        guard settings.editPhotosWithCodex, CodexImage.isInstalled else { return }
+        for person in people where person.edit?.isEmpty == false && person.useOriginal != true {
+            guard !Task.isCancelled, let current = self.post(postId) else { return }
+            let photos = StudioService.personPhotos(current, person)
+            guard photos.original != nil, photos.edited == nil else { continue }
+            report(postId, String(localized: "Codex is editing the photo of \(person.name)…"))
+            var failure: String?
+            do {
+                try await StudioService.editPerson(current, person)
+            } catch {
+                if Task.isCancelled { return }
+                failure = Problem(error).message
+            }
+            updatePerson(postId, person.name) { $0.editError = failure }
+        }
+    }
+
+    private func updatePerson(_ postId: UUID, _ name: String, _ change: (inout StoryPerson) -> Void) {
+        updatePost(postId) { p in
+            guard let i = p.directed?.storyboard.people?.firstIndex(where: { $0.name == name }) else { return }
+            change(&p.directed!.storyboard.people![i])
+        }
+    }
+
+    /// Uses the downloaded photo instead of the edit (or goes back to the edit).
+    func setUseOriginalPhoto(_ useOriginal: Bool, name: String, postId: UUID) {
+        updatePerson(postId, name) { $0.useOriginal = useOriginal }
+        updatePost(postId) { $0.markScriptChanged() }
+    }
+
+    /// Has Codex edit a person's photo again, with a new instruction if given (the user's own words, e.g. from the phone).
+    func editPersonPhoto(name: String, postId: UUID, instruction: String?) {
+        let instruction = instruction?.trimmingCharacters(in: .whitespacesAndNewlines)
+        updatePerson(postId, name) { p in
+            if let instruction, !instruction.isEmpty { p.edit = instruction }
+            p.useOriginal = false
+            p.editError = nil
+        }
+        updatePost(postId) { $0.markScriptChanged() }
+        if let post = post(postId), let person = post.directed?.storyboard.people?.first(where: { $0.name == name }),
+           StudioService.personPhotos(post, person).edited != nil { return }
+        run(postId, String(localized: "Codex is editing the photo of \(name)…"), kind: .other) { [weak self] in
+            await self?.preparePeople(postId)
+        }
+    }
+
+    /// Whether the post shows people in photos Codex edited (Instagram asks for AI-made content to be labeled)
+    func usesEditedPhotos(_ post: ContentPost) -> Bool {
+        (post.directed?.storyboard.people ?? []).contains { $0.useOriginal != true && StudioService.personPhotos(post, $0).edited != nil }
     }
 
     /// Generates the voiceover from the approved storyboard, has Claude code the video and renders it.
@@ -431,7 +614,11 @@ final class AppModel {
     func produce(_ postId: UUID, voiceover: Bool = true) {
         guard let post = post(postId), post.directed != nil, let (project, analysis) = context(for: post) else { return }
         let ai = contentAI(language: post.language)
-        updatePost(postId) { $0.directed?.muted = !voiceover; $0.lastError = nil }
+        updatePost(postId) { p in
+            let image = p.isImage
+            p.directed?.muted = !voiceover || image
+            p.lastError = nil
+        }
         run(postId, String(localized: "Preparing video…"), kind: .produce) { [weak self] in
             guard let self else { return }
             try await self.recordingError(postId) {
@@ -466,7 +653,7 @@ final class AppModel {
               let (project, analysis) = context(for: post) else { return }
         let ai = contentAI(language: post.language)
         let produced = directed.produced && StudioService.hasCode(directed.compositionId)
-        run(postId, produced ? String(localized: "Claude is revising the storyboard and video…") : String(localized: "Claude is revising the storyboard…"), kind: .revise) { [weak self] in
+        run(postId, produced ? String(localized: "Claude is revising the storyboard and video…") : String(localized: "Claude is revising the storyboard…"), kind: .revise, input: instruction) { [weak self] in
             guard let self else { return }
             let result = try await ai.reviseStoryboard(post: post, project: project, analysis: analysis, instruction: instruction, produced: produced) { activity in
                 Task { @MainActor in self.report(postId, activity) }
@@ -478,6 +665,7 @@ final class AppModel {
                 p.applyStoryboard(result)
                 p.markScriptChanged()
             }
+            await self.preparePeople(postId)
             guard produced else { return }
             try await self.recordingError(postId) {
                 try await self.codeVideo(postId, project: project, analysis: analysis, ai: ai, revision: instruction)
@@ -519,6 +707,7 @@ final class AppModel {
             report(post.id, String(localized: "Downloading logos…"))
             await StudioService.downloadLogos(post)
         }
+        await preparePeople(post.id)
         try StudioService.writeProps(post: post, project: project, storeLabel: ContentLanguage.find(post.language).storeLabel)
     }
 
@@ -547,7 +736,17 @@ final class AppModel {
                 Task { @MainActor in self?.report(postId, msg, progress: progress) }
             }
             let result: (video: String, cover: String, coverSec: Double)
-            if post.directed != nil {
+            if post.isImage {
+                try await prepareDirectedAssets(&post, project: project)
+                let image = try await StudioService.renderImage(post: post, onProgress: progress)
+                updatePost(postId) {
+                    $0.imageFile = image
+                    $0.coverFile = image
+                    $0.status = .ready
+                }
+                renderedAt[postId] = Date()
+                return
+            } else if post.directed != nil {
                 try await prepareDirectedAssets(&post, project: project)
                 result = try await StudioService.render(post: post, onProgress: progress)
             } else if let external = post.external {
@@ -707,14 +906,14 @@ final class AppModel {
             data.libraries.append(lib)
             return lib.id
         } catch {
-            alert = error.localizedDescription
+            problem = Problem(error)
             return nil
         }
     }
 
     func rescanLibrary(_ id: UUID) {
         guard let lib = library(id), let i = data.libraries.firstIndex(where: { $0.id == id }) else { return }
-        do { data.libraries[i] = try LibraryService.scan(lib.rootURL, existing: lib) } catch { alert = error.localizedDescription }
+        do { data.libraries[i] = try LibraryService.scan(lib.rootURL, existing: lib) } catch { problem = Problem(error) }
     }
 
     /// Claude Code adds a new video template to the library from the user's description, then the library is rescanned.
@@ -763,8 +962,17 @@ final class AppModel {
         post.external = ExternalVideo(libraryId: libraryId, skill: skill, request: request, summary: "")
         post.status = .rendering
         data.posts.append(post)
-        let postId = post.id
-        let ai = contentAI(language: language.id)
+        runSkill(post.id)
+        return post.id
+    }
+
+    /// Claude Code runs the post's library template, then the video is imported and captioned.
+    private func runSkill(_ postId: UUID) {
+        guard let post = post(postId), let external = post.external, let skill = external.skill, let lib = library(external.libraryId) else { return }
+        let project = self.project(post.projectId)
+        let request = external.request
+        let ai = contentAI(language: post.language)
+        updatePost(postId) { $0.status = .rendering; $0.lastError = nil }
 
         run(postId, String(localized: "\(lib.name): preparing \(skill)…"), kind: .generate) { [weak self] in
             do {
@@ -781,7 +989,11 @@ final class AppModel {
                     p.external?.notes = r.notes
                 }
                 guard r.status == "done", let path = r.videoPath, !path.isEmpty else {
-                    self?.updatePost(postId) { $0.status = .draft; $0.lastError = r.status == "needs_input" ? String(localized: "Input needed: \(r.notes)") : String(localized: "Couldn't produce it: \(r.notes)") }
+                    var p = Problem(message: r.status == "needs_input" ? String(localized: "Input needed: \(r.notes)") : String(localized: "Couldn't produce it: \(r.notes)"),
+                                    title: String(localized: "The template couldn’t make the video"), code: .template, fix: .retry)
+                    p.kind = .generate
+                    p.subject = postId
+                    self?.updatePost(postId) { $0.status = .draft; $0.fail(p) }
                     return
                 }
                 let files = try await LibraryService.importVideo(from: path, postId: postId)
@@ -796,11 +1008,10 @@ final class AppModel {
                     p.altText = caption.altText
                 }
             } catch {
-                self?.updatePost(postId) { $0.status = $0.videoFile == nil ? .draft : .ready; $0.lastError = Self.shortened(error.localizedDescription) }
+                self?.updatePost(postId) { $0.status = $0.videoFile == nil ? .draft : .ready }
                 throw error
             }
         }
-        return postId
     }
 
     func generateIdeas(libraryId: UUID, focus: String) {
@@ -891,6 +1102,10 @@ final class AppModel {
         post.videoFile.map { Paths.post(post.id).appendingPathComponent($0) }
     }
 
+    func imageURL(_ post: ContentPost) -> URL? {
+        post.imageFile.map { Paths.post(post.id).appendingPathComponent($0) }
+    }
+
     func coverURL(_ post: ContentPost) -> URL? {
         post.coverFile.map { Paths.post(post.id).appendingPathComponent($0) }
     }
@@ -905,7 +1120,7 @@ final class AppModel {
             }
             updatePost(postId) { $0.coverFile = name; $0.coverSec = sec }
         } catch {
-            alert = error.localizedDescription
+            problem = Problem(error)
         }
     }
 
@@ -930,6 +1145,10 @@ final class AppModel {
 
     /// Posts to the post's Instagram account (its own, else its project's). Without one nothing is posted.
     func queuePublish(_ postId: UUID) {
+        if post(postId)?.isImage == true {
+            alert = String(localized: "Instagram’s API can publish a picture only from a public web address, which Promo Studio doesn’t have. Save the image and post it from Instagram.")
+            return
+        }
         guard let post = post(postId), let video = videoURL(post) else { return }
         guard let account = account(for: post), let token = token(for: account.userId) else {
             let message = String(localized: "Choose an Instagram account for this post first.")
@@ -980,6 +1199,7 @@ final class AppModel {
             lastMetricsRefresh = now
             refreshMetrics()
             refreshTokenIfNeeded()
+            Task { await refreshRequirements() }
         }
     }
 
@@ -1051,7 +1271,7 @@ final class AppModel {
             }
             await connect(withToken: r.token, expiresIn: r.expiresIn, alreadyLongLived: true)
         } catch {
-            alert = error.localizedDescription
+            problem = Problem(error)
         }
     }
 
@@ -1098,7 +1318,7 @@ final class AppModel {
                 notice = addedText
             }
         } catch {
-            alert = error.localizedDescription
+            problem = Problem(error)
         }
     }
 
@@ -1212,7 +1432,7 @@ final class AppModel {
                     Task { @MainActor in self.setupJob?.message = line }
                 }
             } catch {
-                alert = error.localizedDescription
+                problem = Problem(error)
             }
             setupJob = nil
             await refreshRequirements()
@@ -1220,9 +1440,10 @@ final class AppModel {
     }
 
     func refreshRequirements() async {
+        defer { control?.dataChanged() }
         requirements = await SetupService.check(
             hasGeminiKey: AudioService.geminiKey() != nil,
-            isConnected: isConnected,
+            accounts: data.accounts,
             hasLibrary: !data.libraries.isEmpty
         )
     }

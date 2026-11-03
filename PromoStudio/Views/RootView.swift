@@ -142,10 +142,26 @@ struct RootView: View {
                 showTemplatesPrompt = true
             }
         }
-        .alert("Something Went Wrong", isPresented: Binding(get: { model.alert != nil }, set: { if !$0 { model.alert = nil } })) {
-            Button("OK") { model.alert = nil }
-        } message: {
-            Text(model.alert ?? "")
+        .alert(Text(model.problem?.title ?? String(localized: "Something Went Wrong")), isPresented: Binding(get: { model.problem != nil }, set: { if !$0 { model.problem = nil } }), presenting: model.problem) { problem in
+            if let fix = problem.fix, FixButton.isAvailable(fix, for: problem) {
+                Button(FixButton.label(fix)) {
+                    switch fix {
+                    case .reconnect, .settings: SettingsWindow.show(using: openSettings)
+                    case .setup: model.showSetup = true
+                    case .retry, .repair, .withoutVoiceover: model.apply(fix, to: problem)
+                    }
+                    model.problem = nil
+                }
+            }
+            if let details = problem.details {
+                Button("Copy Details") {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(details, forType: .string)
+                }
+            }
+            Button("OK", role: .cancel) { model.problem = nil }
+        } message: { problem in
+            Text(problem.message)
         }
         .alert("Info", isPresented: Binding(get: { model.notice != nil }, set: { if !$0 { model.notice = nil } })) {
             Button("OK") { model.notice = nil }

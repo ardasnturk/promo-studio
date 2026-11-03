@@ -5,6 +5,8 @@ struct ContentAI {
     var claude: ClaudeCode
     var language: String
     var maxHashtags: Int
+    /// People's photos can be edited with Codex (the storyboard may give an edit instruction per person)
+    var editPhotos = false
 
     // MARK: 1) Project analysis
 

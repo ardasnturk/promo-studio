@@ -6,6 +6,23 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-11-03
+
+### Added
+- Readable errors: failures say what happened and what fixes it, with the fix
+  as a button (Try Again, Let Claude Fix It, Produce Without Voiceover,
+  Reconnect Account); the raw output stays under Details. Try Again runs only
+  the failed step.
+- Real photos of the people a video shows, downloaded and cut out of their
+  background; Portrait and FaceOff in the kit.
+- Codex edits people's photos (expression, gaze, pose, light) on the ChatGPT
+  plan; the storyboard's People box compares the original and the edit.
+- Images you add to a new video, which Claude looks at and builds on.
+- Image posts (4:5, 1:1, 9:16), saved or shared and posted by hand.
+- The setup checklist checks disk space, Instagram sessions and Codex.
+- Control API: `problem`, `health`, `uploadImage`, `fix`, `checkHealth`,
+  `setPersonPhoto`, `editPersonPhoto`.
+
 ## [1.3.1] — 2026-11-03
 
 ### Added

@@ -94,16 +94,30 @@ final class ControlServer {
 
     /// A job ended. `notice` says what is worth telling the user: videoReady, storyboardReady,
     /// published or failed (nil: nothing, e.g. a rewritten caption). Remote Code turns it into a notification.
-    func jobFinished(_ id: UUID, kind: JobKind, notice: String?, title: String, postId: UUID?, error: String?) {
+    func jobFinished(_ id: UUID, kind: JobKind, notice: String?, title: String, postId: UUID?, problem: Problem?) {
         var payload: [String: Any] = ["id": id.uuidString, "kind": kind.rawValue, "title": title]
         if let notice { payload["notice"] = notice }
         if let postId { payload["postId"] = postId.uuidString }
-        if let error { payload["error"] = error }
+        if let problem {
+            payload["error"] = problem.message
+            payload["problem"] = Self.object(problem)
+        }
         broadcast("finished", payload)
     }
 
-    func alertShown(title: String, message: String) {
-        broadcast("alert", ["title": title, "message": message])
+    /// The Mac shows an alert: a failure (with `problem`) or an info notice
+    func problemShown(_ problem: Problem) {
+        broadcast("alert", ["title": problem.title, "message": problem.message, "problem": Self.object(problem)])
+    }
+
+    func noticeShown(_ message: String) {
+        broadcast("alert", ["title": String(localized: "Info"), "message": message])
+    }
+
+    private static func object<T: Encodable>(_ value: T) -> Any {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        return (try? encoder.encode(value)).flatMap { try? JSONSerialization.jsonObject(with: $0) } ?? NSNull()
     }
 
     private func broadcast(_ event: String, _ data: [String: Any]) {
@@ -212,6 +226,8 @@ final class ControlServer {
         switch parts.first {
         case "posts" where parts.count == 3 && UUID(uuidString: parts[1]) != nil:
             url = Paths.post(UUID(uuidString: parts[1])!).appendingPathComponent(parts[2])
+        case "posts" where parts.count == 4 && ["people", "uploads"].contains(parts[2]) && UUID(uuidString: parts[1]) != nil:
+            url = Paths.post(UUID(uuidString: parts[1])!).appendingPathComponent("\(parts[2])/\(parts[3])")
         case "projects" where parts.count == 4 && parts[2] == "assets" && UUID(uuidString: parts[1]) != nil:
             url = Paths.projectAssets(UUID(uuidString: parts[1])!).appendingPathComponent(parts[3])
         default:
@@ -272,10 +288,13 @@ final class ControlServer {
         }
         let posts: [Any] = model.data.posts.sorted { $0.createdAt > $1.createdAt }.map { post in
             var d = object(post) as? [String: Any] ?? [:]
-            d["media"] = [
-                "video": post.videoFile.map { "/v1/media/posts/\(post.id.uuidString)/\($0)" } ?? NSNull(),
-                "cover": post.coverFile.map { "/v1/media/posts/\(post.id.uuidString)/\($0)" } ?? NSNull(),
-            ]
+            func media(_ file: String?) -> Any { file.map { "/v1/media/posts/\(post.id.uuidString)/\($0)" } ?? NSNull() }
+            // People's photos: the downloaded one and Codex's edit, for choosing between them on the phone
+            let people: [[String: Any]] = (post.directed?.storyboard.people ?? []).map { person in
+                let photos = StudioService.personPhotos(post, person)
+                return ["name": person.name, "original": media(photos.original?.photo), "edited": media(photos.edited?.photo)]
+            }
+            d["media"] = ["video": media(post.videoFile), "cover": media(post.coverFile), "image": media(post.imageFile), "people": people]
             return d
         }
         var jobs: [String: Any] = [:]
@@ -307,11 +326,16 @@ final class ControlServer {
             },
             "jobs": jobs,
             "alert": model.alert ?? model.notice ?? NSNull(),
+            "problem": model.problem.map { object($0) } ?? NSNull(),
+            "health": (model.requirements ?? []).map { r in
+                ["id": r.item.rawValue, "title": r.title, "status": r.status.rawValue, "detail": r.detail, "required": r.isRequired] as [String: Any]
+            },
             "settings": [
                 "loginMode": s.loginMode.rawValue, "metaAppId": s.metaAppId,
                 "hasAppSecret": !(Keychain.get(Keychain.Key.metaAppSecret) ?? "").isEmpty,
                 "contentLanguage": s.contentLanguage, "voiceoverEnabled": s.voiceoverEnabled,
                 "defaultTheme": s.defaultTheme.rawValue, "maxHashtags": s.maxHashtags,
+                "editPhotos": s.editPhotosWithCodex && CodexImage.isInstalled,
             ],
             "languages": ContentLanguage.all.map { ["id": $0.id, "label": $0.label] },
             "themes": VideoTheme.allCases.map { ["id": $0.rawValue, "label": $0.label] },

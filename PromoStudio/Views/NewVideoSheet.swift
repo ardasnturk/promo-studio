@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// A library video template (skill) picked for a new video.
 struct TemplateRef: Hashable {
@@ -29,15 +30,29 @@ struct NewVideoSheet: View {
     @State private var seconds = 20
     @State private var voiceover = true
     @State private var research = true
+    @State private var format = PostFormat.video
+    @State private var size = ImageSize.portrait
+    /// Images for Claude to look at and use
+    @State private var images: [URL] = []
+    @State private var pickingImages = false
 
     var body: some View {
         let skill = template.flatMap { t in model.library(t.libraryId)?.skills.first { $0.name == t.skill } }
         let project = model.project(projectId)
         Form {
             Section {
+                Picker("Make", selection: $format) {
+                    Text("Video").tag(PostFormat.video)
+                    Text("Image").tag(PostFormat.image)
+                }
+                .pickerStyle(.segmented)
+                .onChange(of: format) { if format == .image { template = nil } }
+            }
+            Section {
                 TextField("Request", text: $prompt, prompt: Text(skill.flatMap { $0.argumentHint.isEmpty ? nil : $0.argumentHint } ?? String(localized: "e.g. Tonight’s derby in 20 seconds: the key stats, the lineups and a prediction.")), axis: .vertical)
                     .labelsHidden()
                     .lineLimit(4...10)
+                if format == .video {
                 Picker("Template", selection: $template) {
                     Text("None: Claude directs it from scratch").tag(TemplateRef?.none)
                     ForEach(model.data.libraries) { lib in
@@ -49,10 +64,13 @@ struct NewVideoSheet: View {
                     }
                 }
                 if let skill { Text(skill.description).font(.caption).foregroundStyle(.secondary) }
+                }
             } header: {
-                Text("What should the video be about?")
+                format == .image ? Text("What should the image show?") : Text("What should the video be about?")
             } footer: {
-                if template != nil {
+                if format == .image {
+                    Text("Claude first writes a design brief. Nothing is rendered until you approve it.")
+                } else if template != nil {
                     Text("Claude Code runs the template in the library in the background: it writes, checks and renders the video. This may take a few minutes.")
                 } else {
                     Text("Claude first writes a scene-by-scene storyboard. Nothing is rendered until you approve it.")
@@ -75,6 +93,43 @@ struct NewVideoSheet: View {
                 Text("Both are optional. Without a project the video isn’t about any app; without an account you can save the video and post it yourself.")
             }
             if template == nil {
+                Section {
+                    if !images.isEmpty {
+                        ScrollView(.horizontal) {
+                            HStack(spacing: 8) {
+                                ForEach(images, id: \.self) { url in
+                                    LocalImage(url: url)
+                                        .frame(width: 72, height: 72)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .overlay(alignment: .topTrailing) {
+                                            Button { images.removeAll { $0 == url } } label: { Image(systemName: "xmark.circle.fill") }
+                                                .buttonStyle(.plain).foregroundStyle(.white, .black.opacity(0.6)).padding(3)
+                                        }
+                                }
+                            }
+                        }
+                    }
+                    Button { pickingImages = true } label: { Label("Add Images…", systemImage: "photo.badge.plus") }
+                } header: {
+                    Text("Your Images")
+                } footer: {
+                    Text("Optional. Claude looks at them and builds the \(format == .image ? String(localized: "image") : String(localized: "video")) around them; people and objects in them are also cut out of their background.")
+                }
+                .fileImporter(isPresented: $pickingImages, allowedContentTypes: [.image], allowsMultipleSelection: true) { result in
+                    if case let .success(urls) = result { images += urls.filter { !images.contains($0) } }
+                }
+            }
+            if template == nil, format == .image {
+                Section("Image") {
+                    Picker("Size", selection: $size) {
+                        ForEach(ImageSize.allCases, id: \.self) { Text($0.label).tag($0) }
+                    }
+                    Picker("Language", selection: $language) {
+                        ForEach(ContentLanguage.all) { Text($0.label).tag($0.id) }
+                    }
+                    Toggle("Let Claude research the web", isOn: $research)
+                }
+            } else if template == nil {
                 Section("Video") {
                     if projectId != nil {
                         Picker("Video type", selection: $promo) {
@@ -96,8 +151,8 @@ struct NewVideoSheet: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
-                Button(template == nil ? "Write Storyboard" : "Generate with Claude Code") { create() }
-                    .disabled(template == nil && trimmed.isEmpty)
+                Button(template == nil ? (format == .image ? "Write Design" : "Write Storyboard") : "Generate with Claude Code") { create() }
+                    .disabled(template == nil && trimmed.isEmpty && images.isEmpty)
             }
         }
         .onAppear {
@@ -121,10 +176,18 @@ struct NewVideoSheet: View {
         if let template {
             id = model.generateFromSkill(libraryId: template.libraryId, skill: template.skill, request: trimmed, projectId: projectId, accountId: account)
         } else {
+            // Security-scoped files from the open panel are read now; the post keeps its own copies
+            let uploads = images.compactMap { url in
+                let scoped = url.startAccessingSecurityScopedResource()
+                defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+                return try? Data(contentsOf: url)
+            }
+            let request = trimmed.isEmpty ? String(localized: "Make it from my images.") : trimmed
             id = model.createDirectedPost(
                 projectId: projectId, feature: nil, seconds: seconds, language: language,
-                brief: PostBrief(prompt: trimmed, research: research), voiceover: voiceover,
-                style: promo ? .promo : .freeform, accountId: account
+                brief: PostBrief(prompt: request, research: research), voiceover: voiceover && format == .video,
+                style: promo ? .promo : .freeform, accountId: account,
+                image: format == .image ? size : nil, uploads: uploads
             )
         }
         guard let id else { return }

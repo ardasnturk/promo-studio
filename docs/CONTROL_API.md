@@ -32,6 +32,8 @@ The full app state. The phone fetches it on first launch and on every `changed` 
   "accounts": [InstagramAccount],
   "libraries": [LibraryDTO],
   "jobs": {"<postId|projectId>": {"message": "...", "progress": 0.42, "log": ["last 20 lines"], "kind": "render", "startedAt": "<ISO 8601>", "estimatedEnd": "<ISO 8601>"}},
+  "problem": Problem | null,      // the failure in the Mac's alert, explained (below)
+  "health": [{"id", "title", "status", "detail", "required"}],  // setup checklist; status: ready, missing, notSetUp, warning
   "settings": {"loginMode", "metaAppId", "hasAppSecret", "contentLanguage", "voiceoverEnabled", "defaultTheme", "maxHashtags"},
   "languages": [{"id": "en", "label": "English"}],
   "themes": [{"id": "hype", "label": "..."}]
@@ -41,7 +43,12 @@ The full app state. The phone fetches it on first launch and on every `changed` 
 - `ProjectDTO`: `{id, name, accountId, logo, analysis, assets: [{fileName, label, isFramed, language}]}`. `analysis` is Promo Studio's `ProjectAnalysis` struct (features, suggestions, brand colors). `logo` and assets are `/v1/media/...` paths.
 - `LibraryDTO` (template libraries such as Promo Templates): `{id, name, compositions, skills: [{name, description, argumentHint, suggestedProjectId}], ideas: [VideoIdea], ideaSources: [url]}`. `suggestedProjectId` is the project the skill's name points to (may be null). `ideas` is the latest trend research (`generateIdeas`), not persisted: `{title, hook, flow, why, skill, difficulty, request}`. Videos made from a library are ordinary posts with an `external` field.
 - A post's `projectId` is null for a standalone video. `accountId` is the Instagram account chosen for the post (it overrides the project's) and, once published, the account it went to.
-- Each post additionally has `"media": {"video": "/v1/media/posts/<id>/video.mp4" | null, "cover": "/v1/media/posts/<id>/cover.jpg" | null}`.
+- Each post additionally has `"media": {"video": "/v1/media/posts/<id>/video.mp4" | null, "cover": "/v1/media/posts/<id>/cover.jpg" | null, "image": "/v1/media/posts/<id>/image.jpg" | null}`.
+- `format: "image"` marks an image post: a single picture made like a directed video (design brief → code → the last frame rendered as `image.jpg`, which is also the cover). `directed.size` is `portrait` (1080×1350), `square` or `story` (1080×1920). Instagram's API can't publish pictures without a public URL, so image posts are saved and posted by hand.
+- `uploads`: file names of the images the user added to the post (Claude looks at them; they are usable in scenes, each with a cut-out).
+- `directed.storyboard.people`: real people the video shows (`{name, wiki?, url?, edit?, useOriginal?, editError?}`); Promo Studio downloads a photo of each and cuts them out of the background. `edit` is how Codex (image generation, on the user's ChatGPT plan) changes the photo; the video uses the edit unless `useOriginal`. `media.people` lists their photos: `[{name, original, edited}]` (media paths `posts/<id>/people/<file>`, null when missing). `settings.editPhotos` says whether Codex can edit photos on this Mac.
+- `problem`: why the post's last step failed (`lastError` holds the same message):
+  `{code, title, message, fix?, details?, kind?, subject?}`. `fix` is `retry` (run the failed step again), `repair` (Claude fixes the video code from the render error), `withoutVoiceover`, `reconnect` (Instagram session), `settings` or `setup` (the Mac's checklist). `details` is the raw output.
 
 ### `GET /v1/events` (Server-Sent Events)
 The connection stays open. Events:
@@ -51,8 +58,8 @@ The connection stays open. Events:
 | `changed` | `{"revision": 18}` | Data changed; fetch `/v1/state` again (sent at most twice per second) |
 | `job` | `{"id", "message", "progress", "kind", "startedAt", "estimatedEnd"}` | Progress of a running job (at most 4 times per second) |
 | `jobEnded` | `{"id"}` | Job finished |
-| `finished` | `{"id", "kind", "title", "notice", "postId", "error"}` | A job ended. `notice` (optional) says what is worth telling the user: `videoReady`, `storyboardReady`, `published` or `failed` (with `error`); cancelled jobs send nothing. Remote Code turns it into a notification |
-| `alert` | `{"title": "Something went wrong" \| "Info", "message"}` | Phone counterpart of the alert shown on the Mac |
+| `finished` | `{"id", "kind", "title", "notice", "postId", "error", "problem"}` | A job ended. `notice` (optional) says what is worth telling the user: `videoReady`, `imageReady`, `storyboardReady`, `published` or `failed` (with `error`, the readable message, and `problem`); cancelled jobs send nothing. Remote Code turns it into a notification |
+| `alert` | `{"title", "message", "problem"?}` | Phone counterpart of the alert shown on the Mac; `problem` when it is a failure |
 | `ping` | `{}` | Every 20 s; keeps the connection alive |
 
 **Remaining time.** `kind` is one of `analyze`, `script`, `storyboard`, `produce`, `revise`, `render`, `caption`, `translate`, `generate`, `ideas`, `capture`, `publish`, `other`. `estimatedEnd` is missing until Promo Studio can estimate: from the render progress rate, or from the median duration of the last jobs of the same kind (`timings.json`, after two successful jobs).
@@ -71,7 +78,12 @@ JSON body. The response is `{"ok": true}`, or `202 {"ok": true, "jobId"}` for lo
 |---|---|---|
 | `createPost` | `projectId, featureId?, suggestionId?, theme?, seconds, notes?, autoRender?, language?` | Quick template video |
 | `createScriptPost` | `projectId, prompt, research, featureId?, theme?, seconds, language?` | Quick template from a custom request (auto-render off) |
-| `createDirectedPost` | `projectId?, prompt, research, featureId?, seconds, language?, voiceover, style?, accountId?` | Claude-directed video, storyboard first. `style`: `promo` (default, app promo film) or `freeform` (any video the prompt describes; the app only appears if asked). Without `projectId` a standalone video (always free-form, about no app) |
+| `createDirectedPost` | `projectId?, prompt, research, featureId?, seconds, language?, voiceover, style?, accountId?, format?, size?, uploads?` | Claude-directed video, storyboard first. `style`: `promo` (default, app promo film) or `freeform` (any video the prompt describes; the app only appears if asked). Without `projectId` a standalone video (always free-form, about no app). `format: "image"` makes an image post of `size`. `uploads`: IDs from `uploadImage`; `prompt` may then be empty |
+| `uploadImage` | `data` (base64, ≤ ~3 MB) | Sends one image ahead of `createDirectedPost`; returns `uploadId`. Unused uploads are removed after a day |
+| `fix` | `postId, fix` | Applies a fix of the post's `problem` that runs on the Mac: `retry`, `repair` or `withoutVoiceover` |
+| `setPersonPhoto` | `postId, name, useOriginal` | Which photo of a person the video uses: the downloaded one or Codex's edit |
+| `editPersonPhoto` | `postId, name, instruction?` | Codex edits the person's photo again; `instruction` replaces the current one (job id = `postId`) |
+| `checkHealth` | — | Checks the setup again; the result is in `health` |
 | `produce` | `postId, voiceover` | Approve the storyboard, have the video coded and render it |
 | `revise` | `postId, instruction, renderAfter` | Storyboard (+ code) for a promo film, script for a template |
 | `restoreRevision` | `postId, revisionId` | |

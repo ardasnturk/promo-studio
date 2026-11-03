@@ -219,7 +219,7 @@ struct MenuPanelView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(post.title).font(.callout).lineLimit(1)
                                 HStack(spacing: 4) {
-                                    Text(post.scheduledAt?.formatted(.relative(presentation: .named)) ?? "")
+                                    Text(post.nextDate?.formatted(.relative(presentation: .named)) ?? "")
                                     if let account = model.account(for: post) {
                                         Text(verbatim: "· @\(account.username)")
                                     }
@@ -325,8 +325,8 @@ struct MenuPanelView: View {
 
     private var scheduled: [ContentPost] {
         model.data.posts
-            .filter { $0.status == .scheduled }
-            .sorted { ($0.scheduledAt ?? .distantFuture) < ($1.scheduledAt ?? .distantFuture) }
+            .filter { $0.status == .scheduled || $0.isPlanned }
+            .sorted { ($0.nextDate ?? .distantFuture) < ($1.nextDate ?? .distantFuture) }
     }
 
     private var weeklyViews: Int {

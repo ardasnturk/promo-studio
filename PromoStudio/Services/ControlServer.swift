@@ -338,6 +338,7 @@ final class ControlServer {
                 "defaultTheme": s.defaultTheme.rawValue, "maxHashtags": s.maxHashtags,
                 "editPhotos": s.editPhotosWithCodex && CodexImage.isInstalled,
                 "canPostPictures": PublicLink.isInstalled,
+                "canPlan": true,
             ],
             "languages": ContentLanguage.all.map { ["id": $0.id, "label": $0.label] },
             "themes": VideoTheme.allCases.map { ["id": $0.rawValue, "label": $0.label] },

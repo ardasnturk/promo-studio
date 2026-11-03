@@ -45,6 +45,7 @@ The full app state. The phone fetches it on first launch and on every `changed` 
 - A post's `projectId` is null for a standalone video. `accountId` is the Instagram account chosen for the post (it overrides the project's) and, once published, the account it went to.
 - Each post additionally has `"media": {"video": "/v1/media/posts/<id>/video.mp4" | null, "cover": "/v1/media/posts/<id>/cover.jpg" | null, "image": "/v1/media/posts/<id>/image.jpg" | null, "slides": ["/v1/media/posts/<id>/image.jpg", "/v1/media/posts/<id>/image-2.jpg", …]}` (`slides`: every picture of an image post in order; one for a single image, empty for a video).
 - `placement` is where the post goes on Instagram: missing or `feed` (a Reel for a video, a photo or carousel for an image) or `story` (no caption, gone after 24 hours; a carousel goes out as one story per slide). `canPostToFeed` is false for a 9:16 image, which can only be a story.
+- `plan` is set on a post made later: `{"runAt", "autoApprove", "autoPublish", "startedAt"?, "startedLate"?}`. Until `startedAt` is set the post is only its request (status `draft`, no storyboard). At `runAt` it starts and goes as far as the plan allows: without `autoApprove` it stops at the storyboard, without `autoPublish` at the finished post. Each flag turns false once used, so a later re-render doesn't post again. A plan that starts over an hour late (`startedLate`) drops `autoPublish`. `settings.canPlan` says this Mac supports plans; an older one ignores `plan` and starts right away.
 - `format: "image"` marks an image post: a picture made like a directed video (design brief → code → the last frame rendered as `image.jpg`, which is also the cover). `directed.size` is `portrait` (1080×1350), `square` or `story` (1080×1920). `directed.slides` (2–10) makes it a carousel: one storyboard scene per slide, rendered as `image.jpg`, `image-2.jpg`… Instagram fetches pictures from a public URL, so while one is published Promo Studio serves it through a temporary Cloudflare quick tunnel (`cloudflared`, no account; random trycloudflare.com address, closed right after). `settings.canPostPictures` says whether cloudflared is installed.
 - `uploads`: file names of the images the user added to the post (Claude looks at them; they are usable in scenes, each with a cut-out).
 - `directed.storyboard.people`: real people the video shows (`{name, wiki?, url?, edit?, useOriginal?, editError?}`); Promo Studio downloads a photo of each and cuts them out of the background. `edit` is how Codex (image generation, on the user's ChatGPT plan) changes the photo; the video uses the edit unless `useOriginal`. `media.people` lists their photos: `[{name, original, edited}]` (media paths `posts/<id>/people/<file>`, null when missing). `settings.editPhotos` says whether Codex can edit photos on this Mac.
@@ -79,7 +80,7 @@ JSON body. The response is `{"ok": true}`, or `202 {"ok": true, "jobId"}` for lo
 |---|---|---|
 | `createPost` | `projectId, featureId?, suggestionId?, theme?, seconds, notes?, autoRender?, language?` | Quick template video |
 | `createScriptPost` | `projectId, prompt, research, featureId?, theme?, seconds, language?` | Quick template from a custom request (auto-render off) |
-| `createDirectedPost` | `projectId?, prompt, research, featureId?, seconds, language?, voiceover, style?, accountId?, format?, size?, slides?, uploads?` | Claude-directed video, storyboard first. `style`: `promo` (default, app promo film) or `freeform` (any video the prompt describes; the app only appears if asked). Without `projectId` a standalone video (always free-form, about no app). `format: "image"` makes an image post of `size`; `slides` (2–10) a carousel. `uploads`: IDs from `uploadImage`; `prompt` may then be empty |
+| `createDirectedPost` | `projectId?, prompt, research, featureId?, seconds, language?, voiceover, style?, accountId?, format?, size?, slides?, uploads?, plan?, placement?` | Claude-directed video, storyboard first. `style`: `promo` (default, app promo film) or `freeform` (any video the prompt describes; the app only appears if asked). Without `projectId` a standalone video (always free-form, about no app). `format: "image"` makes an image post of `size`; `slides` (2–10) a carousel. `uploads`: IDs from `uploadImage`; `prompt` may then be empty. `plan` (`{runAt, autoApprove?, autoPublish?}`) makes it at that time instead of now |
 | `uploadImage` | `data` (base64, ≤ ~3 MB) | Sends one image ahead of `createDirectedPost`; returns `uploadId`. Unused uploads are removed after a day |
 | `fix` | `postId, fix` | Applies a fix of the post's `problem` that runs on the Mac: `retry`, `repair` or `withoutVoiceover` |
 | `setPersonPhoto` | `postId, name, useOriginal` | Which photo of a person the video uses: the downloaded one or Codex's edit |
@@ -93,7 +94,9 @@ JSON body. The response is `{"ok": true}`, or `202 {"ok": true, "jobId"}` for lo
 | `render` | `postId` | |
 | `setCover` | `postId, sec` | Use the frame at `sec` seconds as the cover; it is also sent to Instagram as the Reel's cover. Posts carry the current one as `coverSec` |
 | `cancel` | `id` | Cancels a post or project job |
-| `deletePost` | `postId` | |
+| `deletePost` | `postId` | Also cancels a plan |
+| `updatePlan` | `postId, request?, runAt?, autoApprove?, autoPublish?, placement?` | Changes a plan that hasn't started |
+| `startPlan` | `postId` | Starts a planned post now |
 | `publish` | `postId, placement?` | Publish right away: a video as a Reel or story, an image as a photo, carousel or story(s). `placement` (`feed` or `story`) is saved on the post |
 | `schedule` | `postId, at, placement?` | |
 | `unschedule` | `postId` | |
@@ -107,7 +110,7 @@ JSON body. The response is `{"ok": true}`, or `202 {"ok": true, "jobId"}` for lo
 | `disconnect` | `accountId` | |
 | `refreshMetrics` | — | |
 | `dismissAlert` | — | Dismisses the alert on the Mac |
-| `generateFromSkill` | `libraryId, skill, request?, projectId?, accountId?` | Claude Code runs a library's video template (skill) and renders the video. Without `projectId` the video belongs to no project. Returns `postId` |
+| `generateFromSkill` | `libraryId, skill, request?, projectId?, accountId?, plan?, placement?` | Claude Code runs a library's video template (skill) and renders the video. Without `projectId` the video belongs to no project. Returns `postId` |
 | `createTemplate` | `libraryId, prompt` | Claude Code adds a new video template (skill + reference composition) to the library from the description, then rescans it (job id = `libraryId`) |
 | `generateIdeas` | `libraryId, focus?` | Trend research for video ideas; results arrive in the library's `ideas` (job id = `libraryId`) |
 

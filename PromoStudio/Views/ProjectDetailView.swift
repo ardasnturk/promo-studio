@@ -301,10 +301,10 @@ struct PostRow: View {
                         if let projectName { Text(projectName).font(.caption).foregroundStyle(.secondary) }
                         Text((post.language ?? "tr").uppercased()).font(.caption2.monospaced()).foregroundStyle(.secondary)
                     }
-                    Text(post.caption.split(separator: "\n").first.map(String.init) ?? String(localized: "Waiting for script…"))
+                    Text(post.caption.split(separator: "\n").first.map(String.init) ?? (post.isPlanned ? String(localized: "Waiting for its time") : String(localized: "Waiting for script…")))
                         .font(.callout).foregroundStyle(.secondary).lineLimit(1)
-                    if let date = post.scheduledAt, post.status == .scheduled {
-                        Label(date.formatted(date: .abbreviated, time: .shortened), systemImage: "clock").font(.caption)
+                    if let date = post.nextDate, post.isPlanned || post.status == .scheduled {
+                        Label(date.formatted(date: .abbreviated, time: .shortened), systemImage: post.isPlanned ? "calendar.badge.clock" : "clock").font(.caption)
                     }
                     if let err = post.lastError { Text(err).font(.caption).foregroundStyle(.red).lineLimit(2) }
                 }
@@ -316,7 +316,7 @@ struct PostRow: View {
                         RemainingTimeLabel(job: job)
                     }
                 }
-                StatusBadge(status: post.status)
+                StatusBadge(post: post)
             }
         }
         .contentShape(Rectangle())

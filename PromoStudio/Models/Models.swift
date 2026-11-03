@@ -212,8 +212,14 @@ struct ContentPost: Codable, Identifiable, Hashable {
     var slideFiles: [String]?
     /// Where it is shared on Instagram; nil is the feed (a Reel for a video, a photo or carousel for an image)
     var placement: PostPlacement?
+    /// Set when the post is made later: the request waits for its time, then goes as far as the plan allows
+    var plan: CreationPlan?
 
     var isImage: Bool { format == .image }
+    /// The request is waiting for its time; nothing has been made yet
+    var isPlanned: Bool { plan != nil && plan?.startedAt == nil }
+    /// When the next thing happens: a planned post starts, a scheduled post goes out
+    var nextDate: Date? { isPlanned ? plan?.runAt : scheduledAt }
     var isCarousel: Bool { (slideFiles?.count ?? 0) > 1 }
     var isStory: Bool { placement == .story }
     /// Pictures of an image post: every slide of a carousel, else the one image
@@ -398,6 +404,17 @@ struct StoryPerson: Codable, Hashable {
 
 enum PostFormat: String, Codable {
     case video, image
+}
+
+/// A request to make a post at a later time. Without `autoApprove` it stops at the storyboard for the user's approval,
+/// without `autoPublish` at the finished video. Each runs once, so a later re-render doesn't post again.
+struct CreationPlan: Codable, Hashable {
+    var runAt: Date
+    var autoApprove = false
+    var autoPublish = false
+    var startedAt: Date?
+    /// It started over an hour late (the Mac was off or asleep), so it was not posted automatically
+    var startedLate: Bool?
 }
 
 /// Where a post goes on Instagram

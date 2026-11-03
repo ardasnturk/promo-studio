@@ -6,6 +6,19 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.6.0] — 2026-11-04
+
+### Added
+- Planned posts: write a request now and have it made at a later time. Choose
+  whether the storyboard is approved and the result posted automatically;
+  otherwise it waits for you. A plan that starts over an hour late isn't
+  posted automatically. The Mac stays awake while a plan runs.
+- Control API: `plan`, `settings.canPlan`, `updatePlan`, `startPlan`;
+  `createDirectedPost` and `generateFromSkill` take `plan` and `placement`.
+
+### Fixed
+- Try Again was missing when publishing an image post failed.
+
 ## [1.5.0] — 2026-11-03
 
 ### Added

@@ -36,6 +36,12 @@ struct NewVideoSheet: View {
     /// Images for Claude to look at and use
     @State private var images: [URL] = []
     @State private var pickingImages = false
+    /// Make it later instead of now
+    @State private var planned = false
+    @State private var runAt = Date().addingTimeInterval(3600)
+    @State private var autoApprove = false
+    @State private var autoPublish = false
+    @State private var story = false
 
     var body: some View {
         let skill = template.flatMap { t in model.library(t.libraryId)?.skills.first { $0.name == t.skill } }
@@ -149,14 +155,15 @@ struct NewVideoSheet: View {
                     Toggle("Let Claude research the web", isOn: $research)
                 }
             }
+            planSection
         }
         .formStyle(.grouped)
         .frame(width: 560)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
-                Button(template == nil ? (format == .image ? "Write Design" : "Write Storyboard") : "Generate with Claude Code") { create() }
-                    .disabled(template == nil && trimmed.isEmpty && images.isEmpty)
+                Button(planned ? "Plan" : template == nil ? (format == .image ? "Write Design" : "Write Storyboard") : "Generate with Claude Code") { create() }
+                    .disabled((template == nil && trimmed.isEmpty && images.isEmpty) || (planned && runAt <= .now))
             }
         }
         .onAppear {
@@ -169,6 +176,35 @@ struct NewVideoSheet: View {
 
     private var trimmed: String { prompt.trimmingCharacters(in: .whitespacesAndNewlines) }
 
+    private var hasAccount: Bool {
+        model.account(accountId.isEmpty ? nil : accountId) != nil || model.project(projectId).flatMap { model.account(for: $0) } != nil
+    }
+
+    @ViewBuilder private var planSection: some View {
+        Section {
+            Toggle("Make it later", isOn: $planned)
+            if planned {
+                DatePicker("Start at", selection: $runAt, in: Date()...)
+                if template == nil {
+                    Toggle(format == .image ? "Approve the design automatically" : "Approve the storyboard automatically", isOn: $autoApprove)
+                }
+                Toggle("Post automatically when it’s ready", isOn: $autoPublish)
+                    .disabled(!hasAccount)
+                if autoPublish, hasAccount, !(format == .image && size == .story) {
+                    Picker("Share as", selection: $story) {
+                        (format == .image ? (slides > 1 ? Text("Carousel") : Text("Post")) : Text("Reel")).tag(false)
+                        Text("Story").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                }
+            }
+        } footer: {
+            if planned {
+                PlanFootnote(needsAccount: !hasAccount, autoPublish: autoPublish, autoApprove: autoApprove || template != nil)
+            }
+        }
+    }
+
     /// Templates that make a video (an idea-research skill doesn't)
     static func videoSkills(_ lib: TemplateLibrary) -> [LibrarySkill] {
         lib.skills.filter { !$0.name.contains("idea") && !$0.name.contains("fikir") }
@@ -177,8 +213,10 @@ struct NewVideoSheet: View {
     private func create() {
         let account = accountId.isEmpty ? nil : accountId
         let id: UUID?
+        let publish = autoPublish && hasAccount
+        let plan = planned ? CreationPlan(runAt: runAt, autoApprove: autoApprove && template == nil, autoPublish: publish) : nil
         if let template {
-            id = model.generateFromSkill(libraryId: template.libraryId, skill: template.skill, request: trimmed, projectId: projectId, accountId: account)
+            id = model.generateFromSkill(libraryId: template.libraryId, skill: template.skill, request: trimmed, projectId: projectId, accountId: account, plan: plan)
         } else {
             // Security-scoped files from the open panel are read now; the post keeps its own copies
             let uploads = images.compactMap { url in
@@ -191,10 +229,11 @@ struct NewVideoSheet: View {
                 projectId: projectId, feature: nil, seconds: seconds, language: language,
                 brief: PostBrief(prompt: request, research: research), voiceover: voiceover && format == .video,
                 style: promo ? .promo : .freeform, accountId: account,
-                image: format == .image ? size : nil, slides: slides, uploads: uploads
+                image: format == .image ? size : nil, slides: slides, uploads: uploads, plan: plan
             )
         }
         guard let id else { return }
+        if planned, publish, story { model.setPlacement(.story, forPost: id) }
         dismiss()
         onCreated(id)
     }

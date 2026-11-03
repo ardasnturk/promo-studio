@@ -81,6 +81,9 @@ final class AppModel {
         for i in data.posts.indices {
             if data.posts[i].status == .rendering { data.posts[i].status = .draft }
             if data.posts[i].status == .publishing { data.posts[i].status = .failed; data.posts[i].lastError = String(localized: "The app quit while publishing.") }
+            // A plan the app quit in the middle of its first step starts again
+            let post = data.posts[i]
+            if post.plan?.startedAt != nil, post.directed?.storyboard.scenes.isEmpty ?? (post.videoFile == nil) { data.posts[i].plan?.startedAt = nil }
         }
         migrateAccounts()
         AudioService.preloadEnvKey()
@@ -209,6 +212,7 @@ final class AppModel {
             jobs[id] = nil
             tasks[id] = nil
             jobFinished(id, kind: kind, startedAt: started, failure: failure, cancelled: cancelled)
+            if !cancelled, failure == nil { continuePlan(id, kind: kind) }
         }
     }
 
@@ -249,7 +253,7 @@ final class AppModel {
         case .produce, .render: return true
         case .revise: return post.directed != nil
         case .generate: return post.external?.skill != nil
-        case .publish: return post.videoFile != nil
+        case .publish: return post.videoFile != nil || !post.imageFiles.isEmpty
         default: return false
         }
     }
@@ -480,7 +484,7 @@ final class AppModel {
     /// Has Claude write a storyboard from the user's request; the video is coded with `produce` once the storyboard is approved.
     /// `projectId` nil: a standalone video (always free-form, no app). `accountId`: Instagram account for this post, overriding the project's.
     /// `image`: an image post of that size instead of a video. `uploads`: images the user added for Claude to look at and use.
-    func createDirectedPost(projectId: UUID?, feature: AppFeature?, seconds: Int, language: String?, brief: PostBrief, voiceover: Bool, style: DirectedStyle = .promo, accountId: String? = nil, image: ImageSize? = nil, slides: Int = 1, uploads: [Data] = []) -> UUID? {
+    func createDirectedPost(projectId: UUID?, feature: AppFeature?, seconds: Int, language: String?, brief: PostBrief, voiceover: Bool, style: DirectedStyle = .promo, accountId: String? = nil, image: ImageSize? = nil, slides: Int = 1, uploads: [Data] = [], plan: CreationPlan? = nil) -> UUID? {
         let language = ContentLanguage.find(language ?? settings.contentLanguage)
         if let projectId { updateProject(projectId) { AssetService.ensureLocalizedAssets(language: language.id, in: &$0) } }
         let project: AppProject, analysis: ProjectAnalysis
@@ -517,7 +521,12 @@ final class AppModel {
             post.directed?.slides = slides > 1 ? min(slides, 10) : nil
             if image == .story { post.placement = .story }
         }
+        post.plan = plan
         data.posts.append(post)
+        if plan != nil {
+            savePlannedUploads(post.id, uploads)
+            return post.id
+        }
         writeStoryboard(post.id, project: project, analysis: analysis, feature: feature, kit: kit, newUploads: uploads)
         return post.id
     }
@@ -772,7 +781,8 @@ final class AppModel {
             updatePost(postId) { $0.status = .draft; $0.lastError = Self.shortened(error.localizedDescription) }
             throw error
         }
-        if settings.autoPublishWhenReady {
+        // A planned post follows its own plan
+        if settings.autoPublishWhenReady, self.post(postId)?.plan == nil {
             // run() won't start a new job while one with the same ID is running; post once the current job finishes
             Task { [weak self] in
                 while self?.tasks[postId] != nil { try? await Task.sleep(for: .milliseconds(100)) }
@@ -950,7 +960,7 @@ final class AppModel {
     /// Produces a video with a library skill: Claude Code writes and renders the video inside the library,
     /// then Promo Studio imports it and has the caption written. Returns the new post's ID.
     /// `projectId` nil: the video belongs to no project. `accountId`: Instagram account for this post, overriding the project's.
-    func generateFromSkill(libraryId: UUID, skill: String, request: String, projectId: UUID?, accountId: String? = nil) -> UUID? {
+    func generateFromSkill(libraryId: UUID, skill: String, request: String, projectId: UUID?, accountId: String? = nil, plan: CreationPlan? = nil) -> UUID? {
         guard let lib = library(libraryId) else { return nil }
         let project = self.project(projectId)
         if projectId != nil, project == nil { return nil }
@@ -963,9 +973,10 @@ final class AppModel {
         )
         post.accountId = accountId
         post.external = ExternalVideo(libraryId: libraryId, skill: skill, request: request, summary: "")
-        post.status = .rendering
+        post.status = plan == nil ? .rendering : .draft
+        post.plan = plan
         data.posts.append(post)
-        runSkill(post.id)
+        if plan == nil { runSkill(post.id) }
         return post.id
     }
 
@@ -1201,6 +1212,86 @@ final class AppModel {
         }
     }
 
+    // MARK: Planned posts
+
+    /// The user's images wait in the post, ready for its time. While this runs the plan can't start.
+    private func savePlannedUploads(_ postId: UUID, _ uploads: [Data]) {
+        guard !uploads.isEmpty else { return }
+        run(postId, String(localized: "Preparing your images…")) { [weak self] in
+            var names: [String] = []
+            for data in uploads {
+                if let name = await StudioService.addUpload(data, to: postId) { names.append(name) }
+            }
+            self?.updatePost(postId) { $0.uploads = names }
+        }
+    }
+
+    /// Changes a plan that hasn't started; left-out values stay as they are.
+    func updatePlan(_ postId: UUID, request: String? = nil, runAt: Date? = nil, autoApprove: Bool? = nil, autoPublish: Bool? = nil) {
+        guard post(postId)?.isPlanned == true else { return }
+        updatePost(postId) { p in
+            if let runAt { p.plan?.runAt = runAt }
+            if let autoApprove { p.plan?.autoApprove = autoApprove }
+            if let autoPublish { p.plan?.autoPublish = autoPublish }
+            // A directed post needs a request to run; a template can go without one
+            if let request, !request.isEmpty || p.external != nil {
+                p.brief?.prompt = request
+                p.external?.request = request
+                p.title = request.isEmpty ? p.external?.skill ?? p.title : String(request.prefix(60))
+            }
+        }
+    }
+
+    /// Runs the planned request: at its time, or right away when the user asks. Starting late is fine for making the
+    /// post, but it isn't posted unseen: a request for tonight's match shouldn't go out tomorrow.
+    func startPlan(_ postId: UUID) {
+        guard let post = post(postId), post.isPlanned, tasks[postId] == nil else { return }
+        let now = Date()
+        let late = now.timeIntervalSince(post.plan?.runAt ?? now) > 3600
+        updatePost(postId) {
+            $0.lastError = nil
+            $0.plan?.startedAt = now
+            if late, $0.plan?.autoPublish == true {
+                $0.plan?.autoPublish = false
+                $0.plan?.startedLate = true
+            }
+        }
+        if post.external != nil { return runSkill(postId) }
+        guard let (project, analysis) = context(for: post) else {
+            var p = Problem(message: String(localized: "The project of this post isn’t analyzed. Analyze it, then try again."), title: String(localized: "The storyboard couldn’t be written"))
+            p.kind = .storyboard
+            p.subject = postId
+            updatePost(postId) { $0.fail(p) }
+            problem = p
+            return
+        }
+        let kit = post.projectId == nil ? nil : brandKit(for: project, copyAssets: false)
+        writeStoryboard(postId, project: project, analysis: analysis, feature: analysis.features.first { $0.id == post.featureId }, kit: kit)
+    }
+
+    /// After a step of a started plan: takes the next step the user allowed, otherwise the post waits for them.
+    /// Failures stop here; a retry that succeeds comes back and carries on.
+    private func continuePlan(_ postId: UUID, kind: JobKind) {
+        guard let post = post(postId), let plan = post.plan, plan.startedAt != nil, tasks[postId] == nil else { return }
+        if kind == .storyboard {
+            guard plan.autoApprove, let directed = post.directed, !directed.produced, !directed.storyboard.scenes.isEmpty else { return }
+            updatePost(postId) { $0.plan?.autoApprove = false }
+            return produce(postId, voiceover: directed.muted != true)
+        }
+        guard [.produce, .render, .revise, .generate].contains(kind), plan.autoPublish, post.status == .ready, post.publishedAt == nil,
+              post.isImage ? !post.imageFiles.isEmpty : post.videoFile != nil else { return }
+        updatePost(postId) { $0.plan?.autoPublish = false }
+        guard account(for: post) != nil else {
+            var p = Problem(message: String(localized: "Choose an Instagram account for this post first."), title: String(localized: "The post couldn’t be published"), code: .instagramAccount)
+            p.kind = .publish
+            p.subject = postId
+            updatePost(postId) { $0.status = .failed; $0.fail(p) }
+            problem = p
+            return
+        }
+        queuePublish(postId)
+    }
+
     private func startScheduler() {
         // Keep App Nap from delaying scheduled posts
         activity = ProcessInfo.processInfo.beginActivity(options: [.userInitiatedAllowingIdleSystemSleep], reason: "Scheduled posts")
@@ -1211,12 +1302,28 @@ final class AppModel {
     }
 
     private var lastMetricsRefresh = Date.distantPast
+    private var planActivity: NSObjectProtocol?
+
+    /// Nobody is at the Mac while a plan runs: idle sleep would stop Claude or the render halfway.
+    private func keepAwakeForPlans() {
+        let running = data.posts.contains { $0.plan?.startedAt != nil && tasks[$0.id] != nil }
+        if running, planActivity == nil {
+            planActivity = ProcessInfo.processInfo.beginActivity(options: [.idleSystemSleepDisabled], reason: "Planned post")
+        } else if !running, let activity = planActivity {
+            ProcessInfo.processInfo.endActivity(activity)
+            planActivity = nil
+        }
+    }
 
     private func tick() {
         let now = Date()
         for post in data.posts where post.status == .scheduled && (post.scheduledAt ?? .distantFuture) <= now && tasks[post.id] == nil {
             queuePublish(post.id)
         }
+        for post in data.posts where post.isPlanned && (post.plan?.runAt ?? .distantFuture) <= now && tasks[post.id] == nil {
+            startPlan(post.id)
+        }
+        keepAwakeForPlans()
         if now.timeIntervalSince(lastMetricsRefresh) > 3600 {
             lastMetricsRefresh = now
             refreshMetrics()

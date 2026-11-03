@@ -43,6 +43,8 @@ videos stay on your Mac.
   then follow views and reach. Optional: **Save Video…** exports the MP4.
 * **Ten languages** — videos and the app itself in English, Türkçe, Deutsch,
   Español, Français, Italiano, Português, 日本語, 한국어 and 简体中文.
+* **Planned posts** — write a request now and have it made tomorrow at 15:00;
+  approve and post it yourself, or let it run from start to finish.
 * **Menu bar first** — a panel with what needs you, jobs in progress and the
   next posts; scheduled posts go out while the studio window is closed.
 * **From your iPhone** — with [Remote Code](https://github.com/ardasnturk/remote-code),

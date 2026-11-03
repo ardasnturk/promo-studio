@@ -44,6 +44,8 @@ videoların Mac'inde kalır.
   izlenme ve erişimi izle. İsteğe bağlı: **Videoyu kaydet…** MP4'ü dışa aktarır.
 * **On dil** — videolar ve uygulamanın kendisi English, Türkçe, Deutsch,
   Español, Français, Italiano, Português, 日本語, 한국어 ve 简体中文 dillerinde.
+* **Planlı gönderiler** — isteğini şimdi yaz, yarın 15.00'te oluşturulsun;
+  onaylayıp kendin paylaş ya da baştan sona kendi çalışsın.
 * **Menü çubuğu öncelikli** — seni bekleyenler, üretimdeki işler ve sıradaki
   paylaşımlarla bir panel; stüdyo penceresi kapalıyken de zamanlanmış
   paylaşımlar gider.

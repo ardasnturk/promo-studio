@@ -108,9 +108,13 @@ struct ColorSwatch: View {
 }
 
 struct StatusBadge: View {
-    let status: PostStatus
+    let post: ContentPost
     var body: some View {
-        StatusPill(text: Text(status.label), color: status.color)
+        if post.isPlanned {
+            StatusPill(text: Text("Planned"), color: Brand.indigo)
+        } else {
+            StatusPill(text: Text(post.status.label), color: post.status.color)
+        }
     }
 }
 

@@ -61,6 +61,13 @@ enum ControlActions {
             return (202, ["ok": true, "postId": id.uuidString, "jobId": id.uuidString])
         }
         let accepted: (UUID) -> (Int, [String: Any]) = { (202, ["ok": true, "jobId": $0.uuidString]) }
+        let placement = str("placement").flatMap(PostPlacement.init(rawValue:))
+        /// `plan`: {runAt, autoApprove?, autoPublish?}, to make the post at that time instead of now
+        func plan() throws -> CreationPlan? {
+            guard let plan = body["plan"] as? [String: Any] else { return nil }
+            guard let at = (plan["runAt"] as? String).flatMap(ISO8601DateFormatter().date(from:)) else { throw ActionError.missing("runAt") }
+            return CreationPlan(runAt: at, autoApprove: plan["autoApprove"] as? Bool ?? false, autoPublish: plan["autoPublish"] as? Bool ?? false)
+        }
 
         switch name {
         // MARK: Production
@@ -87,7 +94,9 @@ enum ControlActions {
             guard let prompt else { throw ActionError.missing("prompt") }
             let brief = PostBrief(prompt: prompt, research: bool("research", true))
             let image = str("format") == "image" ? str("size").flatMap(ImageSize.init(rawValue:)) ?? .portrait : nil
-            return try created(model.createDirectedPost(projectId: p?.id, feature: a?.features.first { $0.id == str("featureId") }, seconds: int("seconds", 20), language: str("language"), brief: brief, voiceover: bool("voiceover", model.settings.voiceoverEnabled), style: str("style").flatMap(DirectedStyle.init(rawValue:)) ?? .promo, accountId: try accountId(), image: image, slides: int("slides", 1), uploads: uploads))
+            let id = model.createDirectedPost(projectId: p?.id, feature: a?.features.first { $0.id == str("featureId") }, seconds: int("seconds", 20), language: str("language"), brief: brief, voiceover: bool("voiceover", model.settings.voiceoverEnabled), style: str("style").flatMap(DirectedStyle.init(rawValue:)) ?? .promo, accountId: try accountId(), image: image, slides: int("slides", 1), uploads: uploads, plan: try plan())
+            if let id, let placement { model.setPlacement(placement, forPost: id) }
+            return try created(id)
         case "uploadImage":
             // An image for a new post, sent ahead (base64, at most a few MB); returns its uploadId
             guard let raw = body["data"] as? String, let data = Data(base64Encoded: raw), !data.isEmpty else { throw ActionError.missing("data") }
@@ -145,6 +154,22 @@ enum ControlActions {
         case "cancel":
             model.cancel(try uuid("id"))
             return ok
+        case "updatePlan":
+            let p = try post()
+            guard p.isPlanned else { throw ActionError.failed(String(localized: "This post has already started")) }
+            var runAt: Date?
+            if let at = str("runAt") {
+                guard let date = ISO8601DateFormatter().date(from: at) else { throw ActionError.missing("runAt") }
+                runAt = date
+            }
+            model.updatePlan(p.id, request: str("request"), runAt: runAt, autoApprove: body["autoApprove"] as? Bool, autoPublish: body["autoPublish"] as? Bool)
+            if let placement { model.setPlacement(placement, forPost: p.id) }
+            return ok
+        case "startPlan":
+            let p = try post()
+            guard p.isPlanned else { throw ActionError.failed(String(localized: "This post has already started")) }
+            model.startPlan(p.id)
+            return accepted(p.id)
         case "deletePost":
             model.deletePost(try post().id)
             return ok
@@ -219,7 +244,9 @@ enum ControlActions {
             guard let lib = model.library(id) else { throw ActionError.notFound(String(localized: "Library")) }
             let skill = try require("skill")
             guard lib.skills.contains(where: { $0.name == skill }) else { throw ActionError.notFound(String(localized: "Template")) }
-            return try created(model.generateFromSkill(libraryId: id, skill: skill, request: str("request") ?? "", projectId: try optionalProject()?.id, accountId: try accountId()))
+            let post = model.generateFromSkill(libraryId: id, skill: skill, request: str("request") ?? "", projectId: try optionalProject()?.id, accountId: try accountId(), plan: try plan())
+            if let post, let placement { model.setPlacement(placement, forPost: post) }
+            return try created(post)
         case "generateIdeas":
             let id = try uuid("libraryId")
             guard model.library(id) != nil else { throw ActionError.notFound(String(localized: "Library")) }

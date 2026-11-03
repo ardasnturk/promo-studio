@@ -8,7 +8,8 @@ struct QueueView: View {
     var body: some View {
         let posts = model.data.posts
         let scheduled = posts.filter { $0.status == .scheduled }.sorted { ($0.scheduledAt ?? .distantFuture) < ($1.scheduledAt ?? .distantFuture) }
-        let inProgress = posts.filter { [.draft, .rendering, .ready, .publishing, .failed].contains($0.status) }.sorted { $0.createdAt > $1.createdAt }
+        let planned = posts.filter(\.isPlanned).sorted { ($0.nextDate ?? .distantFuture) < ($1.nextDate ?? .distantFuture) }
+        let inProgress = posts.filter { !$0.isPlanned && [.draft, .rendering, .ready, .publishing, .failed].contains($0.status) }.sorted { $0.createdAt > $1.createdAt }
         let published = posts.filter { $0.status == .published }.sorted { ($0.publishedAt ?? .distantPast) > ($1.publishedAt ?? .distantPast) }
 
         ScrollView {
@@ -21,6 +22,7 @@ struct QueueView: View {
                     )
                     .padding(.top, 80)
                 }
+                group("Planned", planned, byDay: true)
                 group("Scheduled", scheduled, byDay: true)
                 group("In Progress", inProgress)
                 group("Published", published)
@@ -40,7 +42,7 @@ struct QueueView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text(title).font(.title2.weight(.bold))
                 if byDay {
-                    let days = Dictionary(grouping: posts) { Calendar.current.startOfDay(for: $0.scheduledAt ?? .now) }
+                    let days = Dictionary(grouping: posts) { Calendar.current.startOfDay(for: $0.nextDate ?? .now) }
                     ForEach(days.keys.sorted(), id: \.self) { day in
                         Text(day.formatted(.dateTime.weekday(.wide).day().month(.wide)))
                             .font(.headline).foregroundStyle(.secondary)

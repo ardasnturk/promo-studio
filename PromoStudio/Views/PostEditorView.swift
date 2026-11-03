@@ -19,7 +19,7 @@ struct PostEditorView: View {
             VStack(spacing: 0) {
                 HStack {
                     Text(post.title).font(.title2.bold()).lineLimit(1)
-                    StatusBadge(status: post.status)
+                    StatusBadge(post: post)
                     Text(ContentLanguage.find(post.language).label)
                         .font(.caption.weight(.medium))
                         .padding(.horizontal, 8).padding(.vertical, 3)
@@ -55,8 +55,12 @@ struct PostEditorView: View {
                     .frame(maxHeight: 44).fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal)
                 }
+                if let plan = post.plan, !post.isPlanned { PlanStatusLine(plan: plan).padding(.horizontal) }
                 HStack(alignment: .top, spacing: 16) {
                     preview(post)
+                    if post.isPlanned {
+                        PlanPanel(postId: postId)
+                    } else {
                     VStack(spacing: 0) {
                         Picker("", selection: $tab) {
                             (post.directed != nil ? Text("Storyboard") : post.external == nil ? Text("Scenes") : Text("Template")).tag(0)
@@ -81,6 +85,7 @@ struct PostEditorView: View {
                         default: publishPanel(post)
                         }
                     }
+                    }
                 }
                 .padding()
             }
@@ -98,7 +103,14 @@ struct PostEditorView: View {
         VStack(spacing: 10) {
             ZStack {
                 RoundedRectangle(cornerRadius: 16).fill(.black)
-                if model.imageURL(post) != nil, post.status != .rendering {
+                if post.isPlanned, let plan = post.plan {
+                    VStack(spacing: 8) {
+                        Image(systemName: "calendar.badge.clock").font(.largeTitle)
+                        Text(plan.runAt.formatted(date: .abbreviated, time: .shortened))
+                        Text("Nothing is made until then.").font(.caption)
+                    }
+                    .foregroundStyle(.white.opacity(0.75))
+                } else if model.imageURL(post) != nil, post.status != .rendering {
                     let files = post.imageFiles
                     let url = Paths.post(post.id).appendingPathComponent(files[min(slide, files.count - 1)])
                     // Re-renders keep the file name; the modification date makes the preview reload
@@ -151,6 +163,7 @@ struct PostEditorView: View {
                 }
             }
             .frame(width: 315, height: 560)
+            if !post.isPlanned {
             HStack {
                 if let directed = post.directed, !directed.produced {
                     Button {
@@ -190,6 +203,7 @@ struct PostEditorView: View {
                     Button { NSWorkspace.shared.activateFileViewerSelecting([url]) } label: { Label("Show in Finder", systemImage: "folder") }
                         .labelStyle(.iconOnly).help("Show in Finder")
                 }
+            }
             }
             if post.isVideoOutdated {
                 Label("The script has changed; this preview is from an older version. Render again.", systemImage: "exclamationmark.arrow.circlepath")

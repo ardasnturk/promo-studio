@@ -6,6 +6,20 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.5.0] — 2026-11-03
+
+### Added
+- Stories, photo posts and carousels: a video is shared as a Reel or a story,
+  an image post as a photo, a carousel (2–10 slides) or stories.
+- Pictures reach Instagram through a temporary Cloudflare quick tunnel
+  (cloudflared, no account), opened only while they are published; the setup
+  checklist installs cloudflared and the Homebrew cask depends on it.
+- Story insights (views, reach, shares).
+- Website: promo.ardasnturk.com.
+- Control API: `placement`, `canPostToFeed`, `media.slides`,
+  `settings.canPostPictures`, `setPlacement`; `publish`/`schedule` take
+  `placement`, `createDirectedPost` takes `slides`.
+
 ## [1.4.0] — 2026-11-03
 
 ### Added

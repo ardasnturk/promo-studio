@@ -6,6 +6,10 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- Website: a new animated design in all ten languages of the app, with planned
+  posts, the formats, Remote Code on the iPhone and Promo Templates.
+
 ## [1.6.0] — 2026-11-04
 
 ### Added

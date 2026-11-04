@@ -3,44 +3,95 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Promo Studio — Videos and posts for your apps, directed by Claude Code</title>
-  <meta name="description" content="Promo Studio is a free, open-source Mac app that turns your app's code into Reels, stories, posts and carousels. Claude Code writes the storyboard and codes every video with Remotion; you approve and post to Instagram.">
+  <title>Promo Studio — Your app has a story. Claude Code directs it.</title>
+  <meta name="description" content="Promo Studio is a free, open-source Mac app that turns your app's code into Reels, stories, photo posts and carousels. Claude Code writes the storyboard and codes every video with Remotion. Approve it, plan it and post it to Instagram.">
   <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" content="#0c1124" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f5f6fb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#080b1a" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f6f7fc" media="(prefers-color-scheme: light)">
+  <meta property="og:type" content="website">
   <meta property="og:title" content="Promo Studio">
   <meta property="og:description" content="Reels, stories, posts and carousels for your apps, written and directed by Claude Code.">
-  <meta property="og:image" content="https://promo.ardasnturk.com/assets/icon-512.png">
+  <meta property="og:image" content="https://promo.ardasnturk.com/assets/og.png">
   <meta property="og:url" content="https://promo.ardasnturk.com/">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://promo.ardasnturk.com/">
+  <link rel="alternate" hreflang="x-default" href="https://promo.ardasnturk.com/">
+  <link rel="alternate" hreflang="en" href="https://promo.ardasnturk.com/?lang=en">
+  <link rel="alternate" hreflang="tr" href="https://promo.ardasnturk.com/?lang=tr">
+  <link rel="alternate" hreflang="de" href="https://promo.ardasnturk.com/?lang=de">
+  <link rel="alternate" hreflang="es" href="https://promo.ardasnturk.com/?lang=es">
+  <link rel="alternate" hreflang="fr" href="https://promo.ardasnturk.com/?lang=fr">
+  <link rel="alternate" hreflang="it" href="https://promo.ardasnturk.com/?lang=it">
+  <link rel="alternate" hreflang="pt-BR" href="https://promo.ardasnturk.com/?lang=pt-BR">
+  <link rel="alternate" hreflang="ja" href="https://promo.ardasnturk.com/?lang=ja">
+  <link rel="alternate" hreflang="ko" href="https://promo.ardasnturk.com/?lang=ko">
+  <link rel="alternate" hreflang="zh-Hans" href="https://promo.ardasnturk.com/?lang=zh-Hans">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="stylesheet" href="styles.css">
   <script>
-    // Apply the saved theme before first paint to avoid a flash.
-    try { var t = localStorage.getItem('ps-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+    // Before first paint: the saved theme, and the language file when it isn't English.
+    (function () {
+      var langs = ['en', 'tr', 'de', 'es', 'fr', 'it', 'pt-BR', 'ja', 'ko', 'zh-Hans'];
+      function read(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+      function pick() {
+        var q = new URLSearchParams(location.search).get('lang');
+        if (langs.indexOf(q) > -1) return q;
+        var s = read('ps-lang');
+        if (langs.indexOf(s) > -1) return s;
+        var list = navigator.languages || [navigator.language || 'en'];
+        for (var i = 0; i < list.length; i++) {
+          var l = String(list[i]).toLowerCase();
+          if (l.indexOf('zh') === 0) return 'zh-Hans';
+          if (l.indexOf('pt') === 0) return 'pt-BR';
+          var base = l.split('-')[0];
+          if (langs.indexOf(base) > -1) return base;
+        }
+        return 'en';
+      }
+      var t = read('ps-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      var lang = pick();
+      window.PS_LANG = lang;
+      if (lang !== 'en') document.write('<script src="i18n/' + lang + '.js"><\/script>');
+    })();
   </script>
 </head>
 <body>
   <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
 
   <header class="nav" id="top">
-    <div class="wrap nav-inner">
+    <div class="nav-bar">
       <a class="brand" href="#top" aria-label="Promo Studio">
-        <img src="assets/favicon.png" width="30" height="30" alt="">
+        <img src="assets/favicon.png" width="28" height="28" alt="">
         <span>Promo Studio</span>
       </a>
       <nav class="nav-links" aria-label="Sections" data-i18n-attr="aria-label:nav.label">
+        <a href="#flow" data-i18n="nav.how">How it works</a>
         <a href="#formats" data-i18n="nav.formats">Formats</a>
-        <a href="#how" data-i18n="nav.how">How it works</a>
+        <a href="#planned" data-i18n="nav.planned">Planned posts</a>
         <a href="#features" data-i18n="nav.features">Features</a>
         <a href="#templates" data-i18n="nav.templates">Templates</a>
         <a href="#faq" data-i18n="nav.faq">FAQ</a>
       </nav>
       <div class="nav-tools">
-        <div class="lang" role="group" aria-label="Language" data-i18n-attr="aria-label:lang.label">
-          <button type="button" data-lang="en" aria-pressed="true">EN</button>
-          <button type="button" data-lang="tr" aria-pressed="false">TR</button>
+        <div class="lang" id="lang">
+          <button type="button" class="lang-btn" id="lang-btn" aria-haspopup="true" aria-expanded="false" aria-controls="lang-menu" aria-label="Language" data-i18n-attr="aria-label:lang.label">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.5 3.5 5.3 3.5 8.5s-1 6-3.5 8.5c-2.5-2.5-3.5-5.3-3.5-8.5s1-6 3.5-8.5z"/></svg>
+            <span id="lang-current">English</span>
+          </button>
+          <div class="lang-menu" id="lang-menu" hidden>
+            <button type="button" lang="en" data-lang="en">English</button>
+            <button type="button" lang="tr" data-lang="tr">Türkçe</button>
+            <button type="button" lang="de" data-lang="de">Deutsch</button>
+            <button type="button" lang="es" data-lang="es">Español</button>
+            <button type="button" lang="fr" data-lang="fr">Français</button>
+            <button type="button" lang="it" data-lang="it">Italiano</button>
+            <button type="button" lang="pt-BR" data-lang="pt-BR">Português</button>
+            <button type="button" lang="ja" data-lang="ja">日本語</button>
+            <button type="button" lang="ko" data-lang="ko">한국어</button>
+            <button type="button" lang="zh-Hans" data-lang="zh-Hans">简体中文</button>
+          </div>
         </div>
         <button type="button" class="icon-btn" id="theme-toggle" aria-label="Switch theme" data-i18n-attr="aria-label:theme.toggle">
           <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
@@ -48,223 +99,429 @@
         </button>
         <a class="btn btn-small btn-primary nav-cta" href="#download" data-i18n="nav.download">Download</a>
       </div>
+      <span class="playhead" id="playhead" aria-hidden="true"></span>
     </div>
   </header>
 
   <main id="main">
     <!-- Hero -->
     <section class="hero">
-      <div class="glow" aria-hidden="true"></div>
-      <div class="wrap hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow"><span class="pill" data-i18n="hero.new">New in 1.6</span> <span data-i18n="hero.newText">Planned posts that make themselves</span></p>
-          <h1 data-i18n="hero.title">Promo videos for your apps, <span class="grad-text">directed by Claude Code.</span></h1>
-          <p class="lead" data-i18n="hero.lead">Promo Studio reads your app's source code, writes a storyboard from your prompt and has <b>Claude Code</b> build every scene in <b>Remotion</b>. You approve it, and it posts the result to <b>Instagram</b> as a Reel, a story, a photo or a carousel.</p>
-          <div class="cta-row">
-            <a class="btn btn-primary" href="https://github.com/ardasnturk/promo-studio/releases/latest">
-              <svg viewBox="0 0 24 24" aria-hidden="true" class="i-apple"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.5 2.8-1.3z"/></svg>
-              <span data-i18n="hero.cta">Download for Mac</span>
-            </a>
-            <a class="btn btn-ghost" href="https://github.com/ardasnturk/promo-studio" data-i18n="hero.github">View on GitHub</a>
-          </div>
-          <ul class="hero-facts">
-            <li data-i18n="hero.fact1">Free and open source</li>
-            <li data-i18n="hero.fact2">Runs on your Mac</li>
-            <li data-i18n="hero.fact3">No server, no account</li>
-            <li data-i18n="hero.fact4">10 languages</li>
-          </ul>
+      <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="wrap hero-copy">
+        <a class="eyebrow load" href="#planned"><span class="pill" data-i18n="hero.new">New in 1.6</span> <span data-i18n="hero.newText">Write it today, post it tomorrow</span> <span class="arrow" aria-hidden="true">→</span></a>
+        <h1 class="load" data-i18n="hero.title">Your app has a story. <span class="grad">Claude Code directs it.</span></h1>
+        <p class="lead load" data-i18n="hero.lead">Promo Studio reads your source code, writes a storyboard from your prompt and has <b>Claude Code</b> build every scene in <b>Remotion</b>. You approve it, and it goes to <b>Instagram</b> as a Reel, a story, a photo or a carousel.</p>
+        <div class="cta-row center load">
+          <a class="btn btn-primary btn-shine" href="https://github.com/ardasnturk/promo-studio/releases/latest">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="i-apple"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.5 2.8-1.3z"/></svg>
+            <span data-i18n="hero.cta">Download for Mac</span>
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/ardasnturk/promo-studio" data-i18n="hero.github">View on GitHub</a>
         </div>
+        <ul class="hero-facts load">
+          <li data-i18n="hero.fact1">Free and open source</li>
+          <li data-i18n="hero.fact2">Runs on your Mac</li>
+          <li data-i18n="hero.fact3">No server, no account</li>
+          <li data-i18n="hero.fact4">10 languages</li>
+        </ul>
+      </div>
 
-        <div class="hero-art" aria-hidden="true">
-          <div class="phone phone-back"><video src="assets/dice.mp4" poster="assets/dice.jpg" muted loop playsinline preload="none"></video></div>
-          <div class="phone phone-front"><video src="assets/chat.mp4" poster="assets/chat.jpg" muted loop playsinline preload="none"></video></div>
-          <div class="phone phone-side"><video src="assets/colorwar.mp4" poster="assets/colorwar.jpg" muted loop playsinline preload="none"></video></div>
-          <div class="spark"></div>
+      <div class="fan load" id="fan" aria-hidden="true">
+        <div class="phone f1"><video src="assets/ribbon.mp4" poster="assets/ribbon.jpg" muted loop playsinline preload="none"></video></div>
+        <div class="phone f2"><video src="assets/dice.mp4" poster="assets/dice.jpg" muted loop playsinline preload="none"></video></div>
+        <div class="phone f3"><video src="assets/chat.mp4" poster="assets/chat.jpg" muted loop playsinline preload="none"></video></div>
+        <div class="phone f4"><video src="assets/colorwar.mp4" poster="assets/colorwar.jpg" muted loop playsinline preload="none"></video></div>
+        <div class="phone f5"><video src="assets/snow.mp4" poster="assets/snow.jpg" muted loop playsinline preload="none"></video></div>
+        <svg class="star s1" viewBox="0 0 100 100"><path d="M50 0l11 39 39 11-39 11-11 39-11-39L0 50l39-11z"/></svg>
+        <svg class="star s2" viewBox="0 0 100 100"><path d="M50 0l11 39 39 11-39 11-11 39-11-39L0 50l39-11z"/></svg>
+      </div>
+
+      <div class="wrap prompt-wrap load">
+        <div class="prompt" id="prompt">
+          <svg class="prompt-star" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 0l11 39 39 11-39 11-11 39-11-39L0 50l39-11z"/></svg>
+          <p class="prompt-text"><span id="typed" data-i18n-skip></span><i class="caret" aria-hidden="true"></i></p>
+          <ol class="stepper" id="stepper">
+            <li data-i18n="hero.st1">Storyboard</li>
+            <li data-i18n="hero.st2">Code</li>
+            <li data-i18n="hero.st3">Render</li>
+            <li data-i18n="hero.st4">Posted</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Works with -->
+    <section class="ticker" aria-label="Works with" data-i18n-attr="aria-label:ticker.label">
+      <div class="ticker-track" data-marquee>
+        <span>Claude Code</span><span>Remotion</span><span>Instagram</span><span>Gemini</span><span>Codex</span><span>Cloudflare</span><span>Remote Code</span><span>Homebrew</span>
+      </div>
+    </section>
+
+    <!-- How it works: the stage stays while the steps pass -->
+    <section class="section" id="flow">
+      <div class="wrap">
+        <div class="head rv">
+          <p class="kicker" data-i18n="how.kicker">How it works</p>
+          <h2 data-i18n="how.title">From your code to a finished post in four steps.</h2>
+        </div>
+        <div class="flow">
+          <div class="flow-steps">
+            <article class="flow-step" data-step="0">
+              <span class="num">01</span>
+              <h3 data-i18n="how.s1">It reads your project</h3>
+              <p data-i18n="how.s1Text">Point it at your app's project folder, whatever it's written in. Claude Code finds the app's features, brand colors and screenshots, and can capture new screens in the iOS Simulator.</p>
+            </article>
+            <article class="flow-step" data-step="1">
+              <span class="num">02</span>
+              <h3 data-i18n="how.s2">You describe the video</h3>
+              <p data-i18n="how.s2Text">Write what you want, or add your own images. Claude researches current facts on the web when needed and writes a scene-by-scene storyboard with its sources.</p>
+            </article>
+            <article class="flow-step" data-step="2">
+              <span class="num">03</span>
+              <h3 data-i18n="how.s3">Claude codes it</h3>
+              <p data-i18n="how.s3Text">After you approve the storyboard, Claude writes a custom Remotion composition, renders stills to check its own work and fixes what doesn't look right. Revise it in plain words.</p>
+            </article>
+            <article class="flow-step" data-step="3">
+              <span class="num">04</span>
+              <h3 data-i18n="how.s4">Render and post</h3>
+              <p data-i18n="how.s4Text">The Mac renders the video or image. Post it now, schedule it, or save it, then follow views and reach in the app.</p>
+            </article>
+          </div>
+
+          <div class="stage" id="stage" aria-hidden="true">
+            <div class="window">
+              <div class="window-bar"><i></i><i></i><i></i><span>Promo Studio</span></div>
+              <div class="window-body">
+                <!-- 1 Read -->
+                <div class="panel panel-read">
+                  <div class="tree">
+                    <p>YourApp/</p>
+                    <p class="in">Sources/</p>
+                    <p class="in2 hit">Features/DarkMode.swift</p>
+                    <p class="in2 hit">Features/Widgets.swift</p>
+                    <p class="in2">Theme/Colors.swift</p>
+                    <p class="in">Assets.xcassets/</p>
+                    <p class="in">README.md</p>
+                  </div>
+                  <div class="found">
+                    <p class="label" data-i18n="stage.found">Found in your code</p>
+                    <span class="tagline" data-i18n="stage.tag1">Features</span>
+                    <span class="tagline" data-i18n="stage.tag2">Screenshots</span>
+                    <p class="label" data-i18n="stage.brand">Brand colors</p>
+                    <div class="swatches"><i></i><i></i><i></i><i></i></div>
+                  </div>
+                </div>
+                <!-- 2 Storyboard -->
+                <div class="panel panel-board">
+                  <div class="board">
+                    <div class="scene"><b data-i18n="stage.sc1">Hook</b><span>0:00</span></div>
+                    <div class="scene"><b data-i18n="stage.sc2">Feature</b><span>0:03</span></div>
+                    <div class="scene"><b data-i18n="stage.sc3">Proof</b><span>0:09</span></div>
+                    <div class="scene"><b data-i18n="stage.sc4">Call to action</b><span>0:15</span></div>
+                  </div>
+                  <div class="board-foot">
+                    <span class="source" data-i18n="stage.source">3 sources checked</span>
+                    <span class="approve" data-i18n="stage.approve">Approve storyboard</span>
+                  </div>
+                </div>
+                <!-- 3 Code -->
+                <div class="panel panel-code">
+                  <pre class="code"><code><span class="c-k">export const</span> <span class="c-f">Hook</span> = () =&gt; {
+  <span class="c-k">const</span> frame = <span class="c-f">useCurrentFrame</span>();
+  <span class="c-k">const</span> y = <span class="c-f">spring</span>({ frame, fps: <span class="c-n">30</span> });
+  <span class="c-k">return</span> (
+    &lt;<span class="c-t">AbsoluteFill</span>&gt;
+      &lt;<span class="c-t">PhoneShot</span> y={y} /&gt;
+      &lt;<span class="c-t">KineticType</span> at={<span class="c-n">12</span>} /&gt;
+    &lt;/<span class="c-t">AbsoluteFill</span>&gt;
+  );
+};</code></pre>
+                  <div class="phone mini-phone"><video src="assets/dice.mp4" poster="assets/dice.jpg" muted loop playsinline preload="none"></video></div>
+                </div>
+                <!-- 4 Post -->
+                <div class="panel panel-post">
+                  <div class="render">
+                    <p class="label" data-i18n="stage.render">Rendering</p>
+                    <div class="bar"><i></i></div>
+                  </div>
+                  <div class="actions">
+                    <span class="act act-on" data-i18n="stage.now">Post now</span>
+                    <span class="act" data-i18n="stage.schedule">Schedule</span>
+                    <span class="act" data-i18n="stage.save">Save</span>
+                  </div>
+                  <div class="insight">
+                    <div><p class="label" data-i18n="stage.views">Views</p><div class="spark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+                    <div><p class="label" data-i18n="stage.reach">Reach</p><div class="spark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Formats -->
-    <section class="section" id="formats">
-      <div class="wrap">
-        <p class="kicker" data-i18n="formats.kicker">Every format</p>
-        <h2 data-i18n="formats.title">One prompt, wherever it goes on Instagram.</h2>
-        <p class="section-lead" data-i18n="formats.lead">Choose a video or an image when you start, then pick where it's shared. Promo Studio sizes the design for it and posts through Instagram's official API, right away or on a schedule.</p>
-        <div class="formats">
-          <article class="format">
-            <div class="format-art art-reel"><span class="tag">9:16</span><span class="play"></span></div>
-            <h3 data-i18n="formats.reel">Reels</h3>
-            <p data-i18n="formats.reelText">Vertical videos with kinetic type, voiceover, music and sound effects, a cover frame you choose, and a caption written for search.</p>
-          </article>
-          <article class="format">
-            <div class="format-art art-story"><span class="tag">24h</span><span class="bars"><i></i><i></i><i></i></span></div>
-            <h3 data-i18n="formats.story">Stories</h3>
-            <p data-i18n="formats.storyText">Any video or picture as a story. A carousel goes out as one story per slide.</p>
-          </article>
-          <article class="format">
-            <div class="format-art art-post"><span class="tag">4:5</span></div>
-            <h3 data-i18n="formats.post">Photo posts</h3>
-            <p data-i18n="formats.postText">A single picture designed like a poster: portrait 4:5, square or 9:16, built in code and rendered as a sharp JPEG.</p>
-          </article>
-          <article class="format">
-            <div class="format-art art-carousel"><span class="tag">1/5</span><span class="cards"><i></i><i></i><i></i></span></div>
-            <h3 data-i18n="formats.carousel">Carousels</h3>
-            <p data-i18n="formats.carouselText">Two to ten slides in one visual system: a hook, one idea per slide, a closing call to action.</p>
-          </article>
+    <section class="section section-tint" id="formats">
+      <div class="wrap formats">
+        <div class="formats-copy">
+          <div class="rv">
+            <p class="kicker" data-i18n="formats.kicker">Every format</p>
+            <h2 data-i18n="formats.title">One prompt, wherever it goes on Instagram.</h2>
+            <p class="section-lead" data-i18n="formats.lead">Choose a video or an image when you start, then pick where it's shared. Promo Studio sizes the design for it and posts through Instagram's official API.</p>
+          </div>
+          <div class="fmt-tabs rv" role="tablist" aria-label="Formats" data-i18n-attr="aria-label:nav.formats" id="fmt-tabs">
+            <button type="button" role="tab" id="tab-reel" aria-controls="fmt-panel" aria-selected="true" data-fmt="reel">
+              <b data-i18n="formats.reel">Reels</b>
+              <span data-i18n="formats.reelText">Vertical videos with kinetic type, voiceover, music and sound effects, a cover frame you choose, and a caption written for search.</span>
+            </button>
+            <button type="button" role="tab" id="tab-story" aria-controls="fmt-panel" aria-selected="false" data-fmt="story">
+              <b data-i18n="formats.story">Stories</b>
+              <span data-i18n="formats.storyText">Any video or picture as a story. A carousel goes out as one story per slide.</span>
+            </button>
+            <button type="button" role="tab" id="tab-post" aria-controls="fmt-panel" aria-selected="false" data-fmt="post">
+              <b data-i18n="formats.post">Photo posts</b>
+              <span data-i18n="formats.postText">A single picture designed like a poster: portrait 4:5, square or 9:16, built in code and rendered as a sharp JPEG.</span>
+            </button>
+            <button type="button" role="tab" id="tab-carousel" aria-controls="fmt-panel" aria-selected="false" data-fmt="carousel">
+              <b data-i18n="formats.carousel">Carousels</b>
+              <span data-i18n="formats.carouselText">Two to ten slides in one visual system: a hook, one idea per slide, a closing call to action.</span>
+            </button>
+          </div>
+          <p class="note rv" data-i18n="formats.note">Instagram fetches pictures from a public address. While one is published, Promo Studio opens a temporary Cloudflare link (cloudflared, no account) for those files only and closes it right after.</p>
         </div>
-        <p class="note" data-i18n="formats.note">Instagram fetches pictures from a public address. While one is published, Promo Studio opens a temporary Cloudflare link (cloudflared, no account) for those files only and closes it right after.</p>
+
+        <div class="fmt-stage" role="tabpanel" id="fmt-panel" aria-labelledby="tab-reel">
+          <div class="device" id="device" data-fmt="reel" aria-hidden="true">
+            <span class="ratio" id="ratio">9:16</span>
+            <div class="screen">
+              <div class="layer layer-video">
+                <video src="assets/fill.mp4" poster="assets/fill.jpg" muted loop playsinline preload="none"></video>
+              </div>
+              <div class="layer layer-story">
+                <div class="story-bars"><i></i><i></i><i></i></div>
+                <img src="assets/breath.jpg" alt="" loading="lazy" width="270" height="480">
+              </div>
+              <div class="layer layer-post"><img src="assets/weight.jpg" alt="" loading="lazy" width="270" height="480"></div>
+              <div class="layer layer-carousel">
+                <div class="slides">
+                  <img src="assets/jelly.jpg" alt="" loading="lazy" width="270" height="480">
+                  <img src="assets/tree.jpg" alt="" loading="lazy" width="270" height="480">
+                  <img src="assets/sky.jpg" alt="" loading="lazy" width="270" height="480">
+                </div>
+                <div class="dots"><i></i><i></i><i></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- How it works -->
-    <section class="section section-alt" id="how">
+    <!-- Planned posts -->
+    <section class="section planned" id="planned">
+      <div class="aurora aurora-soft" aria-hidden="true"><i></i><i></i></div>
       <div class="wrap">
-        <p class="kicker" data-i18n="how.kicker">How it works</p>
-        <h2 data-i18n="how.title">From your code to a finished post in four steps.</h2>
-        <ol class="steps">
-          <li>
-            <span class="num">1</span>
-            <h3 data-i18n="how.s1">It reads your project</h3>
-            <p data-i18n="how.s1Text">Point it at your app's project folder, whatever it's written in. Claude Code finds the app's features, brand colors and screenshots, and can capture new screens in the iOS Simulator.</p>
-          </li>
-          <li>
-            <span class="num">2</span>
-            <h3 data-i18n="how.s2">You describe the video</h3>
-            <p data-i18n="how.s2Text">Write what you want, or add your own images. Claude researches current facts on the web when needed and writes a scene-by-scene storyboard with its sources.</p>
-          </li>
-          <li>
-            <span class="num">3</span>
-            <h3 data-i18n="how.s3">Claude codes it</h3>
-            <p data-i18n="how.s3Text">After you approve the storyboard, Claude writes a custom Remotion composition, renders stills to check its own work and fixes what doesn't look right. Revise it in plain words.</p>
-          </li>
-          <li>
-            <span class="num">4</span>
-            <h3 data-i18n="how.s4">Render and post</h3>
-            <p data-i18n="how.s4Text">The Mac renders the video or image. Post it now, schedule it, or save it, then follow views and reach in the app.</p>
-          </li>
-        </ol>
+        <div class="head center rv">
+          <p class="kicker"><span class="pill" data-i18n="hero.new">New in 1.6</span></p>
+          <h2 data-i18n="plan.title">Write it today. It makes itself tomorrow.</h2>
+          <p class="section-lead" data-i18n="plan.lead">Enter a prompt now and pick a time. When that time comes, Promo Studio starts the work by itself. You decide how far it goes without you.</p>
+        </div>
+
+        <div class="plan rv" id="plan">
+          <div class="plan-top">
+            <p class="plan-prompt" data-i18n="plan.prompt">Match preview for Saturday, with the line-ups</p>
+            <span class="plan-time"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span data-i18n="plan.time">Tomorrow, 15:00</span></span>
+          </div>
+          <div class="plan-switches">
+            <label class="switch"><input type="checkbox" id="auto-approve" checked><i></i><span data-i18n="plan.autoApprove">Approve the storyboard automatically</span></label>
+            <label class="switch"><input type="checkbox" id="auto-post"><i></i><span data-i18n="plan.autoPost">Post automatically when it's ready</span></label>
+          </div>
+          <ol class="line" id="line">
+            <li data-node="start"><b data-i18n="plan.n1">Starts on time</b><span data-i18n="plan.n1s">The Mac stays awake</span></li>
+            <li data-node="board" data-gate="auto-approve"><b data-i18n="plan.n2">Storyboard</b><span class="gate-auto" data-i18n="plan.auto">Automatic</span><span class="gate-wait" data-i18n="plan.wait">Waits for your OK</span></li>
+            <li data-node="code"><b data-i18n="plan.n3">Claude codes it</b><span data-i18n="plan.n3s">And checks its work</span></li>
+            <li data-node="render"><b data-i18n="plan.n4">Render</b><span data-i18n="plan.n4s">Video or images</span></li>
+            <li data-node="post" data-gate="auto-post"><b data-i18n="plan.n5">Post</b><span class="gate-auto" data-i18n="plan.auto">Automatic</span><span class="gate-wait" data-i18n="plan.wait">Waits for your OK</span></li>
+          </ol>
+        </div>
+
+        <ul class="plan-notes">
+          <li class="rv" data-i18n="plan.note1">Change it, or start it early, until its time comes.</li>
+          <li class="rv" data-i18n="plan.note2">A plan that starts over an hour late isn't posted automatically.</li>
+          <li class="rv" data-i18n="plan.note3">Plan from the Mac or from your iPhone, and see it on both.</li>
+        </ul>
       </div>
     </section>
 
     <!-- Features -->
     <section class="section" id="features">
       <div class="wrap">
-        <p class="kicker" data-i18n="features.kicker">Features</p>
-        <h2 data-i18n="features.title">A whole studio in your menu bar.</h2>
-        <div class="grid">
-          <article class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.5v5l4.5-2.5z"/></svg></div>
+        <div class="head rv">
+          <p class="kicker" data-i18n="features.kicker">Features</p>
+          <h2 data-i18n="features.title">A whole studio in your menu bar.</h2>
+        </div>
+        <div class="bento" data-spot-group>
+          <article class="tile t-wide rv" data-spot>
+            <div class="art art-film" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><span></span></div>
             <h3 data-i18n="features.f1">Directed films</h3>
             <p data-i18n="features.f1Text">Every video is its own Remotion code: counters, phone shots, matchups, charts and transitions, from a kit made for short vertical video.</p>
           </article>
-          <article class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5"/><path d="M17 4.5l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9z"/></svg></div>
-            <h3 data-i18n="features.f2">Real photos and logos</h3>
-            <p data-i18n="features.f2Text">It finds real club crests and photos of real people on the web and cuts them out. With Codex on your ChatGPT plan it can change an expression or pose, at no extra cost.</p>
-          </article>
-          <article class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9.5" cy="9.5" r="1.8"/><path d="M5 17l4.5-4.5 3.5 3.5 2.5-2.5L20 18"/></svg></div>
-            <h3 data-i18n="features.f3">Your own images</h3>
-            <p data-i18n="features.f3Text">Add photos from your Mac or phone. Claude looks at them, builds the post around them and can place the cut-out subject over a new background.</p>
-          </article>
-          <article class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3"/></svg></div>
-            <h3 data-i18n="features.f4">Research with sources</h3>
-            <p data-i18n="features.f4Text">Dates, line-ups and prices are checked with web search before they go on screen, and the sources stay with the post.</p>
-          </article>
-          <article class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></div>
+          <article class="tile rv" data-spot>
+            <div class="art art-voice" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
             <h3 data-i18n="features.f5">Voiceover and music</h3>
             <p data-i18n="features.f5Text">Optional Gemini text-to-speech fitted to each scene, a royalty-free beat and sound effects timed to the motion.</p>
           </article>
-          <article class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.5 3.5 5.3 3.5 8.5s-1 6-3.5 8.5c-2.5-2.5-3.5-5.3-3.5-8.5s1-6 3.5-8.5z"/></svg></div>
+          <article class="tile rv" data-spot>
+            <div class="art art-cut" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="44" r="21"/><path d="M20 112c5-27 21-41 40-41s35 14 40 41"/></svg><span></span></div>
+            <h3 data-i18n="features.f2">Real photos and logos</h3>
+            <p data-i18n="features.f2Text">It finds real club crests and photos of real people on the web and cuts them out. With Codex on your ChatGPT plan it can change an expression or pose, at no extra cost.</p>
+          </article>
+          <article class="tile rv" data-spot>
+            <div class="art art-src" aria-hidden="true"><span></span><span></span><span></span><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3"/></svg></div>
+            <h3 data-i18n="features.f4">Research with sources</h3>
+            <p data-i18n="features.f4Text">Dates, line-ups and prices are checked with web search before they go on screen, and the sources stay with the post.</p>
+          </article>
+          <article class="tile rv" data-spot>
+            <div class="art art-img" aria-hidden="true"><i></i><i></i><i></i></div>
+            <h3 data-i18n="features.f3">Your own images</h3>
+            <p data-i18n="features.f3Text">Add photos from your Mac or phone. Claude looks at them, builds the post around them and can place the cut-out subject over a new background.</p>
+          </article>
+          <article class="tile rv" data-spot>
+            <div class="art art-lang" aria-hidden="true"><span id="lang-cycle">Türkçe</span></div>
             <h3 data-i18n="features.f6">Ten languages</h3>
             <p data-i18n="features.f6Text">Videos, captions and the app itself in English, Türkçe, Deutsch, Español, Français, Italiano, Português, 日本語, 한국어 and 简体中文.</p>
           </article>
-          <article class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4M12 13v3l2 1"/></svg></div>
-            <h3 data-i18n="features.f9">Planned posts</h3>
-            <p data-i18n="features.f9Text">Write a request now and have it made tomorrow at 15:00. Approve and post it yourself, or let it run from start to finish.</p>
-          </article>
-          <article class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M12 3.5l9 15.5H3z"/><path d="M12 10v4M12 16.5v.5"/></svg></div>
+          <article class="tile t-wide rv" data-spot>
+            <div class="art art-fix" aria-hidden="true">
+              <div class="fix-card"><p data-i18n="features.fixMsg">The voiceover step didn't finish.</p><div><span class="on" data-i18n="features.fixTry">Try Again</span><span data-i18n="features.fixClaude">Let Claude Fix It</span></div></div>
+            </div>
             <h3 data-i18n="features.f7">Errors you can act on</h3>
-            <p data-i18n="features.f7Text">When a step fails, it says what happened in plain words and offers the fix as a button: try again, let Claude repair the code, reconnect an account.</p>
+            <p data-i18n="features.f7Text">When a step fails, it says what happened in plain words and offers the fix as a button. Try Again runs only the failed step.</p>
           </article>
-          <article class="card">
-            <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></div>
-            <h3 data-i18n="features.f8">From your iPhone</h3>
-            <p data-i18n="features.f8Text">With <a href="https://rcode.ardasnturk.com">Remote Code</a>, create, approve and post from your phone while the Mac does the work.</p>
-          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Remote Code -->
+    <section class="section section-tint" id="iphone">
+      <div class="wrap split">
+        <div class="remote" aria-hidden="true">
+          <div class="phone remote-phone">
+            <div class="remote-ui">
+              <p class="r-title">Promo Studio</p>
+              <p class="r-group" data-i18n="iphone.needsYou">Needs you</p>
+              <div class="r-row"><i class="t1"></i><div><b data-i18n="iphone.item1">Launch film</b><span class="r-pill p-wait" data-i18n="iphone.state1">Approve storyboard</span></div></div>
+              <p class="r-group" data-i18n="iphone.planned">Planned</p>
+              <div class="r-row"><i class="t2"></i><div><b data-i18n="iphone.item2">Match preview</b><span class="r-pill p-plan" data-i18n="plan.time">Tomorrow, 15:00</span></div></div>
+              <p class="r-group" data-i18n="iphone.done">Posted</p>
+              <div class="r-row"><i class="t3"></i><div><b data-i18n="iphone.item3">What's new carousel</b><span class="r-pill p-done" data-i18n="formats.carousel">Carousels</span></div></div>
+              <span class="r-cta" data-i18n="iphone.cta">New video</span>
+            </div>
+          </div>
+        </div>
+        <div class="rv">
+          <p class="kicker" data-i18n="iphone.kicker">From your iPhone</p>
+          <h2 data-i18n="iphone.title">Your Mac does the work. Your phone calls the shots.</h2>
+          <p class="section-lead" data-i18n="iphone.lead">With <a href="https://rcode.ardasnturk.com">Remote Code</a>, Promo Studio is a tab on your iPhone. It connects to your own Mac over an encrypted connection.</p>
+          <ul class="checks">
+            <li data-i18n="iphone.c1">Create, approve and post from anywhere</li>
+            <li data-i18n="iphone.c2">Plan a post, or change it until its time comes</li>
+            <li data-i18n="iphone.c3">Swipe through carousels and save them to Photos</li>
+            <li data-i18n="iphone.c4">See what the Mac needs, with the fix as a button</li>
+          </ul>
+          <a class="btn btn-ghost" href="https://rcode.ardasnturk.com" data-i18n="iphone.link">About Remote Code</a>
         </div>
       </div>
     </section>
 
     <!-- Promo Templates -->
-    <section class="section section-alt" id="templates">
-      <div class="wrap templates">
-        <div class="templates-copy">
-          <div class="templates-head">
-            <img src="assets/templates-icon.png" width="56" height="56" alt="">
+    <section class="section templates" id="templates">
+      <div class="wrap split split-tpl">
+        <div class="rv">
+          <div class="tpl-head">
+            <img src="assets/templates-icon.png" width="52" height="52" alt="">
             <p class="kicker" data-i18n="templates.kicker">Promo Templates</p>
           </div>
           <h2 data-i18n="templates.title">Videos made from code, and the skills that make new ones.</h2>
-          <p class="section-lead" data-i18n="templates.lead">Promo Templates is the open-source template library of Promo Studio: physics loops, puzzles solved by real solvers, wordless machines, relaxing exercises and chat stories, all written as React components. Every kind of video is also a Claude Code skill: describe one, and Claude codes, checks and renders it.</p>
-          <ul class="checks">
-            <li data-i18n="templates.c1">15 skills, from /video-physics to /video-ideas for trend research</li>
-            <li data-i18n="templates.c2">Same seed, same video, in the Studio and in the render</li>
-            <li data-i18n="templates.c3">Promo Studio installs it, keeps it up to date and posts the videos</li>
-          </ul>
+          <p class="section-lead" data-i18n="templates.lead">Promo Templates is the open-source library of Promo Studio: physics loops, puzzles solved by real solvers, wordless machines, relaxing exercises and chat stories, all written as React components. Every kind of video is also a Claude Code skill: describe one, and Claude codes, checks and renders it.</p>
+          <dl class="stats">
+            <div><dt data-i18n="templates.stat1">Templates</dt><dd>17</dd></div>
+            <div><dt data-i18n="templates.stat2">Claude Code skills</dt><dd>16</dd></div>
+            <div><dt data-i18n="templates.stat3">Open source license</dt><dd>MIT</dd></div>
+          </dl>
           <a class="btn btn-ghost" href="https://github.com/ardasnturk/promo-templates" data-i18n="templates.cta">Promo Templates on GitHub</a>
         </div>
-        <div class="reel-wall" aria-label="Videos made with Promo Templates" data-i18n-attr="aria-label:templates.wall">
-          <div class="mini"><video src="assets/jelly.mp4" poster="assets/jelly.jpg" muted loop playsinline preload="none"></video></div>
-          <div class="mini"><video src="assets/fill.mp4" poster="assets/fill.jpg" muted loop playsinline preload="none"></video></div>
-          <div class="mini"><video src="assets/breath.mp4" poster="assets/breath.jpg" muted loop playsinline preload="none"></video></div>
-          <div class="mini"><video src="assets/weight.mp4" poster="assets/weight.jpg" muted loop playsinline preload="none"></video></div>
+        <div class="wall" aria-label="Videos made with Promo Templates" role="img" data-i18n-attr="aria-label:templates.wall">
+          <div class="col" data-marquee-y>
+            <div class="clip"><video src="assets/jelly.mp4" poster="assets/jelly.jpg" muted loop playsinline preload="none"></video></div>
+            <div class="clip"><video src="assets/sky.mp4" poster="assets/sky.jpg" muted loop playsinline preload="none"></video></div>
+            <div class="clip"><video src="assets/weight.mp4" poster="assets/weight.jpg" muted loop playsinline preload="none"></video></div>
+            <div class="clip"><video src="assets/breath.mp4" poster="assets/breath.jpg" muted loop playsinline preload="none"></video></div>
+          </div>
+          <div class="col col-rev" data-marquee-y>
+            <div class="clip"><video src="assets/ring.mp4" poster="assets/ring.jpg" muted loop playsinline preload="none"></video></div>
+            <div class="clip"><video src="assets/fill.mp4" poster="assets/fill.jpg" muted loop playsinline preload="none"></video></div>
+            <div class="clip"><video src="assets/fryer.mp4" poster="assets/fryer.jpg" muted loop playsinline preload="none"></video></div>
+            <div class="clip"><video src="assets/tree.mp4" poster="assets/tree.jpg" muted loop playsinline preload="none"></video></div>
+          </div>
+          <div class="col" data-marquee-y>
+            <div class="clip"><video src="assets/sleep.mp4" poster="assets/sleep.jpg" muted loop playsinline preload="none"></video></div>
+            <div class="clip"><video src="assets/colorwar.mp4" poster="assets/colorwar.jpg" muted loop playsinline preload="none"></video></div>
+            <div class="clip"><video src="assets/ribbon.mp4" poster="assets/ribbon.jpg" muted loop playsinline preload="none"></video></div>
+            <div class="clip"><video src="assets/snow.mp4" poster="assets/snow.jpg" muted loop playsinline preload="none"></video></div>
+          </div>
+        </div>
+      </div>
+      <div class="skills" aria-hidden="true">
+        <div class="skills-track" data-marquee>
+          <code>/video-physics</code><code>/video-puzzle</code><code>/video-loop</code><code>/video-cringe</code><code>/video-relaxing</code><code>/video-fill</code><code>/video-color-war</code><code>/video-machine</code><code>/video-swarm</code><code>/video-slice</code><code>/video-ideas</code>
         </div>
       </div>
     </section>
 
     <!-- Privacy -->
-    <section class="section" id="privacy">
-      <div class="wrap privacy">
-        <div>
+    <section class="section section-tint" id="privacy">
+      <div class="wrap">
+        <div class="head center rv">
           <p class="kicker" data-i18n="privacy.kicker">Yours</p>
           <h2 data-i18n="privacy.title">Your code, keys and videos stay on your Mac.</h2>
         </div>
-        <ul class="privacy-list">
-          <li><b data-i18n="privacy.p1">Your own Claude Code.</b> <span data-i18n="privacy.p1Text">Promo Studio drives the claude CLI signed in with your account; there is no Promo Studio server or account.</span></li>
-          <li><b data-i18n="privacy.p2">Secrets in the Keychain.</b> <span data-i18n="privacy.p2Text">Instagram tokens, the Meta app secret and the Gemini key live in your login keychain.</span></li>
-          <li><b data-i18n="privacy.p3">No telemetry.</b> <span data-i18n="privacy.p3Text">Nothing is collected about you or what you make. The code is MIT-licensed on GitHub.</span></li>
+        <ul class="privacy">
+          <li class="rv"><b data-i18n="privacy.p1">Your own Claude Code.</b> <span data-i18n="privacy.p1Text">Promo Studio drives the claude CLI signed in with your account; there is no Promo Studio server or account.</span></li>
+          <li class="rv"><b data-i18n="privacy.p2">Secrets in the Keychain.</b> <span data-i18n="privacy.p2Text">Instagram tokens, the Meta app secret and the Gemini key live in your login keychain.</span></li>
+          <li class="rv"><b data-i18n="privacy.p3">No telemetry.</b> <span data-i18n="privacy.p3Text">Nothing is collected about you or what you make. The code is MIT-licensed on GitHub.</span></li>
         </ul>
       </div>
     </section>
 
     <!-- Download -->
-    <section class="section section-alt" id="download">
-      <div class="wrap download">
-        <img src="assets/icon-512.png" width="112" height="112" alt="" class="dl-icon">
-        <h2 data-i18n="download.title">Get Promo Studio</h2>
-        <p class="section-lead" data-i18n="download.lead">For macOS 15 Sequoia or later. Install it with Homebrew, or download the signed app.</p>
-        <div class="code-row">
-          <code id="brew">brew tap ardasnturk/promo-studio https://github.com/ardasnturk/promo-studio &amp;&amp; brew install --cask promo-studio</code>
-          <button type="button" class="btn btn-small btn-ghost" id="copy" data-i18n="download.copy">Copy</button>
+    <section class="section" id="download">
+      <div class="wrap">
+        <div class="cta-card rv">
+          <div class="aurora aurora-soft" aria-hidden="true"><i></i><i></i></div>
+          <img src="assets/icon-512.png" width="104" height="104" alt="" class="dl-icon">
+          <h2 data-i18n="download.title">Get Promo Studio</h2>
+          <p class="section-lead" data-i18n="download.lead">For macOS 15 Sequoia or later. Install it with Homebrew, or download the signed app.</p>
+          <div class="code-row">
+            <code id="brew">brew tap ardasnturk/promo-studio https://github.com/ardasnturk/promo-studio &amp;&amp; brew install --cask promo-studio</code>
+            <button type="button" class="btn btn-small btn-ghost" id="copy" data-i18n="download.copy">Copy</button>
+          </div>
+          <div class="cta-row center">
+            <a class="btn btn-primary btn-shine" href="https://github.com/ardasnturk/promo-studio/releases/latest"><span data-i18n="download.dmg">Download the .dmg</span> <span class="ver" id="version">1.6.0</span></a>
+            <a class="btn btn-ghost" href="https://github.com/ardasnturk/promo-studio/blob/main/docs/SETUP.md" data-i18n="download.setup">Setup guide</a>
+          </div>
+          <p class="note" data-i18n="download.needs">It needs Claude Code (signed in) and Node.js 20 or later. On first launch, a checklist shows what's missing and installs the Remotion video engine. Gemini, Instagram, Codex and cloudflared are optional.</p>
         </div>
-        <div class="cta-row center">
-          <a class="btn btn-primary" href="https://github.com/ardasnturk/promo-studio/releases/latest" data-i18n="download.dmg">Download the .dmg</a>
-          <a class="btn btn-ghost" href="https://github.com/ardasnturk/promo-studio/blob/main/docs/SETUP.md" data-i18n="download.setup">Setup guide</a>
-        </div>
-        <p class="note" data-i18n="download.needs">It needs Claude Code (signed in) and Node.js 20 or later. On first launch, a checklist shows what's missing and installs the Remotion video engine. Gemini, Instagram, Codex and cloudflared are optional.</p>
       </div>
     </section>
 
     <!-- FAQ -->
     <section class="section" id="faq">
       <div class="wrap faq">
-        <p class="kicker" data-i18n="faq.kicker">FAQ</p>
-        <h2 data-i18n="faq.title">Questions</h2>
+        <div class="head center rv">
+          <p class="kicker" data-i18n="faq.kicker">FAQ</p>
+          <h2 data-i18n="faq.title">Questions</h2>
+        </div>
         <details>
           <summary data-i18n="faq.q1">What does it cost?</summary>
           <p data-i18n="faq.a1">Promo Studio is free. It uses the Claude Code plan you already have. Voiceover uses your own Gemini API key, and photo edits use Codex on your ChatGPT plan; both are optional.</p>
@@ -274,7 +531,11 @@
           <p data-i18n="faq.a2">Business and Creator accounts, through Instagram's official API, with Instagram Login (no Facebook Page needed) or Facebook Login. Meta may limit stories to Business accounts.</p>
         </details>
         <details>
-          <summary data-i18n="faq.q3">Do I need a Mac app project?</summary>
+          <summary data-i18n="faq.q6">Does my Mac have to be on for a planned post?</summary>
+          <p data-i18n="faq.a6">Yes. Promo Studio has to be running on your Mac when the time comes, and it keeps the Mac awake while a plan runs. If a plan starts over an hour late, it's made but not posted automatically, so you can check it first.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q3">Do I need an app project?</summary>
           <p data-i18n="faq.a3">No. Projects make promo films about an app, but you can also make standalone videos and images from a prompt: news, stories, explainers, match previews.</p>
         </details>
         <details>
@@ -305,7 +566,14 @@
     </div>
   </footer>
 
-  <script src="i18n.js"></script>
+  <!-- Strings only the scripts use; kept here so English lives in one place. -->
+  <div hidden>
+    <span data-i18n="ui.copied">Copied</span>
+    <span data-i18n="hero.p1">A 20-second Reel about the new dark mode</span>
+    <span data-i18n="hero.p2">A match preview, tomorrow at 15:00</span>
+    <span data-i18n="hero.p3">A five-slide carousel: what's new in 2.0</span>
+  </div>
+
   <script src="main.js"></script>
 </body>
 </html>

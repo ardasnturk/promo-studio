@@ -6,6 +6,13 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.6.1] — 2026-11-05
+
+### Fixed
+- A video upload Instagram drops or refuses goes again by itself: from where it
+  stopped, then on a new container. If it still fails, the error says how much
+  Instagram received and the reason it gives.
+
 ### Changed
 - Website: a new animated design in all ten languages of the app, with planned
   posts, the formats, Remote Code on the iPhone and Promo Templates.

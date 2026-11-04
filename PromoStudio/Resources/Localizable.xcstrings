@@ -17807,6 +17807,122 @@
         }
       }
     },
+    "Instagram received %@ of %@.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram hat %1$@ von %2$@ erhalten."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram recibió %1$@ de %2$@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram a reçu %1$@ sur %2$@."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram ha ricevuto %1$@ su %2$@."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram は %2$@ のうち %1$@ を受信しました。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram이 %2$@ 중 %1$@을 받았습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Instagram recebeu %1$@ de %2$@."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram %2$@ içinden %1$@ aldı."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram 已收到 %1$@，共 %2$@。"
+          }
+        }
+      }
+    },
+    "Instagram refused the upload. Starting it again…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram hat den Upload abgelehnt. Er wird neu gestartet …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram rechazó la subida. Empezando de nuevo…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram a refusé l’envoi. Nouveau départ…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram ha rifiutato il caricamento. Si riparte…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram がアップロードを拒否しました。やり直しています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram이 업로드를 거부했습니다. 다시 시작하는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Instagram recusou o envio. Começando de novo…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram yüklemeyi reddetti. Yeniden başlatılıyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram 拒绝了上传。正在重新开始…"
+          }
+        }
+      }
+    },
     "Instagram rejected the file (length, size or format). Render it again and retry.": {
       "localizations": {
         "de": {
@@ -37813,6 +37929,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "更新的磁盘映像中不包含 Promo Studio。"
+          }
+        }
+      }
+    },
+    "The upload was interrupted. Trying again…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Upload wurde unterbrochen. Neuer Versuch …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La subida se interrumpió. Reintentando…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’envoi a été interrompu. Nouvelle tentative…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il caricamento si è interrotto. Nuovo tentativo…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アップロードが中断されました。再試行しています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "업로드가 중단되었습니다. 다시 시도하는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O envio foi interrompido. Tentando de novo…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yükleme kesildi. Yeniden deneniyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上传已中断。正在重试…"
           }
         }
       }

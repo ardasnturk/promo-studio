@@ -290,8 +290,7 @@ struct InstagramAPI {
             "share_to_feed": "true",
         ]
         if let coverOffsetMs { params["thumb_offset"] = String(coverOffsetMs) }
-        let container = try await post("\(userId)/media", params)
-        try await upload(videoURL, to: container, onStatus: onStatus)
+        let container = try await uploaded(videoURL, onStatus: onStatus) { try await post("\(userId)/media", params) }
         return try await finish(container, userId: userId, onStatus: onStatus)
     }
 
@@ -304,8 +303,9 @@ struct InstagramAPI {
     ) async throws -> (mediaId: String, permalink: String?) {
         if let videoURL {
             onStatus(String(localized: "Creating container…"))
-            let container = try await post("\(userId)/media", ["media_type": "STORIES", "upload_type": "resumable"])
-            try await upload(videoURL, to: container, onStatus: onStatus)
+            let container = try await uploaded(videoURL, onStatus: onStatus) {
+                try await post("\(userId)/media", ["media_type": "STORIES", "upload_type": "resumable"])
+            }
             return try await finish(container, userId: userId, onStatus: onStatus)
         }
         var last: (mediaId: String, permalink: String?)?
@@ -342,23 +342,103 @@ struct InstagramAPI {
         return try await finish(container, userId: userId, onStatus: onStatus)
     }
 
-    private func upload(_ file: URL, to container: [String: Any], onStatus: @Sendable (String) -> Void) async throws {
+    /// A refused or dropped upload, with what Instagram said.
+    private struct UploadFailure: Error {
+        var text: String
+        /// False when Instagram says the same container won't take it
+        var canResume: Bool
+    }
+
+    /// Makes a container and uploads the file to it. When Instagram refuses that container, one more goes on a new one.
+    private func uploaded(
+        _ file: URL,
+        onStatus: @Sendable (String) -> Void,
+        container make: () async throws -> [String: Any]
+    ) async throws -> [String: Any] {
+        let data = try Data(contentsOf: file, options: .mappedIfSafe)
+        let container = try await make()
+        do {
+            try await upload(data, to: container, onStatus: onStatus)
+            return container
+        } catch is UploadFailure {
+            onStatus(String(localized: "Instagram refused the upload. Starting it again…"))
+            try await Task.sleep(for: .seconds(5))
+            let second = try await make()
+            do {
+                try await upload(data, to: second, onStatus: onStatus)
+                return second
+            } catch let last as UploadFailure {
+                throw InstagramError.api(await explained(last.text, container: second, total: data.count))
+            }
+        }
+    }
+
+    /// Sends the bytes, three times at most: after a drop it goes on from what Instagram says it received.
+    private func upload(_ data: Data, to container: [String: Any], onStatus: @Sendable (String) -> Void) async throws {
         guard let containerId = container["id"] as? String else { throw InstagramError.api(String(localized: "No container ID")) }
         onStatus(String(localized: "Uploading video…"))
-        let data = try Data(contentsOf: file)
         let uploadURL = (container["uri"] as? String).flatMap(URL.init(string:))
             ?? URL(string: "https://rupload.facebook.com/ig-api-upload/\(graphVersion)/\(containerId)")!
-        var up = URLRequest(url: uploadURL)
+        var offset = 0
+        for attempt in 1...3 {
+            do {
+                try await send(data, from: offset, to: uploadURL)
+                onStatus(String(localized: "Instagram is processing the video…"))
+                return
+            } catch let failure as UploadFailure {
+                if !failure.canResume || attempt == 3 { throw failure }
+            } catch let error as URLError where error.code != .cancelled {
+                if attempt == 3 { throw UploadFailure(text: error.localizedDescription, canResume: false) }
+            }
+            onStatus(String(localized: "The upload was interrupted. Trying again…"))
+            try await Task.sleep(for: .seconds(3))
+            let sent = await uploadState(of: containerId).sent ?? 0
+            if sent == data.count { return }
+            offset = sent
+        }
+    }
+
+    private func send(_ data: Data, from offset: Int, to url: URL) async throws {
+        var up = URLRequest(url: url)
         up.httpMethod = "POST"
         up.setValue("OAuth \(token)", forHTTPHeaderField: "Authorization")
-        up.setValue("0", forHTTPHeaderField: "offset")
+        up.setValue(String(offset), forHTTPHeaderField: "offset")
         up.setValue(String(data.count), forHTTPHeaderField: "file_size")
         up.timeoutInterval = 600
-        let (upData, upResp) = try await URLSession.shared.upload(for: up, from: data)
-        if let http = upResp as? HTTPURLResponse, http.statusCode >= 300 {
-            throw InstagramError.api(String(localized: "Upload error (\(http.statusCode)): \(String(decoding: upData, as: UTF8.self))"))
+        let (body, response) = try await URLSession.shared.upload(for: up, from: data.subdata(in: offset..<data.count))
+        guard let http = response as? HTTPURLResponse, http.statusCode >= 300 else { return }
+        let info = (try? JSONSerialization.jsonObject(with: body)) as? [String: Any]
+        let retriable = (info?["debug_info"] as? [String: Any])?["retriable"] as? Bool ?? true
+        throw UploadFailure(
+            text: String(localized: "Upload error (\(http.statusCode)): \(String(decoding: body, as: UTF8.self))"),
+            canResume: retriable
+        )
+    }
+
+    /// What Instagram knows about a container's upload. `video_status` isn't on every connection type.
+    private func uploadState(of containerId: String) async -> (sent: Int?, status: String?, phase: String?) {
+        guard let info = try? await get(containerId, ["fields": "status,status_code,video_status"]) else {
+            let basic = try? await get(containerId, ["fields": "status,status_code"])
+            return (nil, basic?["status"] as? String, nil)
         }
-        onStatus(String(localized: "Instagram is processing the video…"))
+        let phase = (info["video_status"] as? [String: Any])?["uploading_phase"] as? [String: Any]
+        let text = phase.flatMap { try? JSONSerialization.data(withJSONObject: $0, options: .sortedKeys) }
+            .map { String(decoding: $0, as: UTF8.self) }
+        return (phase?["bytes_transferred"] as? Int, info["status"] as? String, text)
+    }
+
+    /// The failure, with the reason Instagram gives when asked about the container.
+    private func explained(_ failure: String, container: [String: Any], total: Int) async -> String {
+        guard let containerId = container["id"] as? String else { return failure }
+        let state = await uploadState(of: containerId)
+        var lines = [failure]
+        if let sent = state.sent {
+            let size = { (bytes: Int) in ByteCountFormatter.string(fromByteCount: Int64(bytes), countStyle: .file) }
+            lines.append(String(localized: "Instagram received \(size(sent)) of \(size(total))."))
+        }
+        if let status = state.status, !status.isEmpty { lines.append(status) }
+        if let phase = state.phase { lines.append(phase) }
+        return lines.joined(separator: "\n")
     }
 
     /// Waits for the container to be processed, publishes it and reads its link.

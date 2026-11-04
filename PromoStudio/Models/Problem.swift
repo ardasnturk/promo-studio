@@ -53,7 +53,7 @@ struct Problem: Codable, Hashable {
                 set(.voiceQuota, String(localized: "Voiceover quota used up"), raw, .withoutVoiceover)
             case .missingKey:
                 set(.voiceKey, String(localized: "No voiceover key"), String(localized: "Add a Gemini API key in Settings → Voiceover, or produce the video without voiceover."), .settings)
-            case .tts, .split:
+            case .tts, .limited, .split:
                 set(.voice, String(localized: "The voiceover couldn’t be made"), String(localized: "Gemini didn’t return usable audio. Try again, or produce the video without voiceover."), .retry)
             }
         } else if let e = error as? ProcessError, case let .notFound(tool) = e {

@@ -6,6 +6,13 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.6.2] — 2026-11-05
+
+### Added
+- A second Gemini API key in Settings → Voiceover. It takes over when the first
+  runs out of quota. It must come from a different Google project, since quota
+  is counted per project.
+
 ## [1.6.1] — 2026-11-05
 
 ### Fixed

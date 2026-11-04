@@ -7,11 +7,13 @@ enum AudioError: LocalizedError {
     case split(String)
     /// Daily free quota used up; retrying just wastes requests
     case quota(String?)
+    /// Still rate limited after waiting
+    case limited(String)
 
     var errorDescription: String? {
         switch self {
         case .missingKey: String(localized: "Gemini API key not found (Settings → Voiceover, or GEMINI_API_KEY).")
-        case let .tts(msg): "Gemini TTS: \(msg)"
+        case let .tts(msg), let .limited(msg): "Gemini TTS: \(msg)"
         case let .split(msg): String(localized: "Couldn't split the voiceover: \(msg)")
         case let .quota(wait):
             wait.map { String(localized: "Gemini voiceover quota reached (free plan: 10 requests per model per day); it resets in about \($0). You can produce the video without voiceover, wait for the quota, or enable billing in Google AI Studio.") }
@@ -26,6 +28,13 @@ enum AudioService {
     static func geminiKey() -> String? {
         if let k = Keychain.get(Keychain.Key.geminiApiKey), !k.isEmpty { return k }
         return envKey
+    }
+
+    /// The keys to voice with, in order. The second takes over when the first runs out of quota.
+    static func geminiKeys() -> [String] {
+        var keys = geminiKey().map { [$0] } ?? []
+        if let second = Keychain.get(Keychain.Key.geminiSecondApiKey), !second.isEmpty, !keys.contains(second) { keys.append(second) }
+        return keys
     }
 
     /// GEMINI_API_KEY from the login shell. Waiting on a process on the main thread re-enters the run loop and
@@ -53,7 +62,7 @@ enum AudioService {
         post: inout ContentPost,
         voice: String,
         model: String,
-        apiKey: String,
+        apiKeys: [String],
         onStatus: @Sendable (String) -> Void
     ) async throws {
         let dir = Paths.post(post.id)
@@ -75,7 +84,7 @@ enum AudioService {
             // Free quota is ~10 requests per model per day: voice the whole video in one request and split at the silences.
             onStatus(String(localized: "Generating voiceover (Gemini, \(voice))…"))
             let take = dir.appendingPathComponent("vo_take.wav")
-            try await synthesize(lines.joined(separator: "\n"), voice: voice, model: model, apiKey: apiKey, to: take)
+            try await synthesize(lines.joined(separator: "\n"), voice: voice, model: model, apiKeys: apiKeys, onStatus: onStatus, to: take)
             do {
                 onStatus(String(localized: "Splitting the voiceover into scenes…"))
                 durations = try await split(take: take, lines: lines, into: files.map { dir.appendingPathComponent($0) })
@@ -86,7 +95,7 @@ enum AudioService {
                 durations = []
                 for (line, file) in zip(lines, files) {
                     let raw = dir.appendingPathComponent("raw_\(file)")
-                    try await synthesize(line, voice: voice, model: model, apiKey: apiKey, to: raw)
+                    try await synthesize(line, voice: voice, model: model, apiKeys: apiKeys, onStatus: onStatus, to: raw)
                     durations.append(try await normalize(raw, from: nil, to: nil, into: dir.appendingPathComponent(file)))
                     try? FileManager.default.removeItem(at: raw)
                 }
@@ -103,7 +112,22 @@ enum AudioService {
         }
     }
 
-    static func synthesize(_ text: String, voice: String, model: String, apiKey: String, to url: URL) async throws {
+    /// Tries the keys in order: one that's out of quota hands over to the next.
+    static func synthesize(_ text: String, voice: String, model: String, apiKeys: [String], onStatus: @Sendable (String) -> Void, to url: URL) async throws {
+        guard let last = apiKeys.last else { throw AudioError.missingKey }
+        for key in apiKeys {
+            do {
+                try await synthesize(text, voice: voice, model: model, apiKey: key, to: url)
+                return
+            } catch AudioError.quota(_) where key != last {
+                onStatus(String(localized: "The first Gemini key is out of quota. Using the second…"))
+            } catch AudioError.limited(_) where key != last {
+                onStatus(String(localized: "The first Gemini key is out of quota. Using the second…"))
+            }
+        }
+    }
+
+    private static func synthesize(_ text: String, voice: String, model: String, apiKey: String, to url: URL) async throws {
         var req = URLRequest(url: URL(string: "https://generativelanguage.googleapis.com/v1beta/models/\(model):generateContent")!)
         req.httpMethod = "POST"
         req.timeoutInterval = 180
@@ -141,6 +165,7 @@ enum AudioService {
                 try await Task.sleep(for: .seconds(5 * (attempt + 1)))
                 continue
             }
+            if code == 429 { throw AudioError.limited(lastError) }
             break
         }
         throw AudioError.tts(lastError)

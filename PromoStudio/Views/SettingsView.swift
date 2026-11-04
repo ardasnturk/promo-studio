@@ -260,6 +260,7 @@ private struct InstagramSettings: View {
 private struct VoiceoverSettings: View {
     @Environment(AppModel.self) private var model
     @State private var geminiKey = Keychain.get(Keychain.Key.geminiApiKey) ?? ""
+    @State private var secondGeminiKey = Keychain.get(Keychain.Key.geminiSecondApiKey) ?? ""
 
     var body: some View {
         @Bindable var model = model
@@ -272,6 +273,8 @@ private struct VoiceoverSettings: View {
                 TextField("TTS model", text: $model.settings.ttsModel)
                 SecureField("Gemini API key", text: $geminiKey)
                     .onChange(of: geminiKey) { _, v in Keychain.set(v.trimmingCharacters(in: .whitespacesAndNewlines), for: Keychain.Key.geminiApiKey) }
+                SecureField("Second Gemini API key (optional)", text: $secondGeminiKey)
+                    .onChange(of: secondGeminiKey) { _, v in Keychain.set(v.trimmingCharacters(in: .whitespacesAndNewlines), for: Keychain.Key.geminiSecondApiKey) }
             } header: {
                 Text("Voiceover")
             } footer: {
@@ -282,6 +285,7 @@ private struct VoiceoverSettings: View {
                 } else {
                     Text("The key is stored in the Keychain. Audio is generated during rendering and isn't regenerated unless the text changes.")
                 }
+                Text("The second key takes over when the first runs out of quota. Google counts quota per project, so it must come from a different project.")
             }
             Section("Music") {
                 Toggle("Background music (royalty-free beat)", isOn: $model.settings.musicEnabled)

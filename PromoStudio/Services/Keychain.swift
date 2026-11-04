@@ -111,5 +111,7 @@ enum Keychain {
         static func instagramToken(_ accountId: String) -> String { "instagram.token.\(accountId)" }
         static let metaAppSecret = "meta.appSecret"
         static let geminiApiKey = "gemini.apiKey"
+        /// Used when the first key's quota runs out
+        static let geminiSecondApiKey = "gemini.secondApiKey"
     }
 }

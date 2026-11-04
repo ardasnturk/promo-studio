@@ -55,6 +55,8 @@ shells), make it available in `~/.zprofile` too, then click **Check Again**.
 1. Create an API key in [Google AI Studio](https://aistudio.google.com) (**Get API key**).
 2. Paste it into **Account & Settings → Voiceover & Music → Gemini API Key**. Promo Studio stores it in the Keychain.
    Alternatively, set `GEMINI_API_KEY` in your shell profile.
+3. Optional: add a **Second Gemini API key**. It takes over when the first runs out of quota. Google counts quota per
+   project, not per key, so a key from the same project adds nothing.
 
 All voiceover lines of a video are generated in one request. The free tier allows about 10 requests a day per TTS model.
 When the quota is used up, Promo Studio shows when it resets; meanwhile you can produce with **Without Voiceover**, or

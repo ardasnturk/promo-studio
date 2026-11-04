@@ -32945,6 +32945,64 @@
         }
       }
     },
+    "Second Gemini API key (optional)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zweiter Gemini-API-Schlüssel (optional)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segunda clave API de Gemini (opcional)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deuxième clé API Gemini (facultatif)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seconda chiave API Gemini (facoltativa)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 つ目の Gemini API キー（任意）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "두 번째 Gemini API 키(선택 사항)"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segunda chave de API do Gemini (opcional)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İkinci Gemini API anahtarı (isteğe bağlı)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第二个 Gemini API 密钥（可选）"
+          }
+        }
+      }
+    },
     "Sending slide %lld of %lld…": {
       "localizations": {
         "de": {
@@ -36425,6 +36483,64 @@
         }
       }
     },
+    "The first Gemini key is out of quota. Using the second…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Kontingent des ersten Gemini-Schlüssels ist aufgebraucht. Der zweite wird verwendet …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La primera clave de Gemini se quedó sin cuota. Usando la segunda…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La première clé Gemini a épuisé son quota. Utilisation de la deuxième…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La prima chiave Gemini ha esaurito la quota. Uso la seconda…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 つ目の Gemini キーの割り当てを使い切りました。2 つ目を使用しています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "첫 번째 Gemini 키의 할당량이 소진되었습니다. 두 번째 키를 사용하는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A primeira chave do Gemini ficou sem cota. Usando a segunda…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İlk Gemini anahtarının kotası doldu. İkincisi kullanılıyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第一个 Gemini 密钥的配额已用完。正在使用第二个…"
+          }
+        }
+      }
+    },
     "The ideas couldn’t be found": {
       "localizations": {
         "de": {
@@ -37233,6 +37349,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "脚本已更改；此预览来自旧版本。请重新渲染。"
+          }
+        }
+      }
+    },
+    "The second key takes over when the first runs out of quota. Google counts quota per project, so it must come from a different project.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der zweite Schlüssel übernimmt, wenn das Kontingent des ersten aufgebraucht ist. Google zählt das Kontingent pro Projekt, er muss also aus einem anderen Projekt stammen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La segunda clave entra en acción cuando la primera se queda sin cuota. Google cuenta la cuota por proyecto, así que debe ser de otro proyecto."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La deuxième clé prend le relais quand la première a épuisé son quota. Google compte le quota par projet : elle doit donc venir d’un autre projet."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La seconda chiave subentra quando la prima esaurisce la quota. Google conta la quota per progetto, quindi deve provenire da un altro progetto."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 つ目のキーの割り当てがなくなると、2 つ目に切り替わります。Google は割り当てをプロジェクト単位で数えるため、別のプロジェクトのキーが必要です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "첫 번째 키의 할당량이 소진되면 두 번째 키로 전환됩니다. Google은 할당량을 프로젝트별로 계산하므로 다른 프로젝트의 키여야 합니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A segunda chave entra em ação quando a primeira fica sem cota. O Google conta a cota por projeto, então ela precisa ser de outro projeto."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İlk anahtarın kotası dolunca ikincisi devreye girer. Google kotayı proje başına saydığı için farklı bir projeden olmalı."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第一个密钥的配额用完后，由第二个接替。Google 按项目计算配额，因此它必须来自另一个项目。"
           }
         }
       }

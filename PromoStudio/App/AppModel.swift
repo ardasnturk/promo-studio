@@ -797,8 +797,9 @@ final class AppModel {
         let postId = post.id
         let hasLines = post.spec.scenes.contains { !($0.voiceover ?? "").isEmpty }
         if settings.voiceoverEnabled, hasLines {
-            if let key = AudioService.geminiKey() {
-                try await AudioService.prepareVoiceover(post: &post, voice: settings.ttsVoice, model: settings.ttsModel, apiKey: key) { [weak self] msg in
+            let keys = AudioService.geminiKeys()
+            if !keys.isEmpty {
+                try await AudioService.prepareVoiceover(post: &post, voice: settings.ttsVoice, model: settings.ttsModel, apiKeys: keys) { [weak self] msg in
                     Task { @MainActor in self?.report(postId, msg) }
                 }
                 let spec = post.spec, signature = post.voiceSignature
@@ -1590,7 +1591,7 @@ final class AppModel {
     func refreshRequirements() async {
         defer { control?.dataChanged() }
         requirements = await SetupService.check(
-            hasGeminiKey: AudioService.geminiKey() != nil,
+            hasGeminiKey: !AudioService.geminiKeys().isEmpty,
             accounts: data.accounts,
             hasLibrary: !data.libraries.isEmpty
         )

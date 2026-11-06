@@ -17749,6 +17749,64 @@
         }
       }
     },
+    "Instagram isn’t taking the video now. Trying once more in 3 minutes…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram nimmt das Video gerade nicht an. Neuer Versuch in 3 Minuten …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram no acepta el vídeo ahora. Se reintentará en 3 minutos…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram n’accepte pas la vidéo pour le moment. Nouvel essai dans 3 minutes…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram non accetta il video in questo momento. Nuovo tentativo tra 3 minuti…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram が現在動画を受け付けていません。3 分後にもう一度試します…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram이 지금 동영상을 받지 않습니다. 3분 후 다시 시도합니다…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Instagram não está aceitando o vídeo agora. Nova tentativa em 3 minutos…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram şu an videoyu kabul etmiyor. 3 dakika sonra bir kez daha denenecek…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram 暂时不接收该视频。3 分钟后再试一次…"
+          }
+        }
+      }
+    },
     "Instagram login": {
       "localizations": {
         "de": {
@@ -33115,6 +33173,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "正在发送第 %lld/%lld 条快拍…"
+          }
+        }
+      }
+    },
+    "Sending the video through a temporary link…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Video wird über einen temporären Link gesendet …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviando el vídeo mediante un enlace temporal…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envoi de la vidéo via un lien temporaire…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invio del video tramite un link temporaneo…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一時リンク経由で動画を送信しています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "임시 링크로 동영상을 보내는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviando o vídeo por um link temporário…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video geçici bir bağlantıyla gönderiliyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在通过临时链接发送视频…"
           }
         }
       }

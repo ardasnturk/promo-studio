@@ -6,6 +6,13 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.6.3] — 2026-11-07
+
+### Fixed
+- When Instagram loses a video upload (error 1363008, "File not found"), it now
+  tries again after a longer wait, then has Instagram fetch the video from a
+  temporary Cloudflare link, then uploads once more after three minutes.
+
 ## [1.6.2] — 2026-11-05
 
 ### Added

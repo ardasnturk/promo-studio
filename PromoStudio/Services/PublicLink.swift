@@ -11,7 +11,8 @@ enum PublicLinkError: LocalizedError {
     }
 }
 
-/// Instagram's API takes pictures only from a public web address. For the few seconds a post is published, a Cloudflare
+/// Instagram's API takes pictures only from a public web address, and videos too when the direct upload fails. For the
+/// little time a post is published, a Cloudflare
 /// quick tunnel (cloudflared, no account) makes these files reachable at a random trycloudflare.com address; only the
 /// files under random paths are served and the tunnel closes right after.
 final class PublicLink: @unchecked Sendable {
@@ -134,16 +135,31 @@ final class PublicLink: @unchecked Sendable {
             let parts = request.split(separator: "\r\n").first?.split(separator: " ") ?? []
             let method = parts.first.map(String.init) ?? ""
             let path = parts.count > 1 ? String(parts[1]) : ""
-            guard ["GET", "HEAD"].contains(method), let file = files[path], let body = try? Data(contentsOf: file) else {
+            guard ["GET", "HEAD"].contains(method), let file = files[path], let body = try? Data(contentsOf: file, options: .mappedIfSafe) else {
                 return respond(conn, "404 Not Found", Data(), type: "text/plain")
             }
             let type = file.pathExtension.lowercased() == "png" ? "image/png" : file.pathExtension.lowercased() == "mp4" ? "video/mp4" : "image/jpeg"
+            if let range = Self.byteRange(in: request, size: body.count) {
+                let extra = "Content-Range: bytes \(range.lowerBound)-\(range.upperBound - 1)/\(body.count)\r\n"
+                return respond(conn, "206 Partial Content", body.subdata(in: range), type: type, head: method == "HEAD", extra: extra)
+            }
             respond(conn, "200 OK", body, type: type, head: method == "HEAD")
         }
     }
 
-    private func respond(_ conn: NWConnection, _ status: String, _ body: Data, type: String, head: Bool = false) {
-        let header = "HTTP/1.1 \(status)\r\nContent-Type: \(type)\r\nContent-Length: \(body.count)\r\nConnection: close\r\n\r\n"
+    /// The range of a `Range: bytes=a-b` or `bytes=a-` header, which video fetchers send.
+    private static func byteRange(in request: String, size: Int) -> Range<Int>? {
+        for line in request.split(separator: "\r\n").dropFirst() where line.lowercased().hasPrefix("range: bytes=") {
+            let ends = line.dropFirst("range: bytes=".count).split(separator: "-", omittingEmptySubsequences: false)
+            guard ends.count == 2, let start = Int(ends[0].trimmingCharacters(in: .whitespaces)), start < size else { return nil }
+            let last = Int(ends[1].trimmingCharacters(in: .whitespaces)) ?? size - 1
+            return start..<min(last + 1, size)
+        }
+        return nil
+    }
+
+    private func respond(_ conn: NWConnection, _ status: String, _ body: Data, type: String, head: Bool = false, extra: String = "") {
+        let header = "HTTP/1.1 \(status)\r\nContent-Type: \(type)\r\nContent-Length: \(body.count)\r\nAccept-Ranges: bytes\r\n\(extra)Connection: close\r\n\r\n"
         conn.send(content: Data(header.utf8) + (head ? Data() : body), completion: .contentProcessed { _ in conn.cancel() })
     }
 }

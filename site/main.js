@@ -240,7 +240,7 @@
   var device = $('#device');
   var ratio = $('#ratio');
   var tabs = $$('#fmt-tabs [role="tab"]');
-  var ratios = { reel: '9:16', story: '9:16', post: '4:5', carousel: '4:5' };
+  var ratios = { reel: '9:16', story: '9:16', post: '4:5', carousel: '4:5', shorts: '9:16' };
   var fmtTimer = null;
   function showFormat(tab) {
     tabs.forEach(function (b) {
@@ -281,6 +281,13 @@
     }, { threshold: 0.4 }).observe($('#formats'));
     $('#fmt-tabs').addEventListener('pointerdown', function () { stopAuto(); fmtTimer = 0; });
   }
+  // Links such as the hero's "New in 1.7" open their format's tab
+  $$('[data-fmt-link]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      var tab = $('#tab-' + link.dataset.fmtLink);
+      if (tab) { stopAuto(); fmtTimer = 0; showFormat(tab); }
+    });
+  });
 
   /* ---------- Planned posts: the plan runs, and stops where you said it should ---------- */
 

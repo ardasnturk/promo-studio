@@ -260,6 +260,39 @@ struct ContentAI {
         )
     }
 
+    // MARK: 3b) YouTube Shorts title
+
+    struct TitleResult: Decodable {
+        var title: String
+    }
+
+    func youtubeTitle(post: ContentPost, analysis: ProjectAnalysis, cwd: URL) async throws -> String {
+        let scenes = post.directed.map { $0.storyboard.scenes.map(\.text).joined(separator: "\n") }
+            ?? post.spec.scenes.map(\.title).joined(separator: "\n")
+        let prompt = """
+        Write the title of a YouTube Shorts video. Language: \(language).
+
+        \(analysis.isStandalone ? "" : "APP\n\(Self.compact(analysis))\n")
+        WORKING TITLE
+        \(post.title)
+
+        ON-SCREEN TEXT
+        \(scenes)
+
+        CAPTION
+        \(post.caption)
+
+        Rules: At most 70 characters (never over 100). Open with what the viewer gets or the most surprising fact, with the words people would search for. No hashtags, no quotation marks around it, at most one emoji. Don't promise anything the video doesn't show.
+        """
+        return try await claude.structured(
+            TitleResult.self,
+            prompt: prompt,
+            schema: ["type": "object", "properties": ["title": ["type": "string", "maxLength": 100]], "required": ["title"]],
+            cwd: cwd,
+            maxTurns: 4
+        ).title
+    }
+
     // MARK: 4) Adapting to another language
 
     struct TranslationResult: Decodable {

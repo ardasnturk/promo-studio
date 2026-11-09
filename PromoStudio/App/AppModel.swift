@@ -857,13 +857,14 @@ final class AppModel {
         }
         copy.status = .draft
         copy.createdAt = Date()
-        for keyPath in [\ContentPost.videoFile, \.coverFile, \.mediaId, \.permalink, \.lastError, \.voiceSignature, \.postingTip] {
+        for keyPath in [\ContentPost.videoFile, \.coverFile, \.mediaId, \.permalink, \.lastError, \.voiceSignature, \.postingTip, \.youtubeTitle] {
             copy[keyPath: keyPath] = nil
         }
         copy.coverSec = nil
         copy.scheduledAt = nil
         copy.publishedAt = nil
         copy.metrics = nil
+        copy.youtube = nil
         data.posts.append(copy)
         let newId = copy.id
         let ai = contentAI(language: language.id)
@@ -1141,18 +1142,38 @@ final class AppModel {
 
     // MARK: Posting and scheduling
 
+    /// Sets the time. A video that also goes to YouTube is uploaded now and waits there as private until that time:
+    /// YouTube publishes it itself, even if the Mac is off then.
     func schedule(_ postId: UUID, at date: Date) {
         updatePost(postId) { $0.scheduledAt = date; $0.status = .scheduled; $0.lastError = nil }
+        guard let post = post(postId), let channel = youtubeChannel(for: post), let video = videoURL(post),
+              post.youtube.map({ !$0.isLive && $0.locked != true }) ?? true else { return }
+        run(postId, String(localized: "Uploading to YouTube for its time…"), kind: .publish) { [weak self] in
+            let status: @Sendable (String) -> Void = { status in Task { @MainActor in self?.report(postId, status) } }
+            try await self?.sendToYouTube(postId, channel: channel, video: video, publishAt: date, onStatus: status)
+        }
     }
 
+    /// Takes the time off. A video waiting on YouTube stays there as private, without a time.
     func unschedule(_ postId: UUID) {
         updatePost(postId) { $0.scheduledAt = nil; $0.status = .ready }
+        guard let post = post(postId), let upload = post.youtube, !upload.isLive, upload.publishAt != nil,
+              let client = youtubeClient(upload.channelId) else { return }
+        let synthetic = usesEditedPhotos(post)
+        run(postId, String(localized: "Taking the time off the YouTube video…"), kind: .publish) { [weak self] in
+            let s = try await client.setVisibility(upload.videoId, privacy: "private", publishAt: nil, synthetic: synthetic)
+            self?.updatePost(postId) { $0.youtube?.privacy = s.privacy; $0.youtube?.publishAt = nil }
+        }
     }
 
-    /// Instagram account a post goes to: the one chosen for the post, else its project's.
+    /// Instagram account a post goes to: the one chosen for the post, else its project's. nil when it doesn't go to Instagram.
     func account(for post: ContentPost) -> InstagramAccount? {
-        account(post.accountId) ?? project(post.projectId).flatMap { account(for: $0) }
+        if post.accountId == Self.noInstagram { return nil }
+        return account(post.accountId) ?? project(post.projectId).flatMap { account(for: $0) }
     }
+
+    /// `ContentPost.accountId` of a post that doesn't go to Instagram
+    static let noInstagram = "-"
 
     func setAccount(_ accountId: String?, forPost postId: UUID) {
         updatePost(postId) { $0.accountId = accountId }
@@ -1163,7 +1184,13 @@ final class AppModel {
         updatePost(postId) { $0.placement = placement == .feed ? nil : placement }
     }
 
-    /// Posts to the post's Instagram account (its own, else its project's). Without one nothing is posted.
+    /// Whether the post has somewhere to go: an Instagram account or a YouTube channel
+    func hasDestination(_ post: ContentPost) -> Bool {
+        account(for: post) != nil || youtubeChannel(for: post) != nil
+    }
+
+    /// Posts to the post's Instagram account (its own, else its project's) and, for a video, to its YouTube channel.
+    /// A place it already went to is skipped, so after a failure only what's left runs again. Without either nothing is posted.
     /// A video goes up as a Reel or a story; pictures (a photo, a carousel, picture stories) through a temporary public link.
     func queuePublish(_ postId: UUID) {
         guard let post = post(postId) else { return }
@@ -1171,44 +1198,188 @@ final class AppModel {
         let images = post.imageFiles.map { folder.appendingPathComponent($0) }
         let video = videoURL(post)
         guard post.isImage ? !images.isEmpty : video != nil else { return }
-        guard let account = account(for: post), let token = token(for: account.userId) else {
-            let message = String(localized: "Choose an Instagram account for this post first.")
+        let account = post.mediaId == nil ? account(for: post) : nil
+        let channel = youtubeChannel(for: post)
+        let needsYouTube = channel != nil && (post.youtube.map { !$0.isLive && $0.locked != true } ?? true)
+        func refuse(_ message: String) {
             if post.status == .scheduled {
                 updatePost(postId) { $0.status = .failed; $0.lastError = message }
             } else {
                 alert = message
             }
+        }
+        if let account, token(for: account.userId) == nil { return refuse(String(localized: "Choose an Instagram account for this post first.")) }
+        guard account != nil || needsYouTube else {
+            if post.mediaId != nil || post.youtube != nil {
+                updatePost(postId) { $0.status = .published; $0.publishedAt = $0.publishedAt ?? Date() }
+            } else {
+                refuse(String(localized: "Choose an Instagram account or a YouTube channel for this post first."))
+            }
             return
         }
+        let token = account.flatMap { token(for: $0.userId) }
         let story = post.isStory || !post.canPostToFeed
-        let client = api(token, mode: account.loginMode)
-        updatePost(postId) { $0.status = .publishing; $0.lastError = nil; $0.accountId = account.userId }
-        run(postId, String(localized: "Publishing to @\(account.username)…"), kind: .publish) { [weak self] in
+        let client = token.map { api($0, mode: account?.loginMode) }
+        updatePost(postId) {
+            $0.status = .publishing
+            $0.lastError = nil
+            if let account { $0.accountId = account.userId }
+        }
+        let message = account.map { String(localized: "Publishing to @\($0.username)…") } ?? String(localized: "Publishing to YouTube…")
+        run(postId, message, kind: .publish) { [weak self] in
             do {
                 let status: @Sendable (String) -> Void = { status in Task { @MainActor in self?.report(postId, status) } }
-                let result: (mediaId: String, permalink: String?)
-                if let video, !post.isImage {
-                    result = story
-                        ? try await client.publishStory(userId: account.userId, videoURL: video, onStatus: status)
-                        : try await client.publishReel(userId: account.userId, videoURL: video, caption: post.fullCaption, coverOffsetMs: post.coverSec.map { Int($0 * 1000) }, onStatus: status)
-                } else {
-                    status(String(localized: "Opening a temporary link for Instagram…"))
-                    result = try await PublicLink.serving(images) { urls in
-                        story
-                            ? try await client.publishStory(userId: account.userId, imageURLs: urls, onStatus: status)
-                            : try await client.publishPhotos(userId: account.userId, imageURLs: urls, caption: post.fullCaption, onStatus: status)
+                if let account, let client {
+                    let result: (mediaId: String, permalink: String?)
+                    if let video, !post.isImage {
+                        result = story
+                            ? try await client.publishStory(userId: account.userId, videoURL: video, onStatus: status)
+                            : try await client.publishReel(userId: account.userId, videoURL: video, caption: post.fullCaption, coverOffsetMs: post.coverSec.map { Int($0 * 1000) }, onStatus: status)
+                    } else {
+                        status(String(localized: "Opening a temporary link for Instagram…"))
+                        result = try await PublicLink.serving(images) { urls in
+                            story
+                                ? try await client.publishStory(userId: account.userId, imageURLs: urls, onStatus: status)
+                                : try await client.publishPhotos(userId: account.userId, imageURLs: urls, caption: post.fullCaption, onStatus: status)
+                        }
                     }
+                    self?.updatePost(postId) {
+                        $0.mediaId = result.mediaId
+                        $0.permalink = result.permalink
+                        if story { $0.placement = .story }
+                    }
+                }
+                if needsYouTube, let channel, let video {
+                    try await self?.sendToYouTube(postId, channel: channel, video: video, publishAt: nil, onStatus: status)
                 }
                 self?.updatePost(postId) {
                     $0.status = .published
                     $0.publishedAt = Date()
-                    $0.mediaId = result.mediaId
-                    $0.permalink = result.permalink
-                    if story { $0.placement = .story }
                 }
             } catch {
                 self?.updatePost(postId) { $0.status = .failed; $0.lastError = Self.shortened(error.localizedDescription) }
                 throw error
+            }
+        }
+    }
+
+    // MARK: YouTube
+
+    func channel(_ id: String?) -> YouTubeChannel? { id.flatMap { id in data.channels.first { $0.id == id } } }
+
+    /// Channel a post's video goes to: the one it went to, the post's choice, else the default in Settings. Pictures don't go to YouTube.
+    func youtubeChannel(for post: ContentPost) -> YouTubeChannel? {
+        guard !post.isImage else { return nil }
+        if let upload = post.youtube { return channel(upload.channelId) }
+        return channel(post.youtubeChannelId ?? settings.youtubeDefaultChannel)
+    }
+
+    /// "" keeps the video off YouTube; nil follows the default in Settings. Choosing a channel has Claude write a title.
+    func setYouTubeChannel(_ channelId: String?, forPost postId: UUID) {
+        updatePost(postId) { $0.youtubeChannelId = channelId }
+        if let post = post(postId), youtubeChannel(for: post) != nil, (post.youtubeTitle ?? "").isEmpty { writeYouTubeTitle(postId) }
+    }
+
+    func youtubeClient(_ channelId: String) -> YouTubeAPI? {
+        guard let refresh = Keychain.get(Keychain.Key.youtubeToken(channelId)) else { return nil }
+        return YouTubeAPI(clientId: settings.googleClientId.trimmingCharacters(in: .whitespacesAndNewlines),
+                          clientSecret: Keychain.get(Keychain.Key.googleClientSecret) ?? "", refreshToken: refresh)
+    }
+
+    /// Uploads the video, or changes the visibility of the one already there. `publishAt` nil: public now.
+    private func sendToYouTube(_ postId: UUID, channel: YouTubeChannel, video: URL, publishAt: Date?, onStatus: @escaping @Sendable (String) -> Void) async throws {
+        guard let client = youtubeClient(channel.id) else { throw YouTubeError.notConnected }
+        guard let post = post(postId) else { return }
+        let synthetic = usesEditedPhotos(post)
+        if let upload = post.youtube, upload.channelId == channel.id, upload.locked != true {
+            // Already on YouTube: it may have gone public at its time already
+            if publishAt == nil, let now = try await client.videoStatus(upload.videoId), now.privacy == "public" {
+                updatePost(postId) { $0.youtube?.privacy = now.privacy; $0.youtube?.publishAt = nil }
+                return
+            }
+            onStatus(publishAt == nil ? String(localized: "Making the YouTube video public…") : String(localized: "Moving the YouTube video to the new time…"))
+            let s = try await client.setVisibility(upload.videoId, privacy: publishAt == nil ? "public" : "private", publishAt: publishAt, synthetic: synthetic)
+            updatePost(postId) { $0.youtube?.privacy = s.privacy; $0.youtube?.publishAt = s.publishAt ?? publishAt }
+            if publishAt == nil, s.privacy == "private" { lockedOnYouTube(postId) }
+            return
+        }
+        let title = (post.youtubeTitle ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let meta = YouTubeAPI.Metadata(title: title.isEmpty ? post.title : title, description: post.youtubeDescription, tags: post.hashtags,
+                                       language: post.language, synthetic: synthetic, publishAt: publishAt)
+        let result = try await client.upload(video, meta, onStatus: onStatus)
+        // Asked for public (or for a time) and got plain private: Google keeps uploads of an unaudited project private
+        let locked = result.status.privacy == "private" && (publishAt == nil || result.status.publishAt == nil)
+        updatePost(postId) {
+            $0.youtube = YouTubeUpload(channelId: channel.id, videoId: result.id, privacy: result.status.privacy,
+                                       publishAt: locked ? nil : result.status.publishAt ?? publishAt, locked: locked ? true : nil)
+        }
+        if locked { lockedOnYouTube(postId) }
+    }
+
+    private func lockedOnYouTube(_ postId: UUID) {
+        updatePost(postId) { $0.youtube?.locked = true }
+        notice = String(localized: "YouTube kept the video private: your Google project hasn’t passed YouTube’s API audit yet. The post’s Publish tab explains what to do.")
+    }
+
+    /// Forgets a video YouTube locked as private, so the next publish uploads it again (after the audit).
+    func forgetYouTubeUpload(_ postId: UUID) {
+        updatePost(postId) {
+            $0.youtube = nil
+            if $0.status == .published, $0.mediaId == nil { $0.status = .ready }
+        }
+    }
+
+    func writeYouTubeTitle(_ postId: UUID) {
+        guard let post = post(postId), let (project, analysis) = context(for: post) else { return }
+        let ai = contentAI(language: post.language)
+        run(postId, String(localized: "Claude is writing the YouTube title…"), kind: .caption) { [weak self] in
+            let title = try await ai.youtubeTitle(post: post, analysis: analysis, cwd: project.folderURL)
+            self?.updatePost(postId) { $0.youtubeTitle = YouTubeAPI.cleanTitle(title) }
+        }
+    }
+
+    /// Opens Google's consent page in the browser and adds the channel it returns.
+    func connectYouTube() async {
+        let clientId = settings.googleClientId.trimmingCharacters(in: .whitespacesAndNewlines)
+        let secret = Keychain.get(Keychain.Key.googleClientSecret) ?? ""
+        do {
+            let result = try await YouTubeAPI.signIn(clientId: clientId, clientSecret: secret)
+            for channel in result.channels {
+                Keychain.set(result.refreshToken, for: Keychain.Key.youtubeToken(channel.id))
+                if let i = data.channels.firstIndex(where: { $0.id == channel.id }) { data.channels[i] = channel } else { data.channels.append(channel) }
+            }
+            if settings.youtubeDefaultChannel.isEmpty, let first = result.channels.first { settings.youtubeDefaultChannel = first.id }
+            notice = String(localized: "YouTube channel connected: \(result.channels.map(\.title).joined(separator: ", "))")
+        } catch {
+            problem = Problem(error)
+        }
+    }
+
+    func disconnectYouTube(_ channelId: String) {
+        if let refresh = Keychain.get(Keychain.Key.youtubeToken(channelId)) { Task { await YouTubeAPI.revoke(refresh) } }
+        Keychain.set(nil, for: Keychain.Key.youtubeToken(channelId))
+        data.channels.removeAll { $0.id == channelId }
+        if settings.youtubeDefaultChannel == channelId { settings.youtubeDefaultChannel = "" }
+    }
+
+    /// Views, likes and comments of videos on YouTube; a video that waited for its time is checked for going public.
+    private func refreshYouTubeMetrics() {
+        let uploads = data.posts.compactMap { post in post.youtube.map { (post.id, $0) } }
+        let byChannel = Dictionary(grouping: uploads) { $0.1.channelId }
+        let clients = byChannel.keys.compactMap { id in youtubeClient(id).map { (id, $0) } }
+        Task {
+            for (channelId, client) in clients {
+                let items = byChannel[channelId] ?? []
+                for (postId, upload) in items where !upload.isLive && upload.locked != true && (upload.publishAt ?? .distantFuture) <= Date() {
+                    if let s = try? await client.videoStatus(upload.videoId) {
+                        updatePost(postId) { $0.youtube?.privacy = s.privacy; if s.privacy == "public" { $0.youtube?.publishAt = nil } }
+                    }
+                }
+                let live = items.filter { $0.1.isLive }
+                for chunk in stride(from: 0, to: live.count, by: 50).map({ Array(live[$0..<min($0 + 50, live.count)]) }) {
+                    guard let stats = try? await client.statistics(chunk.map(\.1.videoId)) else { continue }
+                    for (postId, upload) in chunk { if let m = stats[upload.videoId] { updatePost(postId) { $0.youtube?.metrics = m } } }
+                }
             }
         }
     }
@@ -1282,8 +1453,8 @@ final class AppModel {
         guard [.produce, .render, .revise, .generate].contains(kind), plan.autoPublish, post.status == .ready, post.publishedAt == nil,
               post.isImage ? !post.imageFiles.isEmpty : post.videoFile != nil else { return }
         updatePost(postId) { $0.plan?.autoPublish = false }
-        guard account(for: post) != nil else {
-            var p = Problem(message: String(localized: "Choose an Instagram account for this post first."), title: String(localized: "The post couldn’t be published"), code: .instagramAccount)
+        guard hasDestination(post) else {
+            var p = Problem(message: String(localized: "Choose an Instagram account or a YouTube channel for this post first."), title: String(localized: "The post couldn’t be published"), code: .instagramAccount)
             p.kind = .publish
             p.subject = postId
             updatePost(postId) { $0.status = .failed; $0.fail(p) }
@@ -1534,8 +1705,9 @@ final class AppModel {
         }
     }
 
-    /// Fetches insights for posted posts with the token of the account they were posted to.
+    /// Fetches insights for posted posts with the token of the account they were posted to, and YouTube's numbers.
     func refreshMetrics() {
+        refreshYouTubeMetrics()
         let targets: [(UUID, String, Bool, InstagramAPI)] = data.posts.compactMap { post in
             guard post.status == .published, let mediaId = post.mediaId,
                   let accountId = post.accountId ?? project(post.projectId)?.accountId,

@@ -14,6 +14,7 @@ something required is missing. You can open it at any time from **Help → Setup
 | Xcode | Localized screens from the Simulator | No |
 | [Gemini API key](#gemini-voiceover) | Voiceover | No |
 | [Instagram](#instagram) | Publishing and scheduling | No |
+| [YouTube](#youtube) | Shorts on your channel | No |
 | [Promo Templates](../README.md#template-libraries-and-promo-templates) | Ready-made formats and skills | No |
 
 Without the optional items you can still make videos: without a Gemini key they have no voiceover, and without
@@ -128,6 +129,49 @@ Promo Studio's redirect URI (default `https://localhost/promostudio/callback`).
 - **Permission error while publishing:** usually `instagram_content_publish` was not granted. Log in again and allow
   every requested permission.
 - **Token expired:** with the App Secret entered, Promo Studio renews it automatically; otherwise log in again.
+
+## YouTube
+
+Videos can also go to a YouTube channel as Shorts, through the official YouTube Data API. It's free, but you set it up
+in your own Google Cloud project, the way Instagram uses your own Meta app.
+
+### 1. Create the Google app
+
+1. Open the [Google Cloud Console](https://console.cloud.google.com) and create a project (or pick one).
+2. **APIs & Services → Library:** turn on **YouTube Data API v3**.
+3. **APIs & Services → OAuth consent screen:** choose **External**, fill in the app name and your email, and add
+   yourself as a test user. Then set the **publishing status to In production**. While it is in Testing, Google ends
+   the sign-in every 7 days. Your own app shows a "Google hasn't verified this app" warning when you sign in; choose
+   **Continue**.
+4. **APIs & Services → Credentials → Create credentials → OAuth client ID**, type **Desktop app**. Copy the client ID
+   and client secret.
+
+### 2. Connect in Promo Studio
+
+In **Settings → YouTube**, paste the client ID and secret, then click **Connect a YouTube Channel**. Google's consent
+page opens in your browser; choose the channel and allow access. The browser returns to Promo Studio by itself.
+
+The first channel you connect becomes the default: new videos go to it as well. You can choose another channel or
+leave YouTube out on each post's **Publish** tab, or under **Share new videos to** in Settings.
+
+### 3. Apply for YouTube's audit
+
+**Until Google audits your project, YouTube keeps every video it uploads private, and a video locked that way can't be
+made public later.** Promo Studio warns you when this happens and offers to upload the video again once the audit is
+done. Apply with the [YouTube API Services – Audit and Quota Extension form](https://support.google.com/youtube/contact/yt_api_form);
+it's free and can take a few weeks.
+
+### How posting works
+
+- A video goes up as a Short: the post's title (Claude writes one for YouTube), the caption and hashtags as the
+  description, and `#Shorts`. Pictures go to Instagram only.
+- **Publish now** posts to Instagram and YouTube together. If one of them fails, trying again only redoes that one.
+- **Schedule** uploads the video to YouTube right away and leaves it private with a publish time: YouTube publishes it
+  then, even if your Mac is off. Instagram still needs Promo Studio running at that time.
+- Videos showing people in photos edited with AI are marked as altered content on YouTube.
+- Views, likes and comments appear on the post's Publish tab.
+- Google gives every project a free daily quota. When it's used up, Promo Studio says so; it resets at midnight
+  Pacific time.
 
 ## Keychain prompts
 

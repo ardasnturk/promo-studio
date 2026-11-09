@@ -233,7 +233,7 @@ struct PostEditorView: View {
     }
 
     private func hasAccount(_ post: ContentPost) -> Bool {
-        model.account(for: post) != nil
+        model.hasDestination(post)
     }
 
     private func hasMedia(_ post: ContentPost) -> Bool {
@@ -364,14 +364,16 @@ struct PostEditorView: View {
                             Text("None").tag("")
                         }
                         ForEach(model.data.accounts) { Text(verbatim: "@\($0.username)").tag($0.userId) }
+                        if !post.isImage { Text("Don’t share to Instagram").tag(AppModel.noInstagram) }
                     }
                     .disabled(post.status == .scheduled || post.status == .publishing)
-                    if model.account(for: post) == nil {
+                    if !model.hasDestination(post) {
                         Text(post.isImage ? "Choose an account to publish, or save the image and post it yourself." : "Choose an account to publish, or save the video and post it yourself.")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 }
             }
+            if !post.isImage { youtubeSection(post) }
             Section("Share As") {
                 let story = post.isStory || !post.canPostToFeed
                 Picker("Share as", selection: Binding(
@@ -440,7 +442,11 @@ struct PostEditorView: View {
                 Button {
                     model.queuePublish(postId)
                 } label: {
-                    Label("Publish as \((post.isStory || !post.canPostToFeed ? PostPlacement.story : .feed).label(for: post)) Now", systemImage: "paperplane.fill")
+                    if model.account(for: post) == nil, post.mediaId == nil {
+                        Label("Publish to YouTube Now", systemImage: "paperplane.fill")
+                    } else {
+                        Label("Publish as \((post.isStory || !post.canPostToFeed ? PostPlacement.story : .feed).label(for: post)) Now", systemImage: "paperplane.fill")
+                    }
                 }
                 .disabled(!hasMedia(post) || !hasAccount(post) || model.jobs[postId] != nil || post.status == .published)
             }
@@ -458,6 +464,10 @@ struct PostEditorView: View {
                 }
                 Text("Scheduled posts are published while Promo Studio is open (running in the menu bar also works).")
                     .font(.caption).foregroundStyle(.secondary)
+                if model.youtubeChannel(for: post) != nil {
+                    Text("The video goes up to YouTube when you schedule it and waits there as private; YouTube publishes it at this time itself, even if the Mac is off.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
             }
             if post.status == .published {
                 Section("Performance") {
@@ -471,6 +481,80 @@ struct PostEditorView: View {
         }
         .formStyle(.grouped)
         .onAppear { if let d = post.scheduledAt { scheduleDate = d } }
+    }
+
+    /// Whether the video also goes to YouTube as a Short, its title there, and the video once it is there
+    @ViewBuilder private func youtubeSection(_ post: ContentPost) -> some View {
+        Section("YouTube") {
+            if let upload = post.youtube {
+                LabeledContent("Channel", value: model.channel(upload.channelId)?.title ?? upload.channelId)
+                if upload.locked == true {
+                    Label("YouTube locked this video as private because your Google Cloud project hasn’t passed YouTube’s API audit. A locked video can’t be made public. After the audit, upload it again; delete the locked copy in YouTube Studio.", systemImage: "lock.fill")
+                        .font(.callout).foregroundStyle(.orange)
+                    Button("Upload Again") { model.forgetYouTubeUpload(postId) }
+                        .disabled(model.jobs[postId] != nil)
+                } else if upload.isLive {
+                    Label("Published on YouTube", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
+                } else if let at = upload.publishAt {
+                    Label("Waits on YouTube as private; YouTube publishes it on \(at.formatted(date: .abbreviated, time: .shortened)).", systemImage: "calendar.badge.clock")
+                } else {
+                    Label("Uploaded to YouTube as private.", systemImage: "eye.slash")
+                }
+                HStack {
+                    Link("Open on YouTube", destination: YouTubeAPI.watchURL(upload.videoId))
+                    Link("Open in YouTube Studio", destination: YouTubeAPI.studioURL(upload.videoId))
+                }
+                if upload.isLive, let m = upload.metrics {
+                    Grid(alignment: .leading, horizontalSpacing: 24) {
+                        GridRow {
+                            youtubeMetric("Views", m.views)
+                            youtubeMetric("Likes", m.likes)
+                            youtubeMetric("Comments", m.comments)
+                        }
+                    }
+                }
+            } else if model.data.channels.isEmpty {
+                Text("No YouTube channel is connected. Connect one in Account & Settings → YouTube to share videos there as Shorts.")
+                    .foregroundStyle(.secondary)
+            } else {
+                let fallback = model.channel(model.settings.youtubeDefaultChannel)
+                Picker("YouTube", selection: Binding(
+                    get: { post.youtubeChannelId ?? (fallback == nil ? "" : "default") },
+                    set: { model.setYouTubeChannel($0 == "default" ? nil : $0, forPost: postId) }
+                )) {
+                    if let fallback { Text("Default channel (\(fallback.title))").tag("default") }
+                    Text("Don’t share to YouTube").tag("")
+                    ForEach(model.data.channels) { Text(verbatim: $0.title).tag($0.id) }
+                }
+                .disabled(post.status == .scheduled || post.status == .publishing)
+                if model.youtubeChannel(for: post) != nil {
+                    let title = Binding(get: { model.post(postId)?.youtubeTitle ?? "" }, set: { v in model.updatePost(postId) { $0.youtubeTitle = v } })
+                    TextField("Title on YouTube", text: title, prompt: Text(verbatim: post.title))
+                    HStack {
+                        let count = (post.youtubeTitle ?? "").isEmpty ? post.title.count : (post.youtubeTitle ?? "").count
+                        Text("\(count)/100").font(.caption.monospacedDigit()).foregroundStyle(count > 100 ? .red : .secondary)
+                        Spacer()
+                        Button("Write with Claude") { model.writeYouTubeTitle(postId) }
+                            .disabled(model.jobs[postId] != nil)
+                    }
+                    Text("It goes up as a Short; the caption and hashtags become its description.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            }
+        }
+        .onAppear {
+            if post.youtube == nil, model.youtubeChannel(for: post) != nil, (post.youtubeTitle ?? "").isEmpty,
+               post.videoFile != nil, model.jobs[postId] == nil, post.status != .published {
+                model.writeYouTubeTitle(postId)
+            }
+        }
+    }
+
+    private func youtubeMetric(_ title: LocalizedStringKey, _ value: Int?) -> some View {
+        VStack(alignment: .leading) {
+            Text(value.map { $0.formatted() } ?? "–").font(.title3.monospacedDigit().bold())
+            Text(title).font(.caption).foregroundStyle(.secondary)
+        }
     }
 }
 

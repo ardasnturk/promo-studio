@@ -21,6 +21,7 @@ struct Problem: Codable, Hashable {
         case voiceQuota, voiceKey, voice
         case renderCode, render, diskFull, toolMissing
         case instagramSession, instagramRejected, instagramLimit, instagramAccount, instagram, publicLink
+        case youtubeSession, youtubeLimit, youtube
         case offline, template, unknown
     }
 
@@ -47,6 +48,8 @@ struct Problem: Codable, Hashable {
 
         if let e = error as? InstagramError {
             classify(instagram: e, text: text)
+        } else if let e = error as? YouTubeError {
+            classify(youtube: e)
         } else if let e = error as? AudioError {
             switch e {
             case .quota:
@@ -161,6 +164,36 @@ struct Problem: Codable, Hashable {
             } else {
                 set(.instagram, String(localized: "Instagram returned an error"), message, .retry)
             }
+        }
+    }
+
+    private mutating func classify(youtube e: YouTubeError) {
+        switch e {
+        case .missingClient, .notConnected:
+            set(.youtubeSession, String(localized: "YouTube isn’t set up"), message, .settings)
+        case .expired:
+            set(.youtubeSession, String(localized: "The YouTube sign-in has ended"), String(localized: "Connect the channel again in Settings → YouTube; the post stays as it is. If this happens every week, set your Google app’s publishing status to “In production”."), .settings)
+        case .signIn:
+            set(.youtubeSession, String(localized: "The YouTube connection didn’t finish"), message, .settings)
+        case let .api(status, reason, text):
+            switch reason ?? "" {
+            case "quotaExceeded", "dailyLimitExceeded", "rateLimitExceeded", "userRateLimitExceeded":
+                set(.youtubeLimit, String(localized: "YouTube’s daily quota is used up"), String(localized: "Your Google project’s free daily YouTube quota is used up. It resets at midnight Pacific time; try again then."), .retry)
+            case "uploadLimitExceeded":
+                set(.youtubeLimit, String(localized: "YouTube’s upload limit is reached"), String(localized: "The channel has uploaded as many videos as YouTube allows for now. Try again later."), .retry)
+            case "youtubeSignupRequired":
+                set(.youtubeSession, String(localized: "This Google account has no YouTube channel"), String(localized: "Create a channel at youtube.com, then connect it again in Settings → YouTube."), .settings)
+            case "forbidden", "insufficientPermissions", "accessNotConfigured":
+                set(.youtubeSession, String(localized: "YouTube didn’t allow it"), String(localized: "Turn on “YouTube Data API v3” in your Google Cloud project and connect the channel again."), .settings)
+            default:
+                if status == 401 {
+                    set(.youtubeSession, String(localized: "The YouTube sign-in has ended"), String(localized: "Connect the channel again in Settings → YouTube; the post stays as it is."), .settings)
+                } else {
+                    set(.youtube, String(localized: "YouTube returned an error"), text, .retry)
+                }
+            }
+        case .uploadIncomplete:
+            set(.youtube, String(localized: "The upload to YouTube didn’t finish"), String(localized: "The connection kept dropping. Try again; the upload starts over."), .retry)
         }
     }
 

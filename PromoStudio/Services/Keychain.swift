@@ -113,5 +113,7 @@ enum Keychain {
         static let geminiApiKey = "gemini.apiKey"
         /// Used when the first key's quota runs out
         static let geminiSecondApiKey = "gemini.secondApiKey"
+        static let googleClientSecret = "google.clientSecret"
+        static func youtubeToken(_ channelId: String) -> String { "youtube.token.\(channelId)" }
     }
 }

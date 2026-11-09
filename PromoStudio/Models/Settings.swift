@@ -50,6 +50,10 @@ struct AppSettings: Codable, Equatable {
     var automaticallyChecksForUpdates: Bool = true
     /// Don't show the Promo Templates install suggestion again
     var templatesPromptDismissed: Bool = false
+    /// OAuth client ID of the user's Google Cloud project ("Desktop app"); its secret is in the Keychain
+    var googleClientId: String = ""
+    /// Channel every video also goes to, unless the post says otherwise; empty: none
+    var youtubeDefaultChannel: String = ""
 
     private static let key = "settings"
     /// Settings from when the app was called "Automat" (under another bundle ID)
@@ -81,6 +85,8 @@ struct AppSettings: Codable, Equatable {
         editPhotosWithCodex = try c.decodeIfPresent(Bool.self, forKey: .editPhotosWithCodex) ?? d.editPhotosWithCodex
         automaticallyChecksForUpdates = try c.decodeIfPresent(Bool.self, forKey: .automaticallyChecksForUpdates) ?? d.automaticallyChecksForUpdates
         templatesPromptDismissed = try c.decodeIfPresent(Bool.self, forKey: .templatesPromptDismissed) ?? d.templatesPromptDismissed
+        googleClientId = try c.decodeIfPresent(String.self, forKey: .googleClientId) ?? d.googleClientId
+        youtubeDefaultChannel = try c.decodeIfPresent(String.self, forKey: .youtubeDefaultChannel) ?? d.youtubeDefaultChannel
     }
 
     /// The API the login's token is used with. Unified Login signs in with Instagram but its token is a graph.facebook.com token.

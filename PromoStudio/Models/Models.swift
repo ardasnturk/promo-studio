@@ -158,7 +158,24 @@ enum PostStatus: String, Codable, CaseIterable {
 
 enum SocialPlatform: String, Codable, CaseIterable {
     case instagram
-    // Later: tiktok, youtubeShorts, x ...
+    /// A video can also go to YouTube as a Short (`ContentPost.youtube…`); the post's platform stays Instagram
+    case youtube
+}
+
+/// A post's video on YouTube
+struct YouTubeUpload: Codable, Hashable {
+    var channelId: String
+    var videoId: String
+    var uploadedAt = Date()
+    /// What YouTube reports: public, private or unlisted
+    var privacy: String
+    /// Private until then; YouTube publishes it itself at this time
+    var publishAt: Date?
+    /// Asked for public but YouTube kept it private: the Google project hasn't passed YouTube's audit
+    var locked: Bool?
+    var metrics: PostMetrics?
+
+    var isLive: Bool { privacy == "public" || privacy == "unlisted" }
 }
 
 struct ContentPost: Codable, Identifiable, Hashable {
@@ -214,6 +231,12 @@ struct ContentPost: Codable, Identifiable, Hashable {
     var placement: PostPlacement?
     /// Set when the post is made later: the request waits for its time, then goes as far as the plan allows
     var plan: CreationPlan?
+    /// YouTube channel the video also goes to as a Short: nil follows the default in Settings, "" means not to YouTube
+    var youtubeChannelId: String?
+    /// Title on YouTube (at most 100 characters); empty uses the post's title
+    var youtubeTitle: String?
+    /// The video once it is on YouTube
+    var youtube: YouTubeUpload?
 
     var isImage: Bool { format == .image }
     /// The request is waiting for its time; nothing has been made yet
@@ -226,6 +249,13 @@ struct ContentPost: Codable, Identifiable, Hashable {
     var imageFiles: [String] { slideFiles ?? imageFile.map { [$0] } ?? [] }
     /// A 9:16 picture can't go to the feed (Instagram allows 4:5 at most there), only to a story
     var canPostToFeed: Bool { !(isImage && directed?.size == .story) }
+
+    /// Description on YouTube: the caption, the hashtags and #Shorts
+    var youtubeDescription: String {
+        let tags = hashtags.map { $0.hasPrefix("#") ? $0 : "#\($0)" }
+        let all = tags.contains { $0.lowercased() == "#shorts" } ? tags : tags + ["#Shorts"]
+        return "\(caption)\n\n\(all.joined(separator: " "))"
+    }
 
     /// Full text to post to Instagram
     var fullCaption: String {
@@ -500,11 +530,13 @@ struct AppData: Codable {
     var posts: [ContentPost] = []
     var accounts: [InstagramAccount] = []
     var libraries: [TemplateLibrary] = []
+    /// Connected YouTube channels
+    var channels: [YouTubeChannel] = []
 
     init() {}
 
     private enum CodingKeys: String, CodingKey {
-        case projects, posts, accounts, libraries
+        case projects, posts, accounts, libraries, channels
         /// The single account from older versions
         case account
     }
@@ -519,6 +551,7 @@ struct AppData: Codable {
             accounts = [legacy]
         }
         libraries = try c.decodeIfPresent([TemplateLibrary].self, forKey: .libraries) ?? []
+        channels = try c.decodeIfPresent([YouTubeChannel].self, forKey: .channels) ?? []
     }
 
     func encode(to encoder: Encoder) throws {
@@ -527,5 +560,6 @@ struct AppData: Codable {
         try c.encode(posts, forKey: .posts)
         try c.encode(accounts, forKey: .accounts)
         try c.encode(libraries, forKey: .libraries)
+        try c.encode(channels, forKey: .channels)
     }
 }

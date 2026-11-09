@@ -33,7 +33,7 @@ struct PlanPanel: View {
 
     var body: some View {
         if let post = model.post(postId), let plan = post.plan {
-            let hasAccount = model.account(for: post) != nil
+            let hasAccount = model.hasDestination(post)
             Form {
                 Section("Request") {
                     TextField("Request", text: $request, axis: .vertical)

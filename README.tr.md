@@ -42,6 +42,9 @@ videoların Mac'inde kalır.
   (isteğe bağlı) ve telifsiz bir arka plan ritmi.
 * **Instagram** — resmi API'lerle Reels'i hemen paylaş ya da zamanla, sonra
   izlenme ve erişimi izle. İsteğe bağlı: **Videoyu kaydet…** MP4'ü dışa aktarır.
+* **YouTube Shorts** — aynı video, Claude'un yazdığı bir başlıkla YouTube
+  kanalına da gider; zamanlanan Shorts YouTube'da bekler ve Mac kapalıyken de
+  vaktinde yayınlanır.
 * **On dil** — videolar ve uygulamanın kendisi English, Türkçe, Deutsch,
   Español, Français, Italiano, Português, 日本語, 한국어 ve 简体中文 dillerinde.
 * **Planlı gönderiler** — isteğini şimdi yaz, yarın 15.00'te oluşturulsun;
@@ -60,6 +63,7 @@ videoların Mac'inde kalır.
 * [Promosyon filmi yapmak](#promosyon-filmi-yapmak)
 * [Hızlı şablonlar](#hızlı-şablonlar)
 * [Instagram](#instagram)
+* [YouTube](#youtube)
 * [Seslendirme, müzik ve diller](#seslendirme-müzik-ve-diller)
 * [Promo Templates](#promo-templates)
 * [Menü çubuğu](#menü-çubuğu)
@@ -102,6 +106,7 @@ için [docs/SETUP.tr.md](docs/SETUP.tr.md).
 | Node.js | 20 veya üstü; Promo Studio Remotion'ı kurar ve onunla gelen ffmpeg'i kullanır |
 | Seslendirme | İsteğe bağlı. Bir [Gemini API anahtarı](https://aistudio.google.com) (ücretsiz katman: model başına günde yaklaşık 10 istek, video başına bir) |
 | Instagram | İsteğe bağlı. İşletme ya da İçerik üreticisi hesabı ve kendi Meta geliştirici uygulaman |
+| YouTube | İsteğe bağlı. Bir kanal ve kendi Google Cloud projen (ücretsiz) |
 | Yerel ekranlar | İsteğe bağlı. iOS Simülatörü ile Xcode |
 
 ## Kurulum
@@ -166,6 +171,19 @@ Keychain'de durur. Bağlamak isteğe bağlıdır.
 * Her proje kendi hesabıyla paylaşır (proje başlığındaki seçici). Videolar
   doğrudan yüklenir; herkese açık bir sunucu gerekmez.
 * App Secret girildiyse token'lar 60 güne uzatılır ve süresi dolmadan yenilenir.
+
+## YouTube
+
+Videolar resmi YouTube Data API ile bir YouTube kanalına Shorts olarak da
+gidebilir. Bağlamak isteğe bağlı ve ücretsizdir.
+
+* Kendi Google Cloud projende bir OAuth istemcisi ("Desktop app") oluşturur ve
+  tarayıcından giriş yaparsın; oturum Keychain'de durur. Adımlar:
+  [docs/SETUP.tr.md](docs/SETUP.tr.md#youtube).
+* Her gönderi Instagram'a, YouTube'a ya da ikisine gidebilir; bir hatadan sonra
+  yeniden denemek yalnızca başarısız olan kısmı tekrarlar.
+* **Google Cloud projen denetlenene kadar YouTube yüklenen videoları kalıcı
+  olarak gizli tutar.** Güvenmeden önce ücretsiz denetime başvur.
 
 ## Seslendirme, müzik ve diller
 

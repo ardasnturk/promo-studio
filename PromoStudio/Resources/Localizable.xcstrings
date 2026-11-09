@@ -1567,6 +1567,64 @@
         }
       }
     },
+    "%lld/100": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld/100"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld/100"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld/100"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld/100"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld/100"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld/100"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld/100"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld/100"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld/100"
+          }
+        }
+      }
+    },
     "%lld/2200": {
       "localizations": {
         "de": {
@@ -5105,6 +5163,122 @@
         }
       }
     },
+    "Channel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanal"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canal"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaîne"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canale"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チャンネル"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "채널"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canal"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanal"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "频道"
+          }
+        }
+      }
+    },
+    "Channels videos also go to as Shorts, and your Google app.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanäle, auf die Videos zusätzlich als Shorts gehen, und deine Google-App."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canales a los que también van los vídeos como Shorts, y tu app de Google."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les chaînes où les vidéos vont aussi en Shorts, et votre app Google."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I canali su cui i video vanno anche come Shorts e la tua app Google."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "動画をショートとしても投稿するチャンネルと、あなたの Google アプリ。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "동영상이 Shorts로도 올라가는 채널과 Google 앱입니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canais para onde os vídeos também vão como Shorts, e seu app do Google."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videoların Shorts olarak da gittiği kanallar ve Google uygulaman."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "视频同时以 Shorts 形式发布到的频道，以及你的 Google 应用。"
+          }
+        }
+      }
+    },
     "Check Again": {
       "localizations": {
         "de": {
@@ -5681,6 +5855,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "请先为这条帖子选择一个 Instagram 账号。"
+          }
+        }
+      }
+    },
+    "Choose an Instagram account or a YouTube channel for this post first.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle zuerst ein Instagram-Konto oder einen YouTube-Kanal für diesen Beitrag."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Primero elige una cuenta de Instagram o un canal de YouTube para esta publicación."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez d’abord un compte Instagram ou une chaîne YouTube pour cette publication."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli prima un account Instagram o un canale YouTube per questo post."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "まずこの投稿の Instagram アカウントか YouTube チャンネルを選んでください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "먼저 이 게시물의 Instagram 계정이나 YouTube 채널을 선택하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Primeiro escolha uma conta do Instagram ou um canal do YouTube para este post."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önce bu gönderi için bir Instagram hesabı ya da YouTube kanalı seç."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先为此帖子选择 Instagram 账户或 YouTube 频道。"
           }
         }
       }
@@ -8295,6 +8527,64 @@
         }
       }
     },
+    "Claude is writing the YouTube title…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude schreibt den YouTube-Titel …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude está escribiendo el título de YouTube…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude écrit le titre YouTube…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude sta scrivendo il titolo per YouTube…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude が YouTube のタイトルを書いています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude가 YouTube 제목을 쓰는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Claude está escrevendo o título do YouTube…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude YouTube başlığını yazıyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude 正在撰写 YouTube 标题…"
+          }
+        }
+      }
+    },
     "Claude is writing the caption…": {
       "localizations": {
         "de": {
@@ -8871,6 +9161,122 @@
           "stringUnit": {
             "state": "translated",
             "value": "点按以查看缺少的内容。"
+          }
+        }
+      }
+    },
+    "Client ID": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Client-ID"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ID de cliente"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ID client"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ID client"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "クライアント ID"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "클라이언트 ID"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ID do cliente"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İstemci kimliği"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "客户端 ID"
+          }
+        }
+      }
+    },
+    "Client secret": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clientschlüssel"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Secreto de cliente"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code secret du client"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segreto client"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "クライアントシークレット"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "클라이언트 보안 비밀"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chave secreta do cliente"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İstemci gizli anahtarı"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "客户端密钥"
           }
         }
       }
@@ -9687,6 +10093,64 @@
         }
       }
     },
+    "Connect a YouTube Channel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube-Kanal verbinden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conectar un canal de YouTube"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecter une chaîne YouTube"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collega un canale YouTube"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube チャンネルを接続"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 채널 연결"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conectar um canal do YouTube"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube Kanalı Bağla"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接 YouTube 频道"
+          }
+        }
+      }
+    },
     "Connect an Instagram account, or pick one for this post.": {
       "localizations": {
         "de": {
@@ -9741,6 +10205,122 @@
           "stringUnit": {
             "state": "translated",
             "value": "请连接一个 Instagram 账号，或为这条帖子选择一个。"
+          }
+        }
+      }
+    },
+    "Connect the channel again in Settings → YouTube; the post stays as it is.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbinde den Kanal unter Einstellungen → YouTube erneut; der Beitrag bleibt, wie er ist."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vuelve a conectar el canal en Ajustes → YouTube; la publicación se queda como está."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconnectez la chaîne dans Réglages → YouTube ; la publication reste telle quelle."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ricollega il canale in Impostazioni → YouTube; il post resta com’è."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定 → YouTube でチャンネルを接続し直してください。投稿はそのまま残ります。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 → YouTube에서 채널을 다시 연결하세요. 게시물은 그대로 유지됩니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conecte o canal de novo em Ajustes → YouTube; o post continua como está."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanalı Ayarlar → YouTube'da yeniden bağla; gönderi olduğu gibi kalır."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在“设置 → YouTube”中重新连接频道；帖子保持不变。"
+          }
+        }
+      }
+    },
+    "Connect the channel again in Settings → YouTube; the post stays as it is. If this happens every week, set your Google app’s publishing status to “In production”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbinde den Kanal unter Einstellungen → YouTube erneut; der Beitrag bleibt, wie er ist. Passiert das jede Woche, setze den Veröffentlichungsstatus deiner Google-App auf „In Produktion“."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vuelve a conectar el canal en Ajustes → YouTube; la publicación se queda como está. Si pasa cada semana, cambia el estado de publicación de tu app de Google a «En producción»."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconnectez la chaîne dans Réglages → YouTube ; la publication reste telle quelle. Si cela arrive chaque semaine, passez l’état de publication de votre app Google sur « En production »."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ricollega il canale in Impostazioni → YouTube; il post resta com’è. Se succede ogni settimana, imposta lo stato di pubblicazione della tua app Google su “In produzione”."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定 → YouTube でチャンネルを接続し直してください。投稿はそのまま残ります。毎週起きる場合は、Google アプリの公開ステータスを「本番環境」にしてください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 → YouTube에서 채널을 다시 연결하세요. 게시물은 그대로 유지됩니다. 매주 이런 일이 생기면 Google 앱의 게시 상태를 ‘프로덕션’으로 바꾸세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conecte o canal de novo em Ajustes → YouTube; o post continua como está. Se isso acontecer toda semana, mude o status de publicação do seu app do Google para “Em produção”."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanalı Ayarlar → YouTube'da yeniden bağla; gönderi olduğu gibi kalır. Bu her hafta oluyorsa Google uygulamanın yayın durumunu “In production” (Üretimde) yap."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在“设置 → YouTube”中重新连接频道；帖子保持不变。如果每周都会这样，请将 Google 应用的发布状态设为“正式版”。"
           }
         }
       }
@@ -11659,6 +12239,64 @@
         }
       }
     },
+    "Create a channel at youtube.com, then connect it again in Settings → YouTube.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstelle auf youtube.com einen Kanal und verbinde ihn dann unter Einstellungen → YouTube erneut."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crea un canal en youtube.com y vuelve a conectarlo en Ajustes → YouTube."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créez une chaîne sur youtube.com, puis reconnectez-la dans Réglages → YouTube."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crea un canale su youtube.com, poi ricollegalo in Impostazioni → YouTube."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "youtube.com でチャンネルを作成してから、設定 → YouTube で接続し直してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "youtube.com에서 채널을 만든 다음 설정 → YouTube에서 다시 연결하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crie um canal em youtube.com e depois conecte-o de novo em Ajustes → YouTube."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "youtube.com'da bir kanal oluştur, sonra Ayarlar → YouTube'da yeniden bağla."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在 youtube.com 创建频道，然后在“设置 → YouTube”中重新连接。"
+          }
+        }
+      }
+    },
     "Create the image first": {
       "localizations": {
         "de": {
@@ -12003,6 +12641,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "日期"
+          }
+        }
+      }
+    },
+    "Default channel (%@)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standardkanal (%@)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canal predeterminado (%@)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaîne par défaut (%@)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canale predefinito (%@)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デフォルトのチャンネル（%@）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기본 채널(%@)"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canal padrão (%@)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Varsayılan kanal (%@)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "默认频道（%@）"
           }
         }
       }
@@ -12583,6 +13279,122 @@
           "stringUnit": {
             "state": "translated",
             "value": "完成"
+          }
+        }
+      }
+    },
+    "Don’t share to Instagram": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht auf Instagram teilen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No compartir en Instagram"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne pas partager sur Instagram"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non condividere su Instagram"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram に投稿しない"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram에 공유 안 함"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não compartilhar no Instagram"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instagram'da paylaşma"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不分享到 Instagram"
+          }
+        }
+      }
+    },
+    "Don’t share to YouTube": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht auf YouTube teilen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No compartir en YouTube"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne pas partager sur YouTube"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non condividere su YouTube"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube に投稿しない"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube에 공유 안 함"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não compartilhar no YouTube"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'da paylaşma"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不分享到 YouTube"
           }
         }
       }
@@ -13395,6 +14207,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "表情符号"
+          }
+        }
+      }
+    },
+    "Enter the Google OAuth client ID and secret in Settings → YouTube.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gib die Google-OAuth-Client-ID und den Clientschlüssel unter Einstellungen → YouTube ein."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Introduce el ID y el secreto de cliente OAuth de Google en Ajustes → YouTube."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saisissez l’ID client et le code secret OAuth Google dans Réglages → YouTube."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inserisci l’ID client e il segreto OAuth di Google in Impostazioni → YouTube."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定 → YouTube で Google OAuth のクライアント ID とシークレットを入力してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 → YouTube에 Google OAuth 클라이언트 ID와 보안 비밀을 입력하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Insira o ID e a chave secreta do cliente OAuth do Google em Ajustes → YouTube."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google OAuth istemci kimliğini ve gizli anahtarını Ayarlar → YouTube'a gir."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在“设置 → YouTube”中输入 Google OAuth 客户端 ID 和密钥。"
           }
         }
       }
@@ -16067,6 +16937,238 @@
         }
       }
     },
+    "Google App": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google-App"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App de Google"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App Google"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App Google"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google アプリ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 앱"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App do Google"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Uygulaması"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 应用"
+          }
+        }
+      }
+    },
+    "Google didn’t return a lasting sign-in.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google hat keine dauerhafte Anmeldung zurückgegeben."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google no devolvió un inicio de sesión duradero."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google n’a pas renvoyé de connexion durable."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google non ha restituito un accesso duraturo."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google から継続して使えるログインが返されませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google이 계속 쓸 수 있는 로그인을 반환하지 않았습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Google não retornou um login duradouro."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google kalıcı bir oturum döndürmedi."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 未返回可长期使用的登录。"
+          }
+        }
+      }
+    },
+    "Google ended the YouTube sign-in. Connect the channel again in Settings → YouTube.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google hat die YouTube-Anmeldung beendet. Verbinde den Kanal unter Einstellungen → YouTube erneut."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google cerró la sesión de YouTube. Vuelve a conectar el canal en Ajustes → YouTube."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google a mis fin à la connexion YouTube. Reconnectez la chaîne dans Réglages → YouTube."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google ha chiuso l’accesso a YouTube. Ricollega il canale in Impostazioni → YouTube."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google が YouTube へのログインを終了しました。設定 → YouTube でチャンネルを接続し直してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google이 YouTube 로그인을 종료했습니다. 설정 → YouTube에서 채널을 다시 연결하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Google encerrou o login do YouTube. Conecte o canal de novo em Ajustes → YouTube."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google YouTube oturumunu sonlandırdı. Kanalı Ayarlar → YouTube'da yeniden bağla."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 已结束 YouTube 登录。请在“设置 → YouTube”中重新连接频道。"
+          }
+        }
+      }
+    },
+    "Google’s answer didn’t match the request.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Antwort von Google passt nicht zur Anfrage."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La respuesta de Google no coincide con la solicitud."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La réponse de Google ne correspond pas à la demande."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La risposta di Google non corrisponde alla richiesta."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google の応答がリクエストと一致しませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google의 응답이 요청과 일치하지 않습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A resposta do Google não corresponde à solicitação."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google'ın yanıtı istekle eşleşmedi."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 的回应与请求不符。"
+          }
+        }
+      }
+    },
     "Graph API version": {
       "localizations": {
         "de": {
@@ -16701,6 +17803,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "制作中"
+          }
+        }
+      }
+    },
+    "In your own Google Cloud project, turn on “YouTube Data API v3”, set up the OAuth consent screen, and create an OAuth client of type “Desktop app”. It’s free; the client secret is stored in the Keychain.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktiviere in deinem eigenen Google-Cloud-Projekt „YouTube Data API v3“, richte den OAuth-Zustimmungsbildschirm ein und erstelle einen OAuth-Client vom Typ „Desktop-App“. Das ist kostenlos; der Clientschlüssel wird im Schlüsselbund gespeichert."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En tu propio proyecto de Google Cloud, activa «YouTube Data API v3», configura la pantalla de consentimiento de OAuth y crea un cliente OAuth de tipo «App de escritorio». Es gratis; el secreto de cliente se guarda en el llavero."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans votre propre projet Google Cloud, activez « YouTube Data API v3 », configurez l’écran de consentement OAuth et créez un client OAuth de type « Application de bureau ». C’est gratuit ; le code secret est stocké dans le trousseau."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nel tuo progetto Google Cloud attiva “YouTube Data API v3”, configura la schermata di consenso OAuth e crea un client OAuth di tipo “App desktop”. È gratuito; il segreto client è salvato nel Portachiavi."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ご自身の Google Cloud プロジェクトで「YouTube Data API v3」を有効にし、OAuth 同意画面を設定して、種類が「デスクトップ アプリ」の OAuth クライアントを作成してください。無料です。クライアントシークレットはキーチェーンに保存されます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "내 Google Cloud 프로젝트에서 ‘YouTube Data API v3’를 사용 설정하고 OAuth 동의 화면을 구성한 다음 유형이 ‘데스크톱 앱’인 OAuth 클라이언트를 만드세요. 무료이며 클라이언트 보안 비밀은 키체인에 저장됩니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No seu próprio projeto do Google Cloud, ative a “YouTube Data API v3”, configure a tela de consentimento OAuth e crie um cliente OAuth do tipo “App para computador”. É gratuito; a chave secreta fica nas Chaves."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kendi Google Cloud projende “YouTube Data API v3”ü aç, OAuth izin ekranını kur ve “Desktop app” (Masaüstü uygulaması) türünde bir OAuth istemcisi oluştur. Ücretsizdir; gizli anahtar Anahtar Zinciri'nde saklanır."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在你自己的 Google Cloud 项目中启用“YouTube Data API v3”，设置 OAuth 同意屏幕，并创建类型为“桌面应用”的 OAuth 客户端。完全免费；客户端密钥存储在钥匙串中。"
           }
         }
       }
@@ -19373,6 +20533,64 @@
         }
       }
     },
+    "It goes up as a Short; the caption and hashtags become its description.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es wird als Short hochgeladen; Bildunterschrift und Hashtags werden zur Beschreibung."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se sube como Short; el texto y los hashtags pasan a ser su descripción."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elle est mise en ligne comme Short ; la légende et les hashtags en deviennent la description."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Viene caricato come Short; didascalia e hashtag diventano la sua descrizione."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ショートとしてアップロードされ、キャプションとハッシュタグが説明文になります。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shorts로 업로드되며 캡션과 해시태그가 설명이 됩니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ele sobe como Short; a legenda e as hashtags viram a descrição."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Short olarak yüklenir; açıklama metni ve hashtag'ler videonun açıklaması olur."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "以 Shorts 形式上传；文案和话题标签会成为视频说明。"
+          }
+        }
+      }
+    },
     "It runs from start to finish and posts without asking you.": {
       "localizations": {
         "de": {
@@ -20939,6 +22157,64 @@
         }
       }
     },
+    "Making the YouTube video public…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube-Video wird öffentlich gemacht …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haciendo público el vídeo de YouTube…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La vidéo YouTube devient publique…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rendo pubblico il video su YouTube…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube の動画を公開しています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 동영상을 공개하는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tornando o vídeo do YouTube público…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube videosu herkese açılıyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在公开 YouTube 视频…"
+          }
+        }
+      }
+    },
     "Menu Bar": {
       "localizations": {
         "de": {
@@ -21399,6 +22675,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "模型"
+          }
+        }
+      }
+    },
+    "Moving the YouTube video to the new time…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube-Video wird auf die neue Zeit verschoben …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moviendo el vídeo de YouTube a la nueva hora…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacement de la vidéo YouTube à la nouvelle heure…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sposto il video su YouTube al nuovo orario…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube の動画を新しい時刻に移しています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 동영상을 새 시간으로 옮기는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Movendo o vídeo do YouTube para o novo horário…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube videosu yeni saate taşınıyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在将 YouTube 视频改到新时间…"
           }
         }
       }
@@ -22911,6 +24245,122 @@
         }
       }
     },
+    "No YouTube channel is connected. Connect one in Account & Settings → YouTube to share videos there as Shorts.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein YouTube-Kanal verbunden. Verbinde einen unter Konto & Einstellungen → YouTube, um Videos dort als Shorts zu teilen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay ningún canal de YouTube conectado. Conecta uno en Cuenta y ajustes → YouTube para compartir allí los vídeos como Shorts."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune chaîne YouTube n’est connectée. Connectez-en une dans Compte et réglages → YouTube pour y partager les vidéos en Shorts."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessun canale YouTube collegato. Collegane uno in Account e impostazioni → YouTube per condividere lì i video come Shorts."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube チャンネルが接続されていません。動画をショートとして投稿するには、「アカウントと設定」→ YouTube でチャンネルを接続してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "연결된 YouTube 채널이 없습니다. 동영상을 Shorts로 공유하려면 계정 및 설정 → YouTube에서 채널을 연결하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum canal do YouTube está conectado. Conecte um em Conta e Ajustes → YouTube para compartilhar vídeos lá como Shorts."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağlı YouTube kanalı yok. Videoları orada Shorts olarak paylaşmak için Hesap ve Ayarlar → YouTube'dan bir kanal bağla."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未连接 YouTube 频道。请在“账户与设置 → YouTube”中连接频道，以 Shorts 形式分享视频。"
+          }
+        }
+      }
+    },
+    "No YouTube channels connected.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine YouTube-Kanäle verbunden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay canales de YouTube conectados."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune chaîne YouTube connectée."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessun canale YouTube collegato."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "接続済みの YouTube チャンネルはありません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "연결된 YouTube 채널이 없습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum canal do YouTube conectado."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağlı YouTube kanalı yok."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未连接 YouTube 频道。"
+          }
+        }
+      }
+    },
     "No account found": {
       "localizations": {
         "de": {
@@ -23023,6 +24473,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "未选择账户"
+          }
+        }
+      }
+    },
+    "No answer from Google in time.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google hat nicht rechtzeitig geantwortet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google no respondió a tiempo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google n’a pas répondu à temps."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google non ha risposto in tempo."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google から時間内に応答がありませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google이 제시간에 응답하지 않았습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Google não respondeu a tempo."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google zamanında yanıt vermedi."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 未及时回应。"
           }
         }
       }
@@ -24651,6 +26159,122 @@
         }
       }
     },
+    "Only when I choose it on a post": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur wenn ich ihn bei einem Beitrag wähle"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo cuando lo elija en una publicación"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seulement quand je la choisis sur une publication"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo quando lo scelgo in un post"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "投稿で選んだときだけ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "게시물에서 선택할 때만"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Só quando eu escolher em um post"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yalnızca gönderide seçtiğimde"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅在帖子中选择时"
+          }
+        }
+      }
+    },
+    "Open Google Cloud Console": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Cloud Console öffnen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir Google Cloud Console"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir Google Cloud Console"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apri Google Cloud Console"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Cloud Console を開く"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Cloud Console 열기"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir o Google Cloud Console"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Cloud Console'u Aç"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打开 Google Cloud Console"
+          }
+        }
+      }
+    },
     "Open Login Items": {
       "localizations": {
         "de": {
@@ -24995,6 +26619,122 @@
           "stringUnit": {
             "state": "translated",
             "value": "在 Instagram 中打开"
+          }
+        }
+      }
+    },
+    "Open in YouTube Studio": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In YouTube Studio öffnen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir en YouTube Studio"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir dans YouTube Studio"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apri in YouTube Studio"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube Studio で開く"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 스튜디오에서 열기"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir no YouTube Studio"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube Studio'da Aç"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在 YouTube 工作室中打开"
+          }
+        }
+      }
+    },
+    "Open on YouTube": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf YouTube öffnen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir en YouTube"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir sur YouTube"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apri su YouTube"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube で開く"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube에서 열기"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir no YouTube"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'da Aç"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在 YouTube 上打开"
           }
         }
       }
@@ -27551,6 +29291,64 @@
         }
       }
     },
+    "Promo Studio is connected to YouTube.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Promo Studio ist mit YouTube verbunden."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Promo Studio está conectado a YouTube."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Promo Studio est connecté à YouTube."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Promo Studio è collegato a YouTube."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Promo Studio が YouTube に接続されました。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Promo Studio가 YouTube에 연결되었습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Promo Studio está conectado ao YouTube."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Promo Studio YouTube'a bağlandı."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Promo Studio 已连接到 YouTube。"
+          }
+        }
+      }
+    },
     "Promo Studio is up to date.": {
       "localizations": {
         "de": {
@@ -28479,6 +30277,64 @@
         }
       }
     },
+    "Publish to YouTube Now": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jetzt auf YouTube veröffentlichen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publicar en YouTube ahora"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publier sur YouTube maintenant"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pubblica su YouTube ora"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今すぐ YouTube に公開"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지금 YouTube에 게시"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publicar no YouTube agora"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şimdi YouTube'da Yayınla"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "立即发布到 YouTube"
+          }
+        }
+      }
+    },
     "Published": {
       "localizations": {
         "de": {
@@ -28591,6 +30447,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "已发布的内容"
+          }
+        }
+      }
+    },
+    "Published on YouTube": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf YouTube veröffentlicht"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publicado en YouTube"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publiée sur YouTube"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pubblicato su YouTube"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube に公開済み"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube에 게시됨"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publicado no YouTube"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'da yayınlandı"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已发布到 YouTube"
           }
         }
       }
@@ -28823,6 +30737,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "正在发布到 @%@…"
+          }
+        }
+      }
+    },
+    "Publishing to YouTube…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird auf YouTube veröffentlicht …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publicando en YouTube…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publication sur YouTube…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pubblicazione su YouTube…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube に公開しています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube에 게시하는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publicando no YouTube…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'da yayınlanıyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在发布到 YouTube…"
           }
         }
       }
@@ -33815,6 +35787,64 @@
         }
       }
     },
+    "Share new videos to": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Videos teilen auf"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compartir los vídeos nuevos en"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partager les nouvelles vidéos sur"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Condividi i nuovi video su"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しい動画の投稿先"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "새 동영상 공유 채널"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compartilhar novos vídeos em"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni videoları paylaş"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新视频分享到"
+          }
+        }
+      }
+    },
     "Shares": {
       "localizations": {
         "de": {
@@ -35091,6 +37121,64 @@
         }
       }
     },
+    "Starting the upload to YouTube…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upload zu YouTube startet …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciando la subida a YouTube…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Début de la mise en ligne sur YouTube…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avvio del caricamento su YouTube…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube へのアップロードを開始しています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 업로드를 시작하는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciando o envio ao YouTube…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'a yükleme başlıyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在开始上传到 YouTube…"
+          }
+        }
+      }
+    },
     "Stat": {
       "localizations": {
         "de": {
@@ -35729,6 +37817,64 @@
         }
       }
     },
+    "Taking the time off the YouTube video…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitplan des YouTube-Videos wird entfernt …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quitando la hora programada del vídeo de YouTube…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retrait de l’heure programmée de la vidéo YouTube…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tolgo l’orario programmato dal video su YouTube…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube の動画の公開予約を解除しています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 동영상의 예약 시간을 해제하는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Removendo o horário agendado do vídeo do YouTube…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube videosunun yayın saati kaldırılıyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在取消 YouTube 视频的定时发布…"
+          }
+        }
+      }
+    },
     "Target audience": {
       "localizations": {
         "de": {
@@ -35961,6 +38107,64 @@
         }
       }
     },
+    "The Google sign-in didn’t finish: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Google-Anmeldung wurde nicht abgeschlossen: %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El inicio de sesión de Google no terminó: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connexion Google n’a pas abouti : %@"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’accesso a Google non è terminato: %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google へのログインが完了しませんでした：%@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 로그인이 완료되지 않았습니다: %@"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O login do Google não terminou: %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google girişi tamamlanmadı: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 登录未完成：%@"
+          }
+        }
+      }
+    },
     "The Instagram account this project's content is posted to": {
       "localizations": {
         "de": {
@@ -36131,6 +38335,238 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mac 无法连接到服务器。请检查网络后重试。"
+          }
+        }
+      }
+    },
+    "The YouTube channel isn’t connected. Connect it in Settings → YouTube.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der YouTube-Kanal ist nicht verbunden. Verbinde ihn unter Einstellungen → YouTube."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El canal de YouTube no está conectado. Conéctalo en Ajustes → YouTube."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La chaîne YouTube n’est pas connectée. Connectez-la dans Réglages → YouTube."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il canale YouTube non è collegato. Collegalo in Impostazioni → YouTube."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube チャンネルが接続されていません。設定 → YouTube で接続してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 채널이 연결되어 있지 않습니다. 설정 → YouTube에서 연결하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O canal do YouTube não está conectado. Conecte-o em Ajustes → YouTube."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube kanalı bağlı değil. Ayarlar → YouTube'dan bağla."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 频道未连接。请在“设置 → YouTube”中连接。"
+          }
+        }
+      }
+    },
+    "The YouTube connection didn’t finish": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die YouTube-Verbindung wurde nicht abgeschlossen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La conexión con YouTube no terminó"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connexion à YouTube n’a pas abouti"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il collegamento a YouTube non è terminato"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube への接続が完了しませんでした"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 연결이 완료되지 않았습니다"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A conexão com o YouTube não terminou"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube bağlantısı tamamlanmadı"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 连接未完成"
+          }
+        }
+      }
+    },
+    "The YouTube connection was cancelled.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die YouTube-Verbindung wurde abgebrochen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se canceló la conexión con YouTube."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connexion à YouTube a été annulée."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il collegamento a YouTube è stato annullato."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube への接続はキャンセルされました。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 연결이 취소되었습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A conexão com o YouTube foi cancelada."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube bağlantısı iptal edildi."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已取消 YouTube 连接。"
+          }
+        }
+      }
+    },
+    "The YouTube sign-in has ended": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die YouTube-Anmeldung ist abgelaufen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La sesión de YouTube ha terminado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connexion YouTube a expiré"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’accesso a YouTube è scaduto"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube へのログインが終了しました"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 로그인이 만료되었습니다"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O login do YouTube expirou"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube oturumu sona erdi"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 登录已失效"
           }
         }
       }
@@ -36421,6 +38857,180 @@
           "stringUnit": {
             "state": "translated",
             "value": "无法撰写文案"
+          }
+        }
+      }
+    },
+    "The channel has uploaded as many videos as YouTube allows for now. Try again later.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Kanal hat vorerst so viele Videos hochgeladen, wie YouTube erlaubt. Versuch es später erneut."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El canal ya subió tantos vídeos como YouTube permite por ahora. Inténtalo más tarde."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La chaîne a mis en ligne autant de vidéos que YouTube le permet pour l’instant. Réessayez plus tard."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il canale ha caricato tutti i video che YouTube consente per ora. Riprova più tardi."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このチャンネルは現在 YouTube が許可する上限までアップロードしました。しばらくしてからもう一度お試しください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 채널은 현재 YouTube가 허용하는 만큼 동영상을 업로드했습니다. 나중에 다시 시도하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O canal já enviou quantos vídeos o YouTube permite por enquanto. Tente de novo mais tarde."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kanal şimdilik YouTube'un izin verdiği kadar video yükledi. Daha sonra yeniden dene."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "该频道已达到 YouTube 目前允许的上传数量。请稍后再试。"
+          }
+        }
+      }
+    },
+    "The connection kept dropping. Try again; the upload starts over.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Verbindung ist immer wieder abgebrochen. Versuch es erneut; der Upload beginnt von vorn."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La conexión se cortaba una y otra vez. Inténtalo de nuevo; la subida empieza desde cero."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connexion n’a pas cessé de couper. Réessayez ; la mise en ligne reprend depuis le début."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connessione continuava a cadere. Riprova; il caricamento ricomincia da capo."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "接続が何度も切れました。もう一度お試しください。アップロードは最初からやり直します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "연결이 계속 끊겼습니다. 다시 시도하세요. 업로드는 처음부터 다시 시작됩니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A conexão caiu várias vezes. Tente de novo; o envio recomeça do início."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağlantı sürekli koptu. Yeniden dene; yükleme baştan başlar."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接反复中断。请重试；上传将从头开始。"
+          }
+        }
+      }
+    },
+    "The connection to YouTube dropped. Carrying on with the upload…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Verbindung zu YouTube ist abgebrochen. Der Upload wird fortgesetzt …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se cortó la conexión con YouTube. Continuando la subida…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connexion à YouTube a été coupée. Reprise de la mise en ligne…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connessione a YouTube è caduta. Il caricamento continua…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube への接続が切れました。アップロードを続けています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 연결이 끊겼습니다. 업로드를 이어서 진행하는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A conexão com o YouTube caiu. Continuando o envio…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube bağlantısı koptu. Yükleme kaldığı yerden sürüyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "与 YouTube 的连接中断。正在继续上传…"
           }
         }
       }
@@ -38223,6 +40833,122 @@
         }
       }
     },
+    "The upload to YouTube didn’t finish": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Upload zu YouTube wurde nicht abgeschlossen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La subida a YouTube no terminó"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La mise en ligne sur YouTube n’a pas abouti"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il caricamento su YouTube non è terminato"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube へのアップロードが完了しませんでした"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 업로드가 완료되지 않았습니다"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O envio ao YouTube não terminou"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'a yükleme tamamlanmadı"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上传到 YouTube 未完成"
+          }
+        }
+      }
+    },
+    "The upload to YouTube stopped before the whole video was sent.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Upload zu YouTube hat aufgehört, bevor das ganze Video gesendet war."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La subida a YouTube se detuvo antes de enviar todo el vídeo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La mise en ligne sur YouTube s’est arrêtée avant l’envoi complet de la vidéo."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il caricamento su YouTube si è fermato prima di inviare tutto il video."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "動画をすべて送信する前に YouTube へのアップロードが止まりました。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "동영상을 모두 보내기 전에 YouTube 업로드가 멈췄습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O envio ao YouTube parou antes de o vídeo inteiro ser enviado."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'a yükleme, videonun tamamı gönderilmeden durdu."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "视频尚未全部发送，上传到 YouTube 就停止了。"
+          }
+        }
+      }
+    },
     "The upload was interrupted. Trying again…": {
       "localizations": {
         "de": {
@@ -38513,6 +41239,64 @@
         }
       }
     },
+    "The video goes up to YouTube when you schedule it and waits there as private; YouTube publishes it at this time itself, even if the Mac is off.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Video wird beim Planen zu YouTube hochgeladen und wartet dort als privat; YouTube veröffentlicht es zu dieser Zeit selbst, auch wenn der Mac aus ist."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El vídeo se sube a YouTube al programarlo y espera allí como privado; YouTube lo publica a esta hora por sí mismo, aunque el Mac esté apagado."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La vidéo est mise en ligne sur YouTube dès que vous la programmez et y attend en privé ; YouTube la publie lui-même à cette heure, même si le Mac est éteint."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il video viene caricato su YouTube quando lo programmi e lì aspetta come privato; YouTube lo pubblica da sé a quest’ora, anche se il Mac è spento."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "予約した時点で動画は YouTube にアップロードされ、非公開で待機します。Mac の電源が切れていても、この時刻に YouTube が自動で公開します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "예약하면 동영상이 바로 YouTube에 업로드되어 비공개로 대기합니다. Mac이 꺼져 있어도 이 시간에 YouTube가 직접 게시합니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O vídeo vai para o YouTube quando você o agenda e espera lá como privado; o próprio YouTube o publica nesse horário, mesmo com o Mac desligado."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video, planladığın anda YouTube'a yüklenir ve orada gizli olarak bekler; Mac kapalı olsa bile YouTube bu saatte kendisi yayınlar."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安排时间后，视频会立即上传到 YouTube 并以私享状态等待；即使 Mac 已关机，YouTube 也会在此时间自动发布。"
+          }
+        }
+      }
+    },
     "The video hasn’t been produced yet: Claude updates the storyboard. When it’s ready, click “Approve and Produce Video” on the left.": {
       "localizations": {
         "de": {
@@ -38799,6 +41583,122 @@
           "stringUnit": {
             "state": "translated",
             "value": "没有可查找本地化版本的原始屏幕。"
+          }
+        }
+      }
+    },
+    "This Google account has no YouTube channel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Google-Konto hat keinen YouTube-Kanal"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta cuenta de Google no tiene canal de YouTube"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce compte Google n’a pas de chaîne YouTube"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo account Google non ha un canale YouTube"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この Google アカウントには YouTube チャンネルがありません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 Google 계정에는 YouTube 채널이 없습니다"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta conta do Google não tem canal no YouTube"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu Google hesabının YouTube kanalı yok"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此 Google 账号没有 YouTube 频道"
+          }
+        }
+      }
+    },
+    "This Google account has no YouTube channel.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Google-Konto hat keinen YouTube-Kanal."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta cuenta de Google no tiene canal de YouTube."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce compte Google n’a pas de chaîne YouTube."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo account Google non ha un canale YouTube."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この Google アカウントには YouTube チャンネルがありません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 Google 계정에는 YouTube 채널이 없습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta conta do Google não tem canal no YouTube."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu Google hesabının YouTube kanalı yok."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此 Google 账号没有 YouTube 频道。"
           }
         }
       }
@@ -39441,6 +42341,64 @@
         }
       }
     },
+    "Title on YouTube": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titel auf YouTube"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Título en YouTube"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titre sur YouTube"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titolo su YouTube"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube のタイトル"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 제목"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Título no YouTube"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube başlığı"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 标题"
+          }
+        }
+      }
+    },
     "To post automatically, choose an Instagram account or a project with one.": {
       "localizations": {
         "de": {
@@ -39847,6 +42805,64 @@
         }
       }
     },
+    "Turn on “YouTube Data API v3” in your Google Cloud project and connect the channel again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktiviere „YouTube Data API v3“ in deinem Google-Cloud-Projekt und verbinde den Kanal erneut."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activa «YouTube Data API v3» en tu proyecto de Google Cloud y vuelve a conectar el canal."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activez « YouTube Data API v3 » dans votre projet Google Cloud et reconnectez la chaîne."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attiva “YouTube Data API v3” nel tuo progetto Google Cloud e ricollega il canale."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Cloud プロジェクトで「YouTube Data API v3」を有効にし、チャンネルを接続し直してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Cloud 프로젝트에서 ‘YouTube Data API v3’를 사용 설정하고 채널을 다시 연결하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ative a “YouTube Data API v3” no seu projeto do Google Cloud e conecte o canal de novo."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Cloud projende “YouTube Data API v3”ü aç ve kanalı yeniden bağla."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在 Google Cloud 项目中启用“YouTube Data API v3”，然后重新连接频道。"
+          }
+        }
+      }
+    },
     "Unauthorized": {
       "localizations": {
         "de": {
@@ -40075,6 +43091,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "取消定时"
+          }
+        }
+      }
+    },
+    "Until Google audits the project, YouTube keeps every video uploaded through it private for good. Apply for the audit with the “YouTube API Services – Audit and Quota Extension” form. Set the consent screen’s publishing status to “In production”, or Google ends the sign-in every 7 days.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bis Google das Projekt prüft, hält YouTube jedes darüber hochgeladene Video dauerhaft privat. Beantrage die Prüfung mit dem Formular „YouTube API Services – Audit and Quota Extension“. Setze den Veröffentlichungsstatus des Zustimmungsbildschirms auf „In Produktion“, sonst beendet Google die Anmeldung alle 7 Tage."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hasta que Google audite el proyecto, YouTube mantiene privado para siempre cada vídeo subido con él. Solicita la auditoría con el formulario «YouTube API Services – Audit and Quota Extension». Cambia el estado de publicación de la pantalla de consentimiento a «En producción»; si no, Google cierra la sesión cada 7 días."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tant que Google n’a pas audité le projet, YouTube garde définitivement privée chaque vidéo mise en ligne par son biais. Demandez l’audit avec le formulaire « YouTube API Services – Audit and Quota Extension ». Passez l’état de publication de l’écran de consentement sur « En production », sinon Google met fin à la connexion tous les 7 jours."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finché Google non verifica il progetto, YouTube mantiene privato per sempre ogni video caricato tramite esso. Richiedi la verifica con il modulo “YouTube API Services – Audit and Quota Extension”. Imposta lo stato di pubblicazione della schermata di consenso su “In produzione”, altrimenti Google chiude l’accesso ogni 7 giorni."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google がプロジェクトを審査するまで、そのプロジェクトでアップロードした動画は YouTube で永久に非公開になります。「YouTube API Services – Audit and Quota Extension」フォームから審査を申請してください。同意画面の公開ステータスを「本番環境」にしないと、Google は 7 日ごとにログインを終了します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google이 프로젝트를 감사하기 전까지 YouTube는 이 프로젝트로 업로드한 모든 동영상을 영구적으로 비공개로 둡니다. ‘YouTube API Services – Audit and Quota Extension’ 양식으로 감사를 신청하세요. 동의 화면의 게시 상태를 ‘프로덕션’으로 바꾸지 않으면 Google이 7일마다 로그인을 종료합니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Até o Google auditar o projeto, o YouTube mantém privado para sempre todo vídeo enviado por ele. Peça a auditoria pelo formulário “YouTube API Services – Audit and Quota Extension”. Mude o status de publicação da tela de consentimento para “Em produção”; senão o Google encerra o login a cada 7 dias."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google projeyi denetleyene kadar YouTube, bu projeyle yüklenen her videoyu kalıcı olarak gizli tutar. Denetim için “YouTube API Services – Audit and Quota Extension” formuyla başvur. İzin ekranının yayın durumunu “In production” (Üretimde) yap; yoksa Google oturumu her 7 günde bir sonlandırır."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在 Google 审核该项目之前，YouTube 会将通过它上传的每个视频永久设为私享。请通过“YouTube API Services – Audit and Quota Extension”表单申请审核。请将同意屏幕的发布状态设为“正式版”，否则 Google 每 7 天会结束一次登录。"
           }
         }
       }
@@ -40659,6 +43733,64 @@
         }
       }
     },
+    "Upload Again": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut hochladen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subir de nuevo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remettre en ligne"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carica di nuovo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "もう一度アップロード"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다시 업로드"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviar de novo"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeniden Yükle"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新上传"
+          }
+        }
+      }
+    },
     "Upload error (%lld): %@": {
       "localizations": {
         "de": {
@@ -40771,6 +43903,180 @@
           "stringUnit": {
             "state": "translated",
             "value": "上传的图片"
+          }
+        }
+      }
+    },
+    "Uploaded to YouTube as private.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als privat auf YouTube hochgeladen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subido a YouTube como privado."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mise en ligne sur YouTube en privé."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caricato su YouTube come privato."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube に非公開でアップロードされました。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube에 비공개로 업로드되었습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviado ao YouTube como privado."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'a gizli olarak yüklendi."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已以私享状态上传到 YouTube。"
+          }
+        }
+      }
+    },
+    "Uploading to YouTube for its time…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird für den geplanten Zeitpunkt zu YouTube hochgeladen …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subiendo a YouTube para su hora…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mise en ligne sur YouTube pour son heure…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caricamento su YouTube per il suo orario…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "予約時刻に向けて YouTube にアップロードしています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "예약 시간에 맞춰 YouTube에 업로드하는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviando ao YouTube para o horário agendado…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yayın saati için YouTube'a yükleniyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在为定时发布上传到 YouTube…"
+          }
+        }
+      }
+    },
+    "Uploading to YouTube… %lld%%": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upload zu YouTube … %lld %%"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subiendo a YouTube… %lld %%"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mise en ligne sur YouTube… %lld %%"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caricamento su YouTube… %lld%%"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube にアップロード中… %lld%%"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube에 업로드하는 중… %lld%%"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviando ao YouTube… %lld%%"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'a yükleniyor… %%%lld"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在上传到 YouTube… %lld%%"
           }
         }
       }
@@ -41529,6 +44835,64 @@
         }
       }
     },
+    "Videos go up as Shorts with the caption as their description. Pictures stay on Instagram. You can change the channel, or leave YouTube out, on each post’s Publish tab.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videos werden als Shorts mit der Bildunterschrift als Beschreibung hochgeladen. Bilder bleiben auf Instagram. Im Tab „Veröffentlichen“ jedes Beitrags kannst du den Kanal ändern oder YouTube weglassen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los vídeos se suben como Shorts con el texto como descripción. Las imágenes se quedan en Instagram. En la pestaña Publicar de cada publicación puedes cambiar el canal o dejar fuera YouTube."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les vidéos sont mises en ligne comme Shorts avec la légende comme description. Les images restent sur Instagram. Dans l’onglet Publier de chaque publication, vous pouvez changer de chaîne ou laisser YouTube de côté."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I video vengono caricati come Shorts con la didascalia come descrizione. Le immagini restano su Instagram. Nella scheda Pubblica di ogni post puoi cambiare canale o escludere YouTube."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "動画はキャプションを説明文としてショートでアップロードされます。画像は Instagram のみです。各投稿の「公開」タブでチャンネルを変えたり、YouTube を外したりできます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "동영상은 캡션을 설명으로 하여 Shorts로 업로드됩니다. 이미지는 Instagram에만 올라갑니다. 각 게시물의 게시 탭에서 채널을 바꾸거나 YouTube를 뺄 수 있습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Os vídeos sobem como Shorts com a legenda como descrição. As imagens ficam no Instagram. Na aba Publicar de cada post você pode trocar o canal ou deixar o YouTube de fora."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videolar, açıklama metni açıklamaları olacak şekilde Shorts olarak yüklenir. Görseller Instagram'da kalır. Kanalı her gönderinin Yayınla sekmesinden değiştirebilir ya da YouTube'u dışarıda bırakabilirsin."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "视频以 Shorts 形式上传，文案作为说明。图片只发布到 Instagram。你可以在每个帖子的“发布”标签页中更换频道或不发布到 YouTube。"
+          }
+        }
+      }
+    },
     "Videos you make without a project appear here.": {
       "localizations": {
         "de": {
@@ -42167,6 +45531,64 @@
         }
       }
     },
+    "Waiting for Google in your browser…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warte auf Google im Browser …"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esperando a Google en tu navegador…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En attente de Google dans votre navigateur…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In attesa di Google nel browser…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ブラウザで Google を待っています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "브라우저에서 Google을 기다리는 중…"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aguardando o Google no navegador…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tarayıcında Google bekleniyor…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在浏览器中等待 Google…"
+          }
+        }
+      }
+    },
     "Waiting for its time": {
       "localizations": {
         "de": {
@@ -42395,6 +45817,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "等待你处理"
+          }
+        }
+      }
+    },
+    "Waits on YouTube as private; YouTube publishes it on %@.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wartet auf YouTube als privat; YouTube veröffentlicht es am %@."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espera en YouTube como privado; YouTube lo publicará el %@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attend en privé sur YouTube ; YouTube la publiera le %@."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attende su YouTube come privato; YouTube lo pubblicherà il %@."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube で非公開のまま待機中。%@ に YouTube が公開します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube에서 비공개로 대기 중이며 %@에 YouTube가 게시합니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aguarda no YouTube como privado; o YouTube vai publicá-lo em %@."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'da gizli olarak bekliyor; YouTube %@ tarihinde yayınlayacak."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在 YouTube 上以私享状态等待；YouTube 将于 %@ 发布。"
           }
         }
       }
@@ -43037,6 +46517,64 @@
         }
       }
     },
+    "Write with Claude": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit Claude schreiben"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escribir con Claude"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écrire avec Claude"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scrivi con Claude"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude で書く"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude로 쓰기"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escrever com o Claude"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude ile Yaz"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用 Claude 撰写"
+          }
+        }
+      }
+    },
     "Writing *word* in a title paints that word in the accent color. If the voiceover text changes, the audio is regenerated and the scene duration is adjusted to match. Render again after making changes.": {
       "localizations": {
         "de": {
@@ -43211,6 +46749,64 @@
         }
       }
     },
+    "You can close this tab and go back to Promo Studio.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du kannst diesen Tab schließen und zu Promo Studio zurückkehren."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puedes cerrar esta pestaña y volver a Promo Studio."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous pouvez fermer cet onglet et revenir à Promo Studio."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puoi chiudere questa scheda e tornare a Promo Studio."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このタブを閉じて Promo Studio に戻ってください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 탭을 닫고 Promo Studio로 돌아가세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Você pode fechar esta aba e voltar ao Promo Studio."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu sekmeyi kapatıp Promo Studio'ya dönebilirsin."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "你可以关闭此标签页并返回 Promo Studio。"
+          }
+        }
+      }
+    },
     "You can edit the values and render again without changing code. Don’t change real facts (scores, dates) without verifying them.": {
       "localizations": {
         "de": {
@@ -43323,6 +46919,644 @@
           "stringUnit": {
             "state": "translated",
             "value": "你可以手动修改文本，或在“使用 Claude 修改”标签页中给出指示。准备就绪后，点按左侧的“批准并制作视频”。"
+          }
+        }
+      }
+    },
+    "YouTube": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube"
+          }
+        }
+      }
+    },
+    "YouTube Channels": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube-Kanäle"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canales de YouTube"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaînes YouTube"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canali YouTube"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube チャンネル"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 채널"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canais do YouTube"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube Kanalları"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 频道"
+          }
+        }
+      }
+    },
+    "YouTube channel connected: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube-Kanal verbunden: %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canal de YouTube conectado: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaîne YouTube connectée : %@"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canale YouTube collegato: %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube チャンネルを接続しました：%@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 채널 연결됨: %@"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canal do YouTube conectado: %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube kanalı bağlandı: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已连接 YouTube 频道：%@"
+          }
+        }
+      }
+    },
+    "YouTube didn’t allow it": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube hat es nicht erlaubt"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube no lo permitió"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube ne l’a pas autorisé"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube non lo ha consentito"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube が許可しませんでした"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube가 허용하지 않았습니다"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O YouTube não permitiu"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube izin vermedi"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 不允许此操作"
+          }
+        }
+      }
+    },
+    "YouTube isn’t set up": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube ist nicht eingerichtet"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube no está configurado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube n’est pas configuré"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube non è configurato"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube が設定されていません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube가 설정되지 않았습니다"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O YouTube não está configurado"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube kurulmamış"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚未设置 YouTube"
+          }
+        }
+      }
+    },
+    "YouTube kept the video private: your Google project hasn’t passed YouTube’s API audit yet. The post’s Publish tab explains what to do.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube hat das Video privat gelassen: Dein Google-Projekt hat die API-Prüfung von YouTube noch nicht bestanden. Im Tab „Veröffentlichen“ des Beitrags steht, was zu tun ist."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube dejó el vídeo como privado: tu proyecto de Google aún no ha pasado la auditoría de la API de YouTube. La pestaña Publicar de la publicación explica qué hacer."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube a gardé la vidéo privée : votre projet Google n’a pas encore passé l’audit de l’API YouTube. L’onglet Publier de la publication explique quoi faire."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube ha lasciato il video privato: il tuo progetto Google non ha ancora superato la verifica dell’API di YouTube. La scheda Pubblica del post spiega cosa fare."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube は動画を非公開のままにしました。Google プロジェクトがまだ YouTube の API 審査に通っていません。対処方法は投稿の「公開」タブで説明しています。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube가 동영상을 비공개로 두었습니다. Google 프로젝트가 아직 YouTube API 감사를 통과하지 않았습니다. 해결 방법은 게시물의 게시 탭에 있습니다."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O YouTube manteve o vídeo privado: seu projeto do Google ainda não passou na auditoria da API do YouTube. A aba Publicar do post explica o que fazer."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube videoyu gizli tuttu: Google projen henüz YouTube'un API denetiminden geçmedi. Ne yapacağın gönderinin Yayınla sekmesinde anlatılıyor."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 将视频保持为私享：你的 Google 项目尚未通过 YouTube API 审核。帖子的“发布”标签页说明了该怎么做。"
+          }
+        }
+      }
+    },
+    "YouTube locked this video as private because your Google Cloud project hasn’t passed YouTube’s API audit. A locked video can’t be made public. After the audit, upload it again; delete the locked copy in YouTube Studio.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube hat dieses Video als privat gesperrt, weil dein Google-Cloud-Projekt die API-Prüfung von YouTube nicht bestanden hat. Ein gesperrtes Video kann nicht öffentlich gemacht werden. Lade es nach der Prüfung erneut hoch und lösche die gesperrte Kopie in YouTube Studio."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube bloqueó este vídeo como privado porque tu proyecto de Google Cloud no ha pasado la auditoría de la API de YouTube. Un vídeo bloqueado no puede hacerse público. Tras la auditoría, súbelo de nuevo y borra la copia bloqueada en YouTube Studio."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube a verrouillé cette vidéo en privé, car votre projet Google Cloud n’a pas passé l’audit de l’API YouTube. Une vidéo verrouillée ne peut pas devenir publique. Après l’audit, remettez-la en ligne et supprimez la copie verrouillée dans YouTube Studio."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube ha bloccato questo video come privato perché il tuo progetto Google Cloud non ha superato la verifica dell’API di YouTube. Un video bloccato non può diventare pubblico. Dopo la verifica caricalo di nuovo ed elimina la copia bloccata in YouTube Studio."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Cloud プロジェクトが YouTube の API 審査に通っていないため、YouTube はこの動画を非公開でロックしました。ロックされた動画は公開できません。審査後にもう一度アップロードし、ロックされた動画は YouTube Studio で削除してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Cloud 프로젝트가 YouTube API 감사를 통과하지 않아 YouTube가 이 동영상을 비공개로 잠갔습니다. 잠긴 동영상은 공개할 수 없습니다. 감사가 끝나면 다시 업로드하고 잠긴 사본은 YouTube 스튜디오에서 삭제하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O YouTube bloqueou este vídeo como privado porque seu projeto do Google Cloud não passou na auditoria da API do YouTube. Um vídeo bloqueado não pode ficar público. Depois da auditoria, envie-o de novo e apague a cópia bloqueada no YouTube Studio."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Cloud projen YouTube'un API denetiminden geçmediği için YouTube bu videoyu gizli olarak kilitledi. Kilitli bir video herkese açılamaz. Denetimden sonra yeniden yükle; kilitli kopyayı YouTube Studio'dan sil."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "由于你的 Google Cloud 项目未通过 YouTube API 审核，YouTube 已将此视频锁定为私享。被锁定的视频无法公开。审核通过后请重新上传，并在 YouTube 工作室中删除被锁定的副本。"
+          }
+        }
+      }
+    },
+    "YouTube returned an error": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube hat einen Fehler gemeldet"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube devolvió un error"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube a renvoyé une erreur"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube ha restituito un errore"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube がエラーを返しました"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube에서 오류가 반환되었습니다"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O YouTube retornou um erro"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube bir hata döndürdü"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 返回了错误"
+          }
+        }
+      }
+    },
+    "YouTube’s daily quota is used up": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Tageskontingent von YouTube ist aufgebraucht"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se agotó la cuota diaria de YouTube"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le quota quotidien de YouTube est épuisé"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La quota giornaliera di YouTube è esaurita"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube の 1 日の割り当てを使い切りました"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 일일 할당량을 모두 썼습니다"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A cota diária do YouTube acabou"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'un günlük kotası doldu"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 每日配额已用完"
+          }
+        }
+      }
+    },
+    "YouTube’s upload limit is reached": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Upload-Limit von YouTube ist erreicht"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se alcanzó el límite de subidas de YouTube"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La limite de mises en ligne de YouTube est atteinte"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il limite di caricamenti di YouTube è stato raggiunto"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube のアップロード上限に達しました"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube 업로드 한도에 도달했습니다"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O limite de envios do YouTube foi atingido"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube'un yükleme sınırına ulaşıldı"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已达到 YouTube 上传上限"
+          }
+        }
+      }
+    },
+    "Your Google project’s free daily YouTube quota is used up. It resets at midnight Pacific time; try again then.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das kostenlose tägliche YouTube-Kontingent deines Google-Projekts ist aufgebraucht. Es wird um Mitternacht pazifischer Zeit zurückgesetzt; versuch es dann erneut."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se agotó la cuota diaria gratuita de YouTube de tu proyecto de Google. Se restablece a medianoche, hora del Pacífico; inténtalo entonces."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le quota YouTube quotidien gratuit de votre projet Google est épuisé. Il se réinitialise à minuit, heure du Pacifique ; réessayez à ce moment-là."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La quota giornaliera gratuita di YouTube del tuo progetto Google è esaurita. Si azzera a mezzanotte, ora del Pacifico; riprova allora."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google プロジェクトの無料の 1 日分の YouTube 割り当てを使い切りました。太平洋時間の午前 0 時にリセットされるので、その後にもう一度お試しください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 프로젝트의 무료 일일 YouTube 할당량을 모두 썼습니다. 태평양 시간 자정에 초기화되니 그때 다시 시도하세요."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A cota diária gratuita do YouTube do seu projeto do Google acabou. Ela zera à meia-noite no horário do Pacífico; tente de novo então."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google projenin ücretsiz günlük YouTube kotası doldu. Pasifik saatiyle gece yarısı sıfırlanır; o zaman yeniden dene."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "你的 Google 项目的免费每日 YouTube 配额已用完。配额会在太平洋时间午夜重置，届时请重试。"
           }
         }
       }

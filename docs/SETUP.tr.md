@@ -14,6 +14,7 @@ listesini** açar. Listeyi istediğin zaman **Yardım → Kurulum kontrol listes
 | Xcode | Simülatörden yerelleştirilmiş ekranlar | Hayır |
 | [Gemini API anahtarı](#gemini-seslendirme) | Seslendirme | Hayır |
 | [Instagram](#instagram) | Paylaşım ve zamanlama | Hayır |
+| [YouTube](#youtube) | Kanalında Shorts | Hayır |
 | [Promo Templates](../README.tr.md) | Hazır video kalıpları ve skill'ler | Hayır |
 
 İsteğe bağlı öğeler olmadan da video üretebilirsin: Gemini anahtarı yoksa videolar seslendirmesiz olur; Instagram
@@ -114,6 +115,51 @@ olarak ekle (**App roles → Roles → Instagram Testers**) ve daveti Instagram'
 - **Paylaşırken izin hatası:** çoğunlukla `instagram_content_publish` verilmemiştir. Yeniden giriş yap ve istenen tüm
   izinleri onayla.
 - **Token süresi doldu:** App Secret girildiyse Promo Studio token'ı kendisi yeniler; girilmediyse yeniden giriş yap.
+
+## YouTube
+
+Videolar resmi YouTube Data API ile bir YouTube kanalına Shorts olarak da gidebilir. Ücretsizdir; ama Instagram'ın
+kendi Meta uygulamanı kullanması gibi, kendi Google Cloud projende kurarsın.
+
+### 1. Google uygulamasını oluştur
+
+1. [Google Cloud Console](https://console.cloud.google.com)'u aç ve bir proje oluştur (ya da birini seç).
+2. **APIs & Services → Library:** **YouTube Data API v3**'ü etkinleştir.
+3. **APIs & Services → OAuth consent screen:** **External**'ı seç, uygulama adını ve e-postanı gir, kendini test
+   kullanıcısı olarak ekle. Sonra **yayın durumunu In production** yap. Testing durumundayken Google oturumu her 7
+   günde bir kapatır. Giriş yaparken kendi uygulaman için "Google bu uygulamayı doğrulamadı" uyarısı çıkar;
+   **Continue**'yu seç.
+4. **APIs & Services → Credentials → Create credentials → OAuth client ID**, tür olarak **Desktop app**. İstemci
+   kimliğini ve gizli anahtarı kopyala.
+
+### 2. Promo Studio'da bağla
+
+**Ayarlar → YouTube**'da istemci kimliğini ve gizli anahtarı yapıştır, sonra **YouTube Kanalı Bağla**'ya tıkla.
+Google'ın izin sayfası tarayıcında açılır; kanalı seç ve erişime izin ver. Tarayıcı Promo Studio'ya kendisi döner.
+
+Bağladığın ilk kanal varsayılan olur: yeni videolar oraya da gider. Her gönderinin **Yayınla** sekmesinde başka bir
+kanal seçebilir ya da YouTube'u dışarıda bırakabilirsin; Ayarlar'daki **Yeni videoları paylaş** seçeneği de bunu
+değiştirir.
+
+### 3. YouTube denetimine başvur
+
+**Google projeni denetleyene kadar YouTube, projeyle yüklenen her videoyu gizli tutar ve bu şekilde kilitlenen bir
+video sonradan herkese açılamaz.** Bu olduğunda Promo Studio seni uyarır ve denetimden sonra videoyu yeniden yüklemeyi
+önerir. [YouTube API Services – Audit and Quota Extension formu](https://support.google.com/youtube/contact/yt_api_form)
+ile başvur; ücretsizdir ve birkaç hafta sürebilir.
+
+### Paylaşım nasıl çalışır
+
+- Video Shorts olarak yüklenir: gönderinin başlığı (Claude YouTube için ayrıca yazar), açıklama olarak metin ve
+  hashtag'ler, bir de `#Shorts`. Görseller yalnızca Instagram'a gider.
+- **Şimdi yayınla** Instagram'a ve YouTube'a birlikte paylaşır. Biri başarısız olursa yeniden denemek yalnızca onu
+  tekrarlar.
+- **Zamanla** videoyu hemen YouTube'a yükler ve bir yayın saatiyle gizli bırakır: Mac kapalı olsa bile YouTube o saatte
+  kendisi yayınlar. Instagram için Promo Studio'nun o saatte açık olması gerekir.
+- Yapay zekâyla düzenlenmiş fotoğraflarda kişiler gösteren videolar YouTube'da değiştirilmiş içerik olarak işaretlenir.
+- İzlenme, beğeni ve yorumlar gönderinin Yayınla sekmesinde görünür.
+- Google her projeye ücretsiz bir günlük kota verir. Dolduğunda Promo Studio bunu söyler; kota Pasifik saatiyle gece
+  yarısı sıfırlanır.
 
 ## Keychain izinleri
 

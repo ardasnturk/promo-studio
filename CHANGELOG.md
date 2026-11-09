@@ -6,6 +6,19 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.7.0] — 2026-11-09
+
+### Added
+- YouTube Shorts. Connect a channel in Settings → YouTube with an OAuth client
+  from your own Google Cloud project, and videos go to YouTube as well as, or
+  instead of, Instagram. Claude writes a YouTube title; the caption and
+  hashtags become the description.
+- Scheduling uploads the video to YouTube right away with a publish time, so
+  YouTube publishes it on time even when the Mac is off.
+- Uploads resume where they stopped after a dropped connection. Views, likes
+  and comments appear on the post.
+- A post can now skip Instagram ("Don't share to Instagram").
+
 ## [1.6.3] — 2026-11-07
 
 ### Fixed

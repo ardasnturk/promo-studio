@@ -426,7 +426,7 @@ h3 { font-size: 20px; line-height: 1.2; letter-spacing: -.015em; font-weight: 65
 .ratio { position: absolute; top: -34px; left: 0; font: 700 13px var(--mono); color: var(--mint); }
 .screen { position: absolute; inset: 0; border-radius: 26px; overflow: hidden; background: #000; box-shadow: var(--shadow-lg), 0 0 0 1.5px var(--line-2), 0 0 0 9px var(--phone); }
 .layer { position: absolute; inset: 0; opacity: 0; transition: opacity .45s; }
-.device[data-fmt="reel"] .layer-video, .device[data-fmt="story"] .layer-story, .device[data-fmt="post"] .layer-post, .device[data-fmt="carousel"] .layer-carousel { opacity: 1; }
+.device[data-fmt="reel"] .layer-video, .device[data-fmt="story"] .layer-story, .device[data-fmt="post"] .layer-post, .device[data-fmt="carousel"] .layer-carousel, .device[data-fmt="shorts"] .layer-shorts { opacity: 1; }
 .layer img, .layer video { width: 100%; height: 100%; object-fit: cover; }
 .story-bars { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; gap: 4px; z-index: 2; }
 .story-bars i { flex: 1; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .35); overflow: hidden; position: relative; }
@@ -441,6 +441,16 @@ h3 { font-size: 20px; line-height: 1.2; letter-spacing: -.015em; font-weight: 65
 @keyframes swipe { 0%, 22% { transform: translateX(0); } 38%, 62% { transform: translateX(-33.33%); } 78%, 100% { transform: translateX(-66.66%); } }
 .dots { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; gap: 6px; justify-content: center; }
 .dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, .85); }
+.shorts-side { position: absolute; right: 10px; bottom: 64px; display: grid; gap: 14px; z-index: 2; }
+.shorts-side i { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(0, 0, 0, .38); backdrop-filter: blur(6px); }
+.shorts-side svg { width: 19px; height: 19px; fill: #fff; }
+.device[data-fmt="shorts"] .shorts-side i:first-child svg { animation: like 4.2s var(--ease) .8s both; }
+@keyframes like { 0%, 10% { transform: scale(1); fill: #fff; } 16% { transform: scale(1.35); fill: #ff3b4a; } 24%, 100% { transform: scale(1); fill: #ff3b4a; } }
+.shorts-meta { position: absolute; left: 14px; right: 60px; bottom: 22px; z-index: 2; color: #fff; display: flex; gap: 8px; align-items: center; font-size: 13px; text-shadow: 0 1px 3px rgba(0, 0, 0, .6); }
+.shorts-meta span { font-weight: 600; padding: 2px 8px; border-radius: 999px; background: #ff0033; text-shadow: none; }
+.shorts-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255, 255, 255, .3); z-index: 2; }
+.shorts-bar i { display: block; height: 100%; background: #ff0033; transform-origin: left; transform: scaleX(0); }
+.device[data-fmt="shorts"] .shorts-bar i { animation: bar 4.2s linear forwards; }
 
 /* Planned posts */
 .planned { overflow: hidden; }

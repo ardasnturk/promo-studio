@@ -41,6 +41,9 @@ videos stay on your Mac.
   scenes, and a royalty-free background beat.
 * **Instagram** — publish now or schedule Reels through the official APIs,
   then follow views and reach. Optional: **Save Video…** exports the MP4.
+* **YouTube Shorts** — the same video goes to your YouTube channel too, with a
+  title Claude writes for it; scheduled Shorts wait on YouTube and go out on
+  time even when the Mac is off.
 * **Ten languages** — videos and the app itself in English, Türkçe, Deutsch,
   Español, Français, Italiano, Português, 日本語, 한국어 and 简体中文.
 * **Planned posts** — write a request now and have it made tomorrow at 15:00;
@@ -58,6 +61,7 @@ videos stay on your Mac.
 * [Making a promo film](#making-a-promo-film)
 * [Quick templates](#quick-templates)
 * [Instagram](#instagram)
+* [YouTube](#youtube)
 * [Voiceover, music and languages](#voiceover-music-and-languages)
 * [Promo Templates](#promo-templates)
 * [The menu bar](#the-menu-bar)
@@ -100,6 +104,7 @@ the Gemini key and the Meta app.
 | Node.js | 20 or later; Promo Studio installs Remotion and uses its bundled ffmpeg |
 | Voiceover | Optional. A [Gemini API key](https://aistudio.google.com) (free tier: about 10 requests a day per model, one per video) |
 | Instagram | Optional. A Business or Creator account and your own Meta developer app |
+| YouTube | Optional. A channel and your own Google Cloud project (free) |
 | Localized screens | Optional. Xcode with the iOS Simulator |
 
 ## Install
@@ -166,6 +171,19 @@ tokens live in the Keychain. Connecting is optional.
   Videos are uploaded directly; no public server is needed.
 * With the App Secret entered, tokens are extended to 60 days and renewed
   before they expire.
+
+## YouTube
+
+Videos can go to a YouTube channel as Shorts as well, through the official
+YouTube Data API. Connecting is optional and free.
+
+* You create an OAuth client ("Desktop app") in your own Google Cloud project
+  and sign in through your browser; the sign-in lives in the Keychain. Steps:
+  [docs/SETUP.md](docs/SETUP.md#youtube).
+* Each post can go to Instagram, YouTube or both; trying again after a failure
+  only redoes the part that failed.
+* **Until Google audits your Cloud project, YouTube keeps uploaded videos
+  private for good.** Apply for the free audit before relying on it.
 
 ## Voiceover, music and languages
 

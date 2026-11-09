@@ -178,6 +178,7 @@ struct NewVideoSheet: View {
 
     private var hasAccount: Bool {
         model.account(accountId.isEmpty ? nil : accountId) != nil || model.project(projectId).flatMap { model.account(for: $0) } != nil
+            || (format != .image && model.channel(model.settings.youtubeDefaultChannel) != nil)
     }
 
     @ViewBuilder private var planSection: some View {

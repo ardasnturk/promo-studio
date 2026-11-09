@@ -4,7 +4,7 @@ import WebKit
 /// Settings window (⌘,): panes with colored icons like System Settings (same layout as Remote Code).
 struct SettingsView: View {
     enum Pane: String, CaseIterable, Identifiable {
-        case general, instagram, voiceover, engine, updates
+        case general, instagram, youtube, voiceover, engine, updates
         var id: String { rawValue }
     }
 
@@ -49,6 +49,7 @@ struct SettingsView: View {
         switch pane {
         case .general: GeneralSettings()
         case .instagram: InstagramSettings()
+        case .youtube: YouTubeSettings()
         case .voiceover: VoiceoverSettings()
         case .engine: EngineSettings()
         case .updates: Form { UpdatesSection() }
@@ -59,6 +60,7 @@ struct SettingsView: View {
         switch pane {
         case .general: Text("General")
         case .instagram: Text("Instagram")
+        case .youtube: Text("YouTube")
         case .voiceover: Text("Voiceover & Music")
         case .engine: Text("Claude & Video Engine")
         case .updates: Text("Updates")
@@ -69,6 +71,7 @@ struct SettingsView: View {
         switch pane {
         case .general: Text("Start at login, content language, hashtags and themes.")
         case .instagram: Text("Accounts each project posts to, and your Meta app.")
+        case .youtube: Text("Channels videos also go to as Shorts, and your Google app.")
         case .voiceover: Text("Gemini voiceover and the background beat.")
         case .engine: Text("The Claude model that writes and directs, and Remotion, which renders.")
         case .updates: Text("New versions of Promo Studio and your template libraries.")
@@ -79,6 +82,7 @@ struct SettingsView: View {
         switch pane {
         case .general: "gearshape.fill"
         case .instagram: "camera.fill"
+        case .youtube: "play.rectangle.fill"
         case .voiceover: "waveform"
         case .engine: "sparkles"
         case .updates: "arrow.down.circle.fill"
@@ -89,6 +93,7 @@ struct SettingsView: View {
         switch pane {
         case .general: [.gray, Color(white: 0.35)]
         case .instagram: [Brand.violet, Brand.pink]
+        case .youtube: [.red, Color(red: 0.75, green: 0.05, blue: 0.1)]
         case .voiceover: [.red, .orange]
         case .engine: [Brand.indigo, Brand.violet]
         case .updates: [.green, Brand.teal]
@@ -250,6 +255,67 @@ private struct InstagramSettings: View {
                 case let .token(token, expiresIn): Task { await model.connect(withToken: token, expiresIn: expiresIn) }
                 case let .failed(message): model.alert = message
                 case nil: break
+                }
+            }
+        }
+    }
+}
+
+/// YouTube channels and the user's own Google Cloud OAuth client
+private struct YouTubeSettings: View {
+    @Environment(AppModel.self) private var model
+    @State private var clientSecret = Keychain.get(Keychain.Key.googleClientSecret) ?? ""
+    @State private var connecting = false
+
+    var body: some View {
+        @Bindable var model = model
+        Form {
+            Section {
+                if model.data.channels.isEmpty {
+                    Text("No YouTube channels connected.").foregroundStyle(.secondary)
+                }
+                ForEach(model.data.channels) { c in
+                    HStack(spacing: 12) {
+                        AsyncImage(url: c.thumbnailURL.flatMap(URL.init(string:))) { $0.resizable() } placeholder: { Circle().fill(.quaternary) }
+                            .frame(width: 32, height: 32).clipShape(Circle())
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(c.title).font(.headline)
+                            if let handle = c.handle { Text(verbatim: handle).font(.caption).foregroundStyle(.secondary) }
+                        }
+                        Spacer()
+                        Button("Remove", role: .destructive) { model.disconnectYouTube(c.id) }
+                    }
+                }
+                if !model.data.channels.isEmpty {
+                    Picker("Share new videos to", selection: $model.settings.youtubeDefaultChannel) {
+                        Text("Only when I choose it on a post").tag("")
+                        ForEach(model.data.channels) { Text(verbatim: $0.title).tag($0.id) }
+                    }
+                }
+                Button {
+                    connecting = true
+                    Task { await model.connectYouTube(); connecting = false }
+                } label: {
+                    Label(connecting ? String(localized: "Waiting for Google in your browser…") : String(localized: "Connect a YouTube Channel"), systemImage: "person.badge.key")
+                }
+                .disabled(connecting || model.settings.googleClientId.trimmingCharacters(in: .whitespaces).isEmpty || clientSecret.isEmpty)
+            } header: {
+                Text("YouTube Channels")
+            } footer: {
+                Text("Videos go up as Shorts with the caption as their description. Pictures stay on Instagram. You can change the channel, or leave YouTube out, on each post’s Publish tab.")
+            }
+
+            Section {
+                TextField("Client ID", text: $model.settings.googleClientId)
+                SecureField("Client secret", text: $clientSecret)
+                    .onChange(of: clientSecret) { _, v in Keychain.set(v.trimmingCharacters(in: .whitespacesAndNewlines), for: Keychain.Key.googleClientSecret) }
+                Link("Open Google Cloud Console", destination: URL(string: "https://console.cloud.google.com/apis/credentials")!)
+            } header: {
+                Text("Google App")
+            } footer: {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("In your own Google Cloud project, turn on “YouTube Data API v3”, set up the OAuth consent screen, and create an OAuth client of type “Desktop app”. It’s free; the client secret is stored in the Keychain.")
+                    Text("Until Google audits the project, YouTube keeps every video uploaded through it private for good. Apply for the audit with the “YouTube API Services – Audit and Quota Extension” form. Set the consent screen’s publishing status to “In production”, or Google ends the sign-in every 7 days.")
                 }
             }
         }

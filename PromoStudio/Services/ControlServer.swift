@@ -296,6 +296,9 @@ final class ControlServer {
             }
             d["media"] = ["video": media(post.videoFile), "cover": media(post.coverFile), "image": media(post.imageFile), "slides": post.imageFiles.map(media), "people": people]
             d["canPostToFeed"] = post.canPostToFeed
+            // Where it goes, as the Mac resolves it (post's choice, project's account, default channel)
+            d["instagramAccountId"] = model.account(for: post)?.userId ?? NSNull()
+            d["youtubeChannel"] = model.youtubeChannel(for: post)?.id ?? NSNull()
             return d
         }
         var jobs: [String: Any] = [:]
@@ -312,6 +315,7 @@ final class ControlServer {
             "projects": projects,
             "posts": posts,
             "accounts": object(model.data.accounts),
+            "channels": object(model.data.channels),
             "libraries": model.data.libraries.map { lib in
                 [
                     "id": lib.id.uuidString, "name": lib.name, "compositions": lib.compositions.count,
@@ -339,6 +343,8 @@ final class ControlServer {
                 "editPhotos": s.editPhotosWithCodex && CodexImage.isInstalled,
                 "canPostPictures": PublicLink.isInstalled,
                 "canPlan": true,
+                "canYouTube": true,
+                "youtubeDefaultChannel": s.youtubeDefaultChannel,
             ],
             "languages": ContentLanguage.all.map { ["id": $0.id, "label": $0.label] },
             "themes": VideoTheme.allCases.map { ["id": $0.rawValue, "label": $0.label] },

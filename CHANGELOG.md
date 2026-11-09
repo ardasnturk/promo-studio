@@ -6,6 +6,15 @@ All notable changes to Promo Studio are recorded here. The format follows
 
 ## [Unreleased]
 
+## [1.7.1] — 2026-11-10
+
+### Added
+- YouTube from the iPhone: Remote Code can choose a post's YouTube channel and
+  title, have Claude write the title, post to YouTube only, and show the video's
+  status and numbers. The control API gains `channels`, the posts' resolved
+  `instagramAccountId` and `youtubeChannel`, and the `writeYouTubeTitle` and
+  `forgetYouTubeUpload` actions.
+
 ## [1.7.0] — 2026-11-09
 
 ### Added

@@ -46,9 +46,10 @@ enum ControlActions {
             guard let raw = str("projectId"), !raw.isEmpty else { return nil }
             return try project()
         }
-        /// Instagram account chosen for a post (nil: the project's)
+        /// Instagram account chosen for a post (nil: the project's; "-": not to Instagram)
         func accountId() throws -> String? {
             guard let id = str("accountId"), !id.isEmpty else { return nil }
+            if id == AppModel.noInstagram { return id }
             guard model.account(id) != nil else { throw ActionError.notFound(String(localized: "Account")) }
             return id
         }
@@ -136,6 +137,20 @@ enum ControlActions {
             if body.keys.contains("accountId") {
                 model.setAccount(try accountId(), forPost: p.id)
             }
+            if let v = body["youtubeTitle"] as? String { model.updatePost(p.id) { $0.youtubeTitle = v } }
+            // youtubeChannelId: a channel's ID, "" for not to YouTube, null for the default in Settings
+            if body.keys.contains("youtubeChannelId") {
+                let id = body["youtubeChannelId"] as? String
+                if let id, !id.isEmpty, model.channel(id) == nil { throw ActionError.notFound(String(localized: "Channel")) }
+                model.setYouTubeChannel(id, forPost: p.id)
+            }
+            return ok
+        case "writeYouTubeTitle":
+            let p = try post()
+            model.writeYouTubeTitle(p.id)
+            return accepted(p.id)
+        case "forgetYouTubeUpload":
+            model.forgetYouTubeUpload(try post().id)
             return ok
         case "rewriteCaption":
             let p = try post()

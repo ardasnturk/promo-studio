@@ -167,5 +167,7 @@
  "formats.shorts": "YouTube Shorts",
  "formats.shortsText": "같은 영상을 Claude가 YouTube용으로 쓴 제목과 함께 채널에도 올립니다. 예약한 Shorts는 YouTube에서 기다렸다가 Mac이 꺼져 있어도 제시간에 공개됩니다.",
  "faq.q7": "YouTube에도 게시할 수 있나요?",
- "faq.a7": "네, 공식 YouTube Data API로 Shorts를 게시합니다. 무료입니다. 내 Google Cloud 프로젝트에서 OAuth 클라이언트를 만들고 브라우저로 로그인하면 됩니다. Google이 그 프로젝트를 감사하기 전까지 YouTube는 업로드한 영상을 비공개로 두므로, 먼저 무료 감사를 신청하세요."
+ "faq.a7": "네, 공식 YouTube Data API로 Shorts를 게시합니다. 무료입니다. 내 Google Cloud 프로젝트에서 OAuth 클라이언트를 만들고 브라우저로 로그인하면 됩니다. Google이 그 프로젝트를 감사하기 전까지 YouTube는 업로드한 영상을 비공개로 두므로, 먼저 무료 감사를 신청하세요.",
+ "footer.privacy": "개인정보 처리방침",
+ "footer.terms": "이용 약관"
 };

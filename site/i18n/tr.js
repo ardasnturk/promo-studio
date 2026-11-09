@@ -167,5 +167,7 @@
  "formats.shorts": "YouTube Shorts",
  "formats.shortsText": "Aynı video, Claude'un YouTube için yazdığı bir başlıkla kanalınıza da gider. Zamanlanan Shorts YouTube'da bekler ve Mac'iniz kapalıyken bile vaktinde yayınlanır.",
  "faq.q7": "YouTube'da paylaşabilir mi?",
- "faq.a7": "Evet, resmi YouTube Data API ile Shorts olarak. Ücretsizdir: kendi Google Cloud projenizde bir OAuth istemcisi oluşturur ve tarayıcınızla giriş yaparsınız. Google bu projeyi denetleyene kadar YouTube yüklenen videoları gizli tutar; bu yüzden önce ücretsiz denetime başvurun."
+ "faq.a7": "Evet, resmi YouTube Data API ile Shorts olarak. Ücretsizdir: kendi Google Cloud projenizde bir OAuth istemcisi oluşturur ve tarayıcınızla giriş yaparsınız. Google bu projeyi denetleyene kadar YouTube yüklenen videoları gizli tutar; bu yüzden önce ücretsiz denetime başvurun.",
+ "footer.privacy": "Gizlilik",
+ "footer.terms": "Koşullar"
 };

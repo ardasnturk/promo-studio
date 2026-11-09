@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Policy — Promo Studio</title>
+  <meta name="description" content="How Promo Studio handles your data: no server, no account, no telemetry. What it reads from YouTube and Instagram, where it keeps it and how to remove it.">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://promo.ardasnturk.com/privacy.html">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function () { try { var t = localStorage.getItem('ps-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {} })();
+  </script>
+</head>
+<body>
+  <header class="nav legal-nav">
+    <div class="nav-bar">
+      <a class="brand" href="/" aria-label="Promo Studio home">
+        <img src="assets/favicon.png" width="28" height="28" alt="">
+        <span>Promo Studio</span>
+      </a>
+      <a class="btn btn-small btn-ghost" href="/">Back to the site</a>
+    </div>
+  </header>
+
+  <main class="legal wrap" id="main">
+    <p class="kicker">Legal</p>
+    <h1>Privacy Policy</h1>
+    <p class="legal-date">Effective November 9, 2026</p>
+
+    <p>Promo Studio is a free, open-source Mac app made by Arda Sentürk (“we”). It turns your app's code and your prompts into short videos and pictures and, if you connect them, posts them to Instagram and YouTube. This policy covers the Promo Studio app and this website.</p>
+
+    <h2>The short version</h2>
+    <ul>
+      <li>There is no Promo Studio server, account or telemetry. We never receive your data.</li>
+      <li>Everything the app keeps stays on your Mac. Sign-ins and keys are in your macOS Keychain.</li>
+      <li>The app talks only to services you set up yourself, with your own accounts, and only to do what you ask.</li>
+    </ul>
+
+    <h2>What stays on your Mac</h2>
+    <p>Promo Studio stores your projects, posts, scripts, rendered videos and pictures, and settings in <code>~/Library/Application Support/Promo Studio</code> and in the app's preferences. Access tokens and keys (Instagram, YouTube, the Meta app secret, the Google client secret and Gemini keys) are stored in your login keychain. None of this is sent to us.</p>
+
+    <h2>Services the app connects to</h2>
+    <p>Each service below receives data only when you use the feature, and under that service's own terms and privacy policy.</p>
+    <ul>
+      <li><b>Claude Code (Anthropic)</b> — your own <code>claude</code> CLI receives your prompts and the parts of your project it reads to write storyboards, captions and video code. It may search and read public web pages for research.</li>
+      <li><b>Google Gemini</b> (optional) — the voiceover lines, to turn them into speech with your API key.</li>
+      <li><b>Instagram (Meta)</b> (optional) — the videos, pictures and captions you publish, through Meta's official Graph API with your own Meta app.</li>
+      <li><b>YouTube (Google)</b> (optional) — the videos, titles and descriptions you publish, through the YouTube API Services. See the next section.</li>
+      <li><b>Codex (OpenAI)</b> (optional) — photos of people you choose to have edited, through your own Codex CLI.</li>
+      <li><b>Cloudflare</b> — when Instagram must fetch a file from a web address, a temporary quick-tunnel link serves only that file and closes right after.</li>
+      <li><b>GitHub</b> — update checks for Promo Studio and template libraries, and downloads of new versions.</li>
+      <li><b>Public websites</b> — logos and photos of public figures that a storyboard names, downloaded from the web (for example Wikipedia).</li>
+    </ul>
+
+    <h2 id="youtube">YouTube API Services</h2>
+    <p>Promo Studio uses the <b>YouTube API Services</b> to upload your videos to your YouTube channel as Shorts. By connecting a channel you also agree to the <a href="https://www.youtube.com/t/terms">YouTube Terms of Service</a>, and Google's use of data is described in the <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.</p>
+    <p>When you connect a channel, you sign in with Google in your own browser and grant the <code>youtube</code> permission to the OAuth client you created in your own Google Cloud project. With it, Promo Studio:</p>
+    <ul>
+      <li>reads your channel's ID, name, handle and thumbnail, to show which channel you connected;</li>
+      <li>uploads the videos you choose to publish, with their title, description, tags and language, and sets their visibility and publish time;</li>
+      <li>reads the visibility and the view, like and comment counts of the videos it uploaded, to show them on the post.</li>
+    </ul>
+    <p>It does not read your other videos, comments, subscribers, messages or account details, and it does not delete anything on YouTube. This information is stored only on your Mac (the refresh token in your keychain, the rest in the app's data folder). It is not shared with us or anyone else, and is not used for advertising.</p>
+    <p>Promo Studio's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+
+    <h2>Removing your data</h2>
+    <ul>
+      <li><b>Disconnect YouTube:</b> click <i>Remove</i> next to the channel in Promo Studio → Settings → YouTube. This revokes the sign-in at Google and deletes it from your keychain. You can also revoke access at any time on the <a href="https://myaccount.google.com/permissions">Google security settings page</a>.</li>
+      <li><b>Disconnect Instagram:</b> click <i>Remove</i> next to the account in Settings → Instagram, and remove the app in your Meta or Instagram settings.</li>
+      <li><b>Delete everything:</b> delete the folder <code>~/Library/Application Support/Promo Studio</code> and the “Promo Studio” item in Keychain Access, then the app.</li>
+    </ul>
+    <p>Data stays on your Mac until you delete it. What you published stays on Instagram and YouTube until you delete it there.</p>
+
+    <h2>Remote Code</h2>
+    <p>If you use Remote Code to drive Promo Studio from your iPhone, the app answers only on <code>127.0.0.1</code> and requires a random token stored on your Mac. Remote Code has its own privacy policy.</p>
+
+    <h2>This website</h2>
+    <p>promo.ardasnturk.com is hosted on GitHub Pages, which may log visitors' IP addresses for security under <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>. The site uses no cookies, analytics or ads. It remembers your language and theme in your browser's local storage and asks GitHub's public API for the latest version number.</p>
+
+    <h2>Children</h2>
+    <p>Promo Studio is a tool for app makers and creators and is not directed at children under 13.</p>
+
+    <h2>Changes</h2>
+    <p>We will post any changes on this page and update the date above. The history is public in the <a href="https://github.com/ardasnturk/promo-studio/commits/main/site/privacy.html">project's repository</a>.</p>
+
+    <h2>Contact</h2>
+    <p>Questions or requests: open an issue at <a href="https://github.com/ardasnturk/promo-studio/issues">github.com/ardasnturk/promo-studio/issues</a>. For security matters, see <a href="https://github.com/ardasnturk/promo-studio/blob/main/SECURITY.md">SECURITY.md</a>.</p>
+
+    <p class="legal-links"><a href="terms.html">Terms of Use</a> · <a href="/">Promo Studio</a></p>
+  </main>
+</body>
+</html>

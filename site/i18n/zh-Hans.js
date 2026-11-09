@@ -167,5 +167,7 @@
  "formats.shorts": "YouTube Shorts",
  "formats.shortsText": "同一个视频也会发到你的频道，标题由 Claude 专为 YouTube 撰写。定时的 Shorts 会在 YouTube 上等待，即使 Mac 已关机也会准时发布。",
  "faq.q7": "可以发布到 YouTube 吗？",
- "faq.a7": "可以，通过官方 YouTube Data API 以 Shorts 形式发布。完全免费：你在自己的 Google Cloud 项目中创建 OAuth 客户端，然后用浏览器登录。在 Google 审核该项目之前，YouTube 会将上传的视频保持为私享，所以请先申请免费审核。"
+ "faq.a7": "可以，通过官方 YouTube Data API 以 Shorts 形式发布。完全免费：你在自己的 Google Cloud 项目中创建 OAuth 客户端，然后用浏览器登录。在 Google 审核该项目之前，YouTube 会将上传的视频保持为私享，所以请先申请免费审核。",
+ "footer.privacy": "隐私",
+ "footer.terms": "条款"
 };

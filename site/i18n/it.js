@@ -167,5 +167,7 @@
  "formats.shorts": "YouTube Shorts",
  "formats.shortsText": "Lo stesso video anche sul tuo canale, con un titolo che Claude scrive per YouTube. Gli Shorts programmati aspettano su YouTube ed escono in orario, anche a Mac spento.",
  "faq.q7": "Può pubblicare su YouTube?",
- "faq.a7": "Sì, come Shorts, con l’API ufficiale YouTube Data API. È gratis: crei un client OAuth nel tuo progetto Google Cloud e accedi dal browser. Finché Google non verifica quel progetto, YouTube mantiene privati i video caricati, quindi richiedi prima la verifica gratuita."
+ "faq.a7": "Sì, come Shorts, con l’API ufficiale YouTube Data API. È gratis: crei un client OAuth nel tuo progetto Google Cloud e accedi dal browser. Finché Google non verifica quel progetto, YouTube mantiene privati i video caricati, quindi richiedi prima la verifica gratuita.",
+ "footer.privacy": "Privacy",
+ "footer.terms": "Termini"
 };

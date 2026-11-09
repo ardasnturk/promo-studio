@@ -167,5 +167,7 @@
  "formats.shorts": "YouTube Shorts",
  "formats.shortsText": "Dasselbe Video auch auf deinem Kanal, mit einem Titel, den Claude für YouTube schreibt. Geplante Shorts warten auf YouTube und gehen pünktlich online, auch wenn dein Mac aus ist.",
  "faq.q7": "Kann es auf YouTube posten?",
- "faq.a7": "Ja, als Shorts über die offizielle YouTube Data API. Das ist kostenlos: Du erstellst einen OAuth-Client in deinem eigenen Google-Cloud-Projekt und meldest dich im Browser an. Bis Google dieses Projekt prüft, hält YouTube hochgeladene Videos privat; beantrage also zuerst die kostenlose Prüfung."
+ "faq.a7": "Ja, als Shorts über die offizielle YouTube Data API. Das ist kostenlos: Du erstellst einen OAuth-Client in deinem eigenen Google-Cloud-Projekt und meldest dich im Browser an. Bis Google dieses Projekt prüft, hält YouTube hochgeladene Videos privat; beantrage also zuerst die kostenlose Prüfung.",
+ "footer.privacy": "Datenschutz",
+ "footer.terms": "Nutzungsbedingungen"
 };

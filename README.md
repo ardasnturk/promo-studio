@@ -272,9 +272,11 @@ Business/Creator account linked to a Page. See
 
 * **No server, no telemetry.** Promo Studio talks only to your `claude` CLI
   (and through it, Anthropic), Google's Gemini API if you add a key, Meta's
-  Graph API for Instagram, GitHub for updates, and the web pages Claude reads
-  during research.
-* **Secrets** — Instagram tokens, the Meta App Secret and the Gemini key are
+  Graph API for Instagram, the YouTube Data API if you connect a channel,
+  GitHub for updates, and the web pages Claude reads during research. See the
+  [privacy policy](https://promo.ardasnturk.com/privacy.html).
+* **Secrets** — Instagram and YouTube sign-ins, the Meta App Secret, the
+  Google client secret and the Gemini key are
   kept in the Keychain, never in files or prompts.
 * **Narrow tools for Claude** — analysis and writing are read-only; video coding
   may only write that video's folder.

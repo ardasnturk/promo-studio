@@ -271,10 +271,13 @@ söyler: bir izin, girişte seçilmeyen bir sayfa ya da hesap, veya sayfaya bağ
 
 * **Sunucu yok, telemetri yok.** Promo Studio yalnızca `claude` CLI'ınla (ve
   onun üzerinden Anthropic'le), anahtar eklediysen Google'ın Gemini API'siyle,
-  Instagram için Meta'nın Graph API'siyle, güncellemeler için GitHub'la ve
-  Claude'un araştırmada okuduğu web sayfalarıyla konuşur.
-* **Sırlar** — Instagram token'ları, Meta App Secret ve Gemini anahtarı
-  Keychain'de tutulur; dosyalara ya da istemlere asla yazılmaz.
+  Instagram için Meta'nın Graph API'siyle, kanal bağladıysan YouTube Data
+  API'siyle, güncellemeler için GitHub'la ve Claude'un araştırmada okuduğu web
+  sayfalarıyla konuşur. Ayrıntılar
+  [gizlilik politikasında](https://promo.ardasnturk.com/privacy.html).
+* **Sırlar** — Instagram ve YouTube oturumları, Meta App Secret, Google
+  istemci gizli anahtarı ve Gemini anahtarı Keychain'de tutulur; dosyalara ya
+  da istemlere asla yazılmaz.
 * **Claude'a dar araçlar** — analiz ve yazım salt okunurdur; video kodlama
   yalnızca o videonun klasörüne yazabilir.
 * **Yerel API** — uzaktan yönetim API'si yalnızca `127.0.0.1`'i dinler ve 0600

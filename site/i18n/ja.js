@@ -167,5 +167,7 @@
  "formats.shorts": "YouTubeショート",
  "formats.shortsText": "同じ動画を、Claude が YouTube 用に書いたタイトルでチャンネルにも投稿。予約したショートは YouTube で待機し、Mac の電源が切れていても時間どおりに公開されます。",
  "faq.q7": "YouTube に投稿できますか？",
- "faq.a7": "はい。公式の YouTube Data API でショートとして投稿します。無料です。ご自身の Google Cloud プロジェクトで OAuth クライアントを作成し、ブラウザでログインします。Google がそのプロジェクトを審査するまで、アップロードした動画は YouTube で非公開のままになるため、先に無料の審査を申請してください。"
+ "faq.a7": "はい。公式の YouTube Data API でショートとして投稿します。無料です。ご自身の Google Cloud プロジェクトで OAuth クライアントを作成し、ブラウザでログインします。Google がそのプロジェクトを審査するまで、アップロードした動画は YouTube で非公開のままになるため、先に無料の審査を申請してください。",
+ "footer.privacy": "プライバシー",
+ "footer.terms": "利用規約"
 };
